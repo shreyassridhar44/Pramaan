@@ -12,7 +12,7 @@ Update this file at the end of every working session and every completed step.
 | 3 | ML kit | Done: renderer (12 layouts), degradation, tamper generator, dataset builder, localiser training and ONNX export, field extractor training, evaluation scripts, document pipeline in the API; smoke-tested on CPU; full training pending on the owner's RTX 4090 | see git log |
 | 4 | Design system and shell | Done: tokens (Ledger and Command themes), primitives, AssuranceRing, chips, AsOfControl, command palette, shell, sign-in with personas, route guards, first command view (headline band, assurance composition, action queue); 20 web tests with axe. ProvenanceGrid, SignalCard, BankMessage and AuditChain are built in Steps 5 to 7 where they are first used (recorded deviation) | see git log |
 | 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
-| 6 | Intake and document intelligence | Not started | |
+| 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
 | 7 | Bank network, monitoring, notifications | Not started | |
 | 8 | Release, letters, verification | Not started | |
 | 9 | Command view, forecast, search, reports | Not started | |
@@ -45,7 +45,9 @@ Update this file at the end of every working session and every completed step.
 
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 6: institution portal, submission wizard, DocumentViewer, signals actions, verification queue.
+2. Step 7: bank confirmation network (signed messages, bank desk), monitoring rule run, notifications, renewal.
+
+Demo story assets: `services/api/app/demo_assets` holds a genuine and an altered specimen receipt for the Demo Institute's open demand, and the simulated bank holds the genuine record (Rs 15,00,000). The altered receipt reads Rs 35,00,000 in figures and Fifteen Lakh in words.
 
 Dev tip: on Windows, run the API without `--reload` (stale reloader processes kept serving old code); restart it after backend changes and regenerate web types with `npm run api:types`.
 

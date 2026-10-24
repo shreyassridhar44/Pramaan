@@ -66,9 +66,10 @@ class Token:
 
 
 def _keyword_class(text: str) -> str | None:
-    t = text.lower()
+    """Label keyword in a token, ignoring spaces because OCR often drops them ("DueDate")."""
+    t = text.lower().replace(" ", "")
     for name in KW_ORDER:
-        if any(k in t for k in KEYWORDS[name]):
+        if any(k.replace(" ", "") in t for k in KEYWORDS[name]):
             return name
     return None
 

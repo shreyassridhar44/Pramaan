@@ -119,6 +119,14 @@ class DemandOut(BaseModel):
     lines: list[DemandLineOut]
 
 
+class DocumentBrief(BaseModel):
+    id: int
+    kind: str
+    filename: str
+    uploaded_on: str
+    analysed: bool
+
+
 class InstrumentDetail(BaseModel):
     as_of: str
     id: int
@@ -160,3 +168,4 @@ class InstrumentDetail(BaseModel):
     reminders: list[ReminderOut]
     demand: DemandOut | None
     timeline: list[TimelineItem]
+    documents: list[DocumentBrief]

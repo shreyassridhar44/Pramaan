@@ -227,3 +227,8 @@ def display(field: FieldName, value_norm: str) -> str:
             return {"yes": "Yes", "no": "No"}.get(value_norm, value_norm)
         case _:
             return value_norm.upper() if field in (FieldName.NUMBER, FieldName.IFSC) else value_norm
+
+
+def rupees(amount_rupees: int) -> str:
+    """Rupees in Indian grouping, for messages: "Rs 15,00,000"."""
+    return f"Rs {_grouped(amount_rupees)}"

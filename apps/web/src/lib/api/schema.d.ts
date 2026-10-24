@@ -306,6 +306,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/instruments/{instrument_id}/actions/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Act */
+        post: operations["act_api_v1_instruments__instrument_id__actions__action__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/signals/{signal_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve */
+        post: operations["resolve_api_v1_signals__signal_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/institutions": {
         parameters: {
             query?: never;
@@ -334,6 +368,131 @@ export interface paths {
         get: operations["get_institution_api_v1_institutions__institution_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload
+         * @description Uploads a document. FDR scans are analysed straight away (OCR, fields, forensics, checks).
+         */
+        post: operations["upload_api_v1_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analysis */
+        get: operations["get_analysis_api_v1_documents__document_id__analysis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/page": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Page */
+        get: operations["page_api_v1_documents__document_id__page_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/heatmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Heatmap */
+        get: operations["heatmap_api_v1_documents__document_id__heatmap_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/specimens/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Specimen
+         * @description Synthetic specimen receipts for trying the submission flow. Demo mode only.
+         */
+        get: operations["specimen_api_v1_documents_specimens__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Home */
+        get: operations["home_api_v1_portal_home_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit */
+        post: operations["submit_api_v1_portal_submissions_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -398,6 +557,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionBody */
+        ActionBody: {
+            /** Reason */
+            reason?: string | null;
+            /** Owner Id */
+            owner_id?: number | null;
+        };
         /** ActionItem */
         ActionItem: {
             /** Kind */
@@ -424,6 +590,15 @@ export interface components {
             status: string;
             /** Escalation */
             escalation?: string | null;
+        };
+        /** ActionResult */
+        ActionResult: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Status */
+            status: string;
+            /** Message */
+            message: string;
         };
         /** AssuranceSplit */
         AssuranceSplit: {
@@ -477,6 +652,18 @@ export interface components {
             /** Simulated */
             simulated: boolean;
         };
+        /** Body_upload_api_v1_documents_post */
+        Body_upload_api_v1_documents_post: {
+            /** File */
+            file: string;
+            /**
+             * Kind
+             * @default fdr_scan
+             */
+            kind: string;
+            /** Declared */
+            declared?: string | null;
+        };
         /** ChainLink */
         ChainLink: {
             /** Id */
@@ -517,6 +704,70 @@ export interface components {
             opened_on: string;
             /** Closed On */
             closed_on: string | null;
+        };
+        /** Declared */
+        Declared: {
+            /**
+             * Kind
+             * @default joint_fdr
+             */
+            kind: string;
+            /** Bank Code */
+            bank_code: string;
+            /** Branch */
+            branch: string;
+            /** Ifsc */
+            ifsc: string;
+            /** Number */
+            number: string;
+            /** Amount Rupees */
+            amount_rupees: number;
+            /**
+             * Issue Date
+             * Format: date
+             */
+            issue_date: string;
+            /**
+             * Maturity Date
+             * Format: date
+             */
+            maturity_date: string;
+            /** Holders */
+            holders: string;
+            /**
+             * Lien
+             * @default true
+             */
+            lien: boolean;
+        };
+        /** DemandCard */
+        DemandCard: {
+            /** Id */
+            id: number;
+            /** Reason */
+            reason: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Intimated On */
+            intimated_on: string;
+            /** Due On */
+            due_on: string;
+            /** Days Left */
+            days_left: number;
+            /** Furnished On */
+            furnished_on: string | null;
+            /** Status */
+            status: string;
+            /** Explanation */
+            explanation: string;
+            /** Slabs */
+            slabs: components["schemas"]["Slab"][];
+            /** Lines */
+            lines: {
+                [key: string]: unknown;
+            }[];
+            /** Aph Ref */
+            aph_ref: string;
         };
         /** DemandLineOut */
         DemandLineOut: {
@@ -588,6 +839,19 @@ export interface components {
             text: string;
             /** Changed */
             changed: boolean;
+        };
+        /** DocumentBrief */
+        DocumentBrief: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Filename */
+            filename: string;
+            /** Uploaded On */
+            uploaded_on: string;
+            /** Analysed */
+            analysed: boolean;
         };
         /** EvidenceOut */
         EvidenceOut: {
@@ -798,6 +1062,8 @@ export interface components {
             demand: components["schemas"]["DemandOut"] | null;
             /** Timeline */
             timeline: components["schemas"]["TimelineItem"][];
+            /** Documents */
+            documents: components["schemas"]["DocumentBrief"][];
         };
         /** InstrumentPage */
         InstrumentPage: {
@@ -917,6 +1183,44 @@ export interface components {
             /** Context */
             context: string;
         };
+        /** PortalHome */
+        PortalHome: {
+            /** Institution Id */
+            institution_id: number;
+            /** Institution */
+            institution: string;
+            /** Trust Name */
+            trust_name: string;
+            /** Aicte Id */
+            aicte_id: string;
+            /** Demands */
+            demands: components["schemas"]["DemandCard"][];
+            /** Instruments */
+            instruments: components["schemas"]["PortalInstrument"][];
+            /** Tasks */
+            tasks: string[];
+        };
+        /** PortalInstrument */
+        PortalInstrument: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Bank */
+            bank: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Days To Maturity */
+            days_to_maturity: number;
+            /** Status */
+            status: string;
+            /** Assurance */
+            assurance: number;
+            /** Next Step */
+            next_step: string;
+        };
         /** ProgrammeOut */
         ProgrammeOut: {
             /** Discipline */
@@ -1022,6 +1326,25 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** ResolveBody */
+        ResolveBody: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "confirmed" | "dismissed" | "resolved";
+            /** Note */
+            note: string;
+        };
+        /** ResolveResult */
+        ResolveResult: {
+            /** Signal Id */
+            signal_id: number;
+            /** Status */
+            status: string;
+            /** Open High Remaining */
+            open_high_remaining: number;
+        };
         /** RiverWeek */
         RiverWeek: {
             /** Week */
@@ -1058,6 +1381,13 @@ export interface components {
             /** Resolution Note */
             resolution_note: string | null;
         };
+        /** Slab */
+        Slab: {
+            /** Until */
+            until: string;
+            /** Penalty Percent */
+            penalty_percent: number;
+        };
         /** SourceValue */
         SourceValue: {
             /** Raw */
@@ -1072,6 +1402,27 @@ export interface components {
             confidence: number | null;
             /** Evidence Type */
             evidence_type: string | null;
+        };
+        /** Submission */
+        Submission: {
+            /** Demand Id */
+            demand_id: number;
+            declared: components["schemas"]["Declared"];
+            /** Fdr Document Id */
+            fdr_document_id: number;
+            /** Affidavit Document Id */
+            affidavit_document_id: number;
+            /** Declaration Accepted */
+            declaration_accepted: boolean;
+        };
+        /** SubmissionResult */
+        SubmissionResult: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Status */
+            status: string;
+            /** Signals */
+            signals: number;
         };
         /** Summary */
         Summary: {
@@ -1678,6 +2029,77 @@ export interface operations {
             };
         };
     };
+    act_api_v1_instruments__instrument_id__actions__action__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                instrument_id: number;
+                action: "start_scrutiny" | "verify" | "return" | "assign" | "observe";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActionBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_api_v1_signals__signal_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                signal_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResolveBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResolveResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_institutions_api_v1_institutions_get: {
         parameters: {
             query?: {
@@ -1733,6 +2155,220 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InstitutionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_api_v1_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_api_v1_documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analysis_api_v1_documents__document_id__analysis_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    page_api_v1_documents__document_id__page_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    heatmap_api_v1_documents__document_id__heatmap_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    specimen_api_v1_documents_specimens__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    home_api_v1_portal_home_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalHome"];
+                };
+            };
+        };
+    };
+    submit_api_v1_portal_submissions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Submission"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionResult"];
                 };
             };
             /** @description Validation Error */

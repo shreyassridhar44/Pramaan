@@ -8,6 +8,7 @@ from typing import Any
 
 import numpy as np
 
+from app.domain.words import words_to_rupees
 from app.services.documents.features import (
     CLASSES,
     RE_AMOUNT,
@@ -20,7 +21,17 @@ from app.services.documents.features import (
     token_features,
 )
 
-TARGETS = ("number", "amount", "issue_date", "maturity_date", "ifsc", "holders", "lien", "branch")
+TARGETS = (
+    "number",
+    "amount",
+    "amount_words",
+    "issue_date",
+    "maturity_date",
+    "ifsc",
+    "holders",
+    "lien",
+    "branch",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +50,7 @@ def _valid(field: str, text: str) -> bool:
         "maturity_date": bool(RE_DATE.match(t)),
         "ifsc": bool(RE_IFSC.match(compact)),
         "number": bool(RE_LONG_NUMBER.match(compact)),
+        "amount_words": words_to_rupees(t) is not None,
     }.get(field, len(t) > 2)
 
 

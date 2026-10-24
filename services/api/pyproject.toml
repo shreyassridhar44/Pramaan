@@ -29,6 +29,7 @@ dependencies = [
     "lightgbm>=4.6",
     "pypdfium2>=4.30",
     "pillow>=11.3",
+    "tzdata>=2025.2",
 ]
 
 [dependency-groups]

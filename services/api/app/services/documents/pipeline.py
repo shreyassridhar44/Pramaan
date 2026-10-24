@@ -99,7 +99,8 @@ def analyse_document(data: bytes) -> Analysis:
     tokens = ocr(page)
     extractor, localiser = models()
     fields = extractor.extract(tokens, page.shape[1], page.shape[0])
-    forensics = analyse(page, localiser)
+    boxes = {name: tuple(round(v) for v in f.box) for name, f in fields.items()}
+    forensics = analyse(page, localiser, boxes)  # type: ignore[arg-type]
     return Analysis(
         image=page,
         tokens=tokens,

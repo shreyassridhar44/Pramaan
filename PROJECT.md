@@ -348,6 +348,7 @@ Primary data flow: institution submission → object storage → analysis job (O
 2. The Regulation Bureau, not the Approval Bureau, owns day-to-day deposit monitoring; NOC authority sits with the Approval Bureau as in Clause 6.46 c. Both are configurable roles.
 3. Reminder offsets and escalation levels are defaults chosen by us; AICTE would set the real values.
 4. The 10-year term applies by default; 8-year deposits are supported as a configurable term.
+5. Late-furnishing penalty slabs (31 May, 31 July) are taken as the next occurrence on or after the due date when a demand falls outside the April to June approval cycle.
 
 ## 14. Security, privacy, performance, reliability
 

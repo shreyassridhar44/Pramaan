@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   CalendarDays,
   CircleDot,
-  FileX,
   GitCommitVertical,
   Landmark,
   Link2,
@@ -15,13 +14,7 @@ import type { ReactNode } from 'react'
 
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
-import {
-  Amount,
-  Chip,
-  SeverityChip,
-  SimulatedBadge,
-  StatusChip,
-} from '@/components/signature/chips'
+import { Amount, Chip, SimulatedBadge, StatusChip } from '@/components/signature/chips'
 import { ProvenanceGrid } from '@/components/signature/provenance-grid'
 import {
   EmptyState,
@@ -37,6 +30,7 @@ import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
 import { formatDate, formatINR, formatRelativeDays } from '@/lib/format'
 
+import { ActionBar, DocumentsTab, SignalsPanel } from './officer-actions'
 import { useInstrument } from './queries'
 
 type Detail = components['schemas']['InstrumentDetail']
@@ -148,6 +142,9 @@ export function InstrumentDetailPage({ id }: { id: number }) {
                 sub={d.next_action ?? 'No action due'}
               />
             </div>
+            <div className="mt-5">
+              <ActionBar d={d} />
+            </div>
           </div>
           <div className="flex items-center gap-5 rounded-[var(--radius-panel)] border border-line bg-sunken/50 px-6 py-5 lg:w-[340px]">
             <AssuranceRing level={level} size={92} animate />
@@ -198,7 +195,7 @@ export function InstrumentDetailPage({ id }: { id: number }) {
               />
               <ProvenanceGrid rows={d.provenance} />
             </Panel>
-            {d.signals.length ? <SignalsPanel signals={d.signals} /> : null}
+            <SignalsPanel d={d} />
           </div>
           <div className="grid content-start gap-5 xl:col-span-4">
             <KeyDates d={d} />
@@ -208,13 +205,7 @@ export function InstrumentDetailPage({ id }: { id: number }) {
         </Tabs.Content>
 
         <Tabs.Content value="documents" className="mt-5">
-          <Panel>
-            <EmptyState
-              icon={<FileX />}
-              title="No document on file"
-              body="Receipts uploaded by the institution appear here with the fields read from them and any regions flagged for a closer look."
-            />
-          </Panel>
+          <DocumentsTab d={d} />
         </Tabs.Content>
 
         <Tabs.Content value="bank" className="mt-5">
@@ -384,42 +375,6 @@ function DemandPanel({ demand }: { demand: NonNullable<Detail['demand']> }) {
         </span>
         <Amount paise={demand.amount_paise} className="font-semibold" />
       </div>
-    </Panel>
-  )
-}
-
-function SignalsPanel({ signals }: { signals: Detail['signals'] }) {
-  return (
-    <Panel>
-      <PanelHeader
-        title="Signals"
-        caption="Items raised by checks and models for an officer to review. They are prompts, not findings."
-      />
-      <ul className="px-5 pb-4">
-        {signals.map((s) => (
-          <li key={s.id} className="flex items-start gap-3 border-b border-line py-3 last:border-0">
-            <span
-              aria-hidden
-              className={cn(
-                'mt-1 h-10 w-1 rounded-full',
-                s.severity === 'high'
-                  ? 'bg-overdue'
-                  : s.severity === 'medium'
-                    ? 'bg-due'
-                    : 'bg-line-strong',
-              )}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-[0.875rem] font-medium text-ink">{s.title}</p>
-              <p className="mt-0.5 text-[0.75rem] text-ink-3">
-                Raised {formatDate(s.raised_on)} by {s.source} v{s.source_version} ·{' '}
-                {s.status === 'open' ? 'Open' : s.status}
-              </p>
-            </div>
-            <SeverityChip severity={s.severity} />
-          </li>
-        ))}
-      </ul>
     </Panel>
   )
 }

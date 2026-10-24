@@ -89,14 +89,42 @@ def _regions(heatmap: np.ndarray, threshold: float, min_area: int) -> list[Regio
     return sorted(out, key=lambda r: -r.score)
 
 
-def analyse(rgb: np.ndarray, localiser: Localiser) -> ForensicsResult:
+def _field_outliers(heat: np.ndarray, boxes: dict[str, tuple[int, int, int, int]]) -> list[Region]:
+    """Classical mode: compare each value field with the other value fields on the same page.
+    Printing, watermarks and seals vary across the page, so absolute heat is unreliable; a field
+    whose residuals stand out from its peers is the useful signal."""
+    scores: dict[str, float] = {}
+    for name, (x0, y0, x1, y1) in boxes.items():
+        patch = heat[max(0, y0) : y1, max(0, x0) : x1]
+        if patch.size:
+            scores[name] = float(np.percentile(patch, 90))
+    if len(scores) < 4:
+        return []
+    values = np.array(list(scores.values()))
+    med = float(np.median(values))
+    mad = float(np.median(np.abs(values - med))) + 1e-3
+    flagged = [
+        Region(boxes[n], min(1.0, 0.5 + (v - med) / (10 * mad)), ["error_level", "noise"])
+        for n, v in scores.items()
+        if v > med + 4 * mad and v - med > 0.08
+    ]
+    return sorted(flagged, key=lambda r: -r.score)[:2]
+
+
+def analyse(
+    rgb: np.ndarray,
+    localiser: Localiser,
+    value_boxes: dict[str, tuple[int, int, int, int]] | None = None,
+) -> ForensicsResult:
     ela = error_level(rgb)
     noise = noise_inconsistency(rgb)
     learned = localiser.predict(rgb)
+    classical = {
+        "error_level_p99": float(np.percentile(ela, 99)),
+        "noise_p99": float(np.percentile(noise, 99)),
+    }
     if learned is not None:
-        heat = learned
-        method = localiser.version
-        regions = _regions(heat, 0.5, 60)
+        regions = _regions(learned, 0.5, 60)
         for r in regions:
             x0, y0, x1, y1 = r.box
             r.sources.append("model")
@@ -104,24 +132,16 @@ def analyse(rgb: np.ndarray, localiser: Localiser) -> ForensicsResult:
                 r.sources.append("error_level")
             if noise[y0:y1, x0:x1].mean() > 0.4:
                 r.sources.append("noise")
-        score = float(cv2.blur(heat, (9, 9)).max())
-    else:
-        heat = (0.5 * ela + 0.5 * noise).astype(np.float32)
-        method = "classical-1"
-        regions = _regions(heat, 0.6, 400)
-        for r in regions:
-            r.sources += ["error_level", "noise"]
-        score = float(np.percentile(heat, 99.9))
-    return ForensicsResult(
-        heat.astype(np.float32),
-        score,
-        regions[:8],
-        method,
-        {
-            "error_level_p99": float(np.percentile(ela, 99)),
-            "noise_p99": float(np.percentile(noise, 99)),
-        },
-    )
+        score = float(cv2.blur(learned, (9, 9)).max())
+        return ForensicsResult(learned, score, regions[:8], localiser.version, classical)
+    heat = np.asarray(0.5 * ela + 0.5 * noise, dtype=np.float32)
+    regions = _field_outliers(heat, value_boxes or {})
+    # Show heat only inside value fields: elsewhere it reflects printing, not edits.
+    shown = np.zeros_like(heat)
+    for x0, y0, x1, y1 in (value_boxes or {}).values():
+        shown[max(0, y0) : y1, max(0, x0) : x1] = heat[max(0, y0) : y1, max(0, x0) : x1]
+    score = max((r.score for r in regions), default=0.0)
+    return ForensicsResult(shown, score, regions, "classical-1", classical)
 
 
 def perceptual_hash(rgb: np.ndarray) -> str:

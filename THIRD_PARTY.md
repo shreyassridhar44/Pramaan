@@ -40,6 +40,7 @@ Licences below are as published by each project and are re-verified when the dep
 | segno | QR codes | BSD-3-Clause | Notice |
 | cryptography | Ed25519, hashing | Apache 2.0 or BSD | Notice |
 | argon2-cffi | Password hashing | MIT | Notice |
+| tzdata | IANA time zone data (Windows and slim images) | Apache 2.0 | Notice |
 | boto3 | AWS SDK | Apache 2.0 | Notice |
 | Caddy | Reverse proxy on the instance | Apache 2.0 | Notice |
 

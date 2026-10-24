@@ -236,3 +236,37 @@ class TestRelease:
         e = evaluate_release(_ctx(documents=frozenset({"application_letter"})), R.release)
         docs = next(c for c in e.checks if c.code == "documents")
         assert docs.state == CheckState.PENDING and "Affidavit 6" in docs.detail
+
+
+class TestAmountInWords:
+    def test_parses_indian_numbering(self) -> None:
+        from app.domain.words import words_to_rupees
+
+        assert words_to_rupees("Rupees Fifteen Lakh Only") == 1_500_000
+        assert words_to_rupees("Rupees Thirty Five Lakh Fifty Thousand Only") == 3_550_000
+        assert words_to_rupees("Rupees One Crore Only") == 10_000_000
+        assert words_to_rupees("Rupees Two Hundred") == 200
+
+    def test_refuses_text_that_is_not_an_amount(self) -> None:
+        from app.domain.words import words_to_rupees
+
+        assert words_to_rupees("Member Secretary AICTE") is None
+        assert words_to_rupees("Rupees Only") is None
+
+
+def test_amount_words_survive_missing_spaces() -> None:
+    from app.domain.words import words_to_rupees
+
+    assert words_to_rupees("RupeesFifteenLakhOnly") == 1_500_000
+    assert words_to_rupees("RupeesSeventeenLakhOnly") == 1_700_000
+    assert words_to_rupees("RupeesFifteenLakhsOnlyy") is None
+
+
+def test_penalty_slabs_roll_to_next_year_for_late_year_demands() -> None:
+    from app.domain.rules.deadlines import slab_date
+
+    s = furnishing_status(
+        date(2026, 10, 20), date(2026, 11, 20), date(2026, 11, 20), 15 * PAISE_PER_LAKH, R.deadline
+    )
+    assert s.penalty_fraction == 0.10 and not s.withdrawn
+    assert slab_date(date(2026, 11, 4), 5, 31) == date(2027, 5, 31)

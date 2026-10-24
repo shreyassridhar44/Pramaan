@@ -10,10 +10,12 @@ Everything is anchored to `anchor` (normally today) so the demo always looks cur
 
 import base64
 import hashlib
+import json
 import random
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time, timedelta
+from pathlib import Path
 from time import time_ns
 from typing import Any
 
@@ -1134,10 +1136,79 @@ class Generator:
         self.persona_ids["institution"] = self.ds.counters["users"]
         self.deposits(insts)
         self._shape_demo_story(demo)
+        self._open_demand_story(demo)
         self.workflow(insts)
         self.rules_and_version()
         self.audit_trail()
         return self.ds
+
+    def _open_demand_story(self, demo: _Inst) -> None:
+        """A programme approved this week leaves the demo institution with an open demand, and the
+        simulated bank holds the genuine record of the specimen receipt shipped in demo_assets."""
+        intimated = self.anchor - timedelta(days=5)
+        self.ds.add(
+            "programmes",
+            {
+                "institution_id": demo.id,
+                "discipline": "computer_applications",
+                "level": "pg",
+                "intake": 60,
+                "approved_from": intimated,
+            },
+        )
+        demand = compute_demand(
+            [ProgrammeLevel("computer_applications", "pg")],
+            demo.premises,
+            demo.ownership,
+            0,
+            True,
+            RULES.demand,
+        )
+        line = demand.lines[0]
+        self.ds.add(
+            "demands",
+            {
+                "institution_id": demo.id,
+                "reason": "new_programme",
+                "lines": [
+                    {
+                        "discipline": line.discipline,
+                        "level": line.level,
+                        "base_paise": line.base_paise,
+                        "multiplier": line.multiplier,
+                        "amount_paise": line.amount_paise,
+                        "note": line.note,
+                    }
+                ],
+                "amount_paise": demand.total_paise,
+                "leased_multiplier": 1,
+                "rule_code": RULES.demand.ref.code,
+                "rule_version": RULES.demand.ref.version,
+                "intimated_on": intimated,
+                "due_on": intimated + timedelta(days=15),
+                "furnished_on": None,
+                "status": "open",
+            },
+        )
+        spec = json.loads(
+            (Path(__file__).resolve().parents[1] / "demo_assets" / "specimen.json").read_text()
+        )
+        self.ds.add(
+            "sim_bank_deposits",
+            {
+                "bank_id": self.bank_ids[spec["bank"]],
+                "number": spec["number"],
+                "branch": spec["branch"],
+                "ifsc": spec["ifsc"],
+                "holders": spec["holders"],
+                "amount_paise": spec["amount_rupees"] * 100,
+                "issue_date": date.fromisoformat(spec["issue"]),
+                "maturity_date": date.fromisoformat(spec["maturity"]),
+                "lien_aicte": True,
+                "encumbrance": None,
+                "status": "live",
+            },
+        )
 
     def _shape_demo_story(self, demo: _Inst) -> None:
         """The demo institution's FDRs mature about 95 days from the anchor, so the reminder and

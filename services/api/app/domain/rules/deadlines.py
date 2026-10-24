@@ -17,6 +17,14 @@ class FurnishingStatus:
     aph_ref: str
 
 
+def slab_date(due: date, month: int, day: int) -> date:
+    """The slab's calendar date on or after the due date. The APH names 31 May and 31 July of the
+    calendar year, written for intimations in the April to June cycle; for a demand due later in
+    the year we take the next occurrence (assumption, see PROJECT.md Section 13)."""
+    candidate = date(due.year, month, day)
+    return candidate if candidate >= due else date(due.year + 1, month, day)
+
+
 def furnishing_status(
     intimated_on: date,
     furnished_on: date | None,
@@ -37,12 +45,12 @@ def furnishing_status(
         return FurnishingStatus(due, days_left, 0.0, 0, False, "Within the deadline", ref)
 
     for (month, day), fraction in rules.slabs:
-        slab_end = date(due.year, month, day)
+        slab_end = slab_date(due, month, day)
         if effective <= slab_end:
             penalty = round(amount_paise * fraction)
             text = f"After the deadline, up to {slab_end:%d %b}: {round(fraction * 100)}% penalty"
             return FurnishingStatus(due, days_left, fraction, penalty, False, text, ref)
 
     last_month, last_day = rules.slabs[-1][0]
-    text = f"Not furnished by {date(due.year, last_month, last_day):%d %b}: approval withdrawn"
+    text = f"Not furnished by {slab_date(due, last_month, last_day):%d %b %Y}: approval withdrawn"
     return FurnishingStatus(due, days_left, 0.0, 0, True, text, ref)

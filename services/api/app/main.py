@@ -2,13 +2,16 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import (
+    actions,
     audit,
     auth,
     demo,
+    documents,
     health,
     institutions,
     instruments,
     meta,
+    portal,
     portfolio,
     public,
 )
@@ -41,7 +44,20 @@ def create_app() -> FastAPI:
     register_default_checks()
 
     v1 = APIRouter(prefix="/api/v1")
-    for module in (health, auth, public, meta, portfolio, instruments, institutions, audit, demo):
+    for module in (
+        health,
+        auth,
+        public,
+        meta,
+        portfolio,
+        instruments,
+        actions,
+        institutions,
+        documents,
+        portal,
+        audit,
+        demo,
+    ):
         v1.include_router(module.router)
     app.include_router(v1)
     return app

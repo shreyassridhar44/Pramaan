@@ -19,6 +19,8 @@ import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppForecastRouteImport } from './routes/_app/forecast'
 import { Route as AppLettersRouteImport } from './routes/_app/letters'
 import { Route as AppQueueRouteImport } from './routes/_app/queue'
+import { Route as PortalIndexRouteImport } from './routes/portal/index'
+import { Route as PortalSubmitRouteImport } from './routes/portal/submit'
 import { Route as AppAdminRulesRouteImport } from './routes/_app/admin/rules'
 import { Route as AppInstitutionsIndexRouteImport } from './routes/_app/institutions/index'
 import { Route as AppInstitutionsInstitutionIdRouteImport } from './routes/_app/institutions/$institutionId'
@@ -75,6 +77,16 @@ const AppQueueRoute = AppQueueRouteImport.update({
   path: '/queue',
   getParentRoute: () => AppRoute,
 } as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalSubmitRoute = PortalSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => PortalRoute,
+} as any)
 const AppAdminRulesRoute = AppAdminRulesRouteImport.update({
   id: '/admin/rules',
   path: '/admin/rules',
@@ -112,12 +124,14 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
-  '/portal': typeof PortalRoute
+  '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
   '/audit': typeof AppAuditRoute
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/portal/submit': typeof PortalSubmitRoute
+  '/portal/': typeof PortalIndexRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -128,13 +142,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
-  '/portal': typeof PortalRoute
   '/signin': typeof SigninRoute
   '/audit': typeof AppAuditRoute
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/portal/submit': typeof PortalSubmitRoute
   '/': typeof AppIndexRoute
+  '/portal': typeof PortalIndexRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -147,13 +162,15 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
-  '/portal': typeof PortalRoute
+  '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
   '/_app/audit': typeof AppAuditRoute
   '/_app/forecast': typeof AppForecastRoute
   '/_app/letters': typeof AppLettersRoute
   '/_app/queue': typeof AppQueueRoute
+  '/portal/submit': typeof PortalSubmitRoute
   '/_app/': typeof AppIndexRoute
+  '/portal/': typeof PortalIndexRoute
   '/_app/admin/rules': typeof AppAdminRulesRoute
   '/_app/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/_app/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -173,6 +190,8 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/portal/submit'
+    | '/portal/'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
@@ -183,13 +202,14 @@ export interface FileRouteTypes {
   to:
     | '/bank'
     | '/clearances'
-    | '/portal'
     | '/signin'
     | '/audit'
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/portal/submit'
     | '/'
+    | '/portal'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
@@ -207,7 +227,9 @@ export interface FileRouteTypes {
     | '/_app/forecast'
     | '/_app/letters'
     | '/_app/queue'
+    | '/portal/submit'
     | '/_app/'
+    | '/portal/'
     | '/_app/admin/rules'
     | '/_app/institutions/$institutionId'
     | '/_app/instruments/$instrumentId'
@@ -220,7 +242,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   BankRoute: typeof BankRoute
   ClearancesRoute: typeof ClearancesRoute
-  PortalRoute: typeof PortalRoute
+  PortalRoute: typeof PortalRouteWithChildren
   SigninRoute: typeof SigninRoute
 }
 
@@ -295,6 +317,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/queue'
       preLoaderRoute: typeof AppQueueRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/portal/': {
+      id: '/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/submit': {
+      id: '/portal/submit'
+      path: '/submit'
+      fullPath: '/portal/submit'
+      preLoaderRoute: typeof PortalSubmitRouteImport
+      parentRoute: typeof PortalRoute
     }
     '/_app/admin/rules': {
       id: '/_app/admin/rules'
@@ -371,11 +407,24 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface PortalRouteChildren {
+  PortalSubmitRoute: typeof PortalSubmitRoute
+  PortalIndexRoute: typeof PortalIndexRoute
+}
+
+const PortalRouteChildren: PortalRouteChildren = {
+  PortalSubmitRoute: PortalSubmitRoute,
+  PortalIndexRoute: PortalIndexRoute,
+}
+
+const PortalRouteWithChildren =
+  PortalRoute._addFileChildren(PortalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   BankRoute: BankRoute,
   ClearancesRoute: ClearancesRoute,
-  PortalRoute: PortalRoute,
+  PortalRoute: PortalRouteWithChildren,
   SigninRoute: SigninRoute,
 }
 export const routeTree = rootRouteImport

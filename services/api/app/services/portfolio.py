@@ -274,7 +274,7 @@ async def action_queue(
     )
     top = items[:limit]
     ids = [i["instrument_id"] for i in top]
-    conflicts = dict(
+    conflicts: dict[int, dict[str, Any]] = dict(
         (
             await session.execute(
                 select(Signal.entity_id, Signal.evidence).where(

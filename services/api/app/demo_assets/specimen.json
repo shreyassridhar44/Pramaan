@@ -1,0 +1,17 @@
+{
+ "bank": "BHNX",
+ "number": "64226103458812",
+ "branch": "Pune Main",
+ "ifsc": "BHNX0411002",
+ "amount_rupees": 1500000,
+ "issue": "2026-10-20",
+ "maturity": "2036-10-20",
+ "holders": "Member Secretary, AICTE; Secretary, Demo Education Society",
+ "rate": 7.1,
+ "altered": {
+  "type": "font_insert_digit",
+  "field": "amount",
+  "original": "Rs. 15,00,000.00",
+  "new": "Rs. 35,00,000.00"
+ }
+}

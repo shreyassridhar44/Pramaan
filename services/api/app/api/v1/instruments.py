@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Annotated, Literal
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, or_, select
@@ -10,8 +11,10 @@ from app.domain.provenance import Observation, char_diff, compare_field, display
 from app.domain.rules.maturity import reminder_schedule
 from app.domain.types import FieldName, MatchState, Role, Source
 from app.models import (
+    Analysis,
     Bank,
     Demand,
+    Document,
     Event,
     FieldObservation,
     Institution,
@@ -26,6 +29,7 @@ from app.schemas.instruments import (
     DemandLineOut,
     DemandOut,
     DiffRun,
+    DocumentBrief,
     EvidenceOut,
     InstrumentDetail,
     InstrumentPage,
@@ -39,6 +43,7 @@ from app.schemas.instruments import (
 from app.services import portfolio as psvc
 
 router = APIRouter(prefix="/instruments", tags=["instruments"])
+IST = ZoneInfo("Asia/Kolkata")
 
 FIELD_LABELS = {
     FieldName.NUMBER: "Instrument number",
@@ -349,6 +354,20 @@ async def get_instrument(
         for r in (await db.scalars(select(Reminder).where(Reminder.instrument_id == inst.id))).all()
     }
     schedule = reminder_schedule(inst.maturity_date, max(d, inst.maturity_date), rules.maturity)
+    docs = (
+        await db.scalars(
+            select(Document)
+            .where(Document.entity_type == "instrument", Document.entity_id == inst.id)
+            .order_by(Document.uploaded_at)
+        )
+    ).all()
+    analysed_ids = set(
+        (
+            await db.scalars(
+                select(Analysis.document_id).where(Analysis.document_id.in_([x.id for x in docs]))
+            )
+        ).all()
+    )
     demand = await db.get(Demand, inst.demand_id) if inst.demand_id else None
     region = await db.get(Region, inst.institution.region_id)
     owner = await db.get(User, inst.owner_id) if inst.owner_id else None
@@ -464,5 +483,15 @@ async def get_instrument(
                 payload=e.payload,
             )
             for e in events
+        ],
+        documents=[
+            DocumentBrief(
+                id=x.id,
+                kind=x.kind,
+                filename=x.filename,
+                uploaded_on=x.uploaded_at.astimezone(IST).date().isoformat(),
+                analysed=x.id in analysed_ids,
+            )
+            for x in docs
         ],
     )
