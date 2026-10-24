@@ -1,0 +1,79 @@
+# Third-party components
+
+Licences below are as published by each project and are re-verified when the dependency is added (see `claude-code/CLAUDE.md` Section 8). Items marked "to verify" must be checked before shipping.
+
+## 1. Planned runtime dependencies
+
+| Component | Use | Licence | Attribution needed |
+|---|---|---|---|
+| React, React DOM | Web UI | MIT | Licence notice in bundle |
+| Vite | Build | MIT | No |
+| TanStack Router, Query, Table, Virtual | Routing, data, tables | MIT | Licence notice |
+| Tailwind CSS | Styling | MIT | Licence notice |
+| Radix UI primitives | Accessible components | MIT | Licence notice |
+| Motion | Animation | MIT | Licence notice |
+| Apache ECharts | Charts | Apache 2.0 | Notice file |
+| MapLibre GL JS | Map rendering | BSD-3-Clause | Notice |
+| cmdk | Command palette | MIT | Notice |
+| Lucide icons | Icons | ISC | Notice |
+| Sonner | Toasts | MIT | Notice |
+| FastAPI, Starlette | API | MIT, BSD-3-Clause | Notice |
+| Pydantic | Validation | MIT | Notice |
+| SQLAlchemy, Alembic | Database | MIT | Notice |
+| psycopg 3 | Postgres driver | LGPL-3.0 | Dynamic linking only; notice |
+| arq | Job queue | MIT | Notice |
+| Valkey (Redis-compatible server) | Cache and queue | BSD-3-Clause | Notice. Chosen over Redis server, whose licence changed in 2024 and 2025 (see `claude-code/DECISION.md` D16) |
+| PostgreSQL | Database | PostgreSQL Licence | Notice |
+| ONNX Runtime | Inference | MIT | Notice |
+| RapidOCR and PP-OCR models | OCR | Apache 2.0 (to verify for model files) | Notice |
+| LightGBM | Field extractor | MIT | Notice |
+| scikit-learn | Anomaly model | BSD-3-Clause | Notice |
+| OpenCV (headless) | Image processing | Apache 2.0 | Notice |
+| pypdfium2 and PDFium | PDF rendering | Apache 2.0 or BSD-3 (pypdfium2), BSD-3 (PDFium) | Notice |
+| ReportLab | PDF generation | BSD | Notice |
+| segno | QR codes | BSD-3-Clause | Notice |
+| cryptography | Ed25519, hashing | Apache 2.0 or BSD | Notice |
+| argon2-cffi | Password hashing | MIT | Notice |
+| boto3 | AWS SDK | Apache 2.0 | Notice |
+| Caddy | Reverse proxy on the instance | Apache 2.0 | Notice |
+
+## 2. Training-only dependencies (GPU machine, not shipped)
+
+| Component | Licence |
+|---|---|
+| PyTorch | BSD-3-Clause |
+| segmentation-models-pytorch | MIT |
+| timm and EfficientNet weights | Apache 2.0 for code; pretrained ImageNet weights to verify per checkpoint |
+| albumentations | MIT |
+
+## 3. Explicitly excluded
+
+| Component | Reason |
+|---|---|
+| PyMuPDF | AGPL-3.0 would impose source-distribution obligations on the whole service |
+| Mapbox GL JS v2 and later | Proprietary licence and token requirement |
+| Highcharts | Commercial licence |
+| Forensics weights with non-commercial licences | Not suitable for a government product |
+
+## 4. Fonts
+
+| Font | Licence | Source |
+|---|---|---|
+| Geist Sans, Geist Mono | SIL Open Font License 1.1 | Vercel |
+| Instrument Serif | SIL Open Font License 1.1 | Google Fonts |
+| Noto Sans Devanagari | SIL Open Font License 1.1 | Google Fonts |
+
+Fonts are self-hosted from the build, not loaded from a CDN at runtime.
+
+## 5. Data and maps
+
+| Asset | Licence | Notes |
+|---|---|---|
+| India boundary data | to verify | Must follow Survey of India boundaries (see `claude-code/DECISION.md` D13) |
+| Base map tiles | to verify | Prefer a self-hosted minimal style without third-party tiles |
+
+## 6. AI services
+
+| Service | Terms |
+|---|---|
+| Amazon Bedrock, Anthropic Claude Haiku 4.5 | AWS Service Terms and the model provider's acceptable use policy |
