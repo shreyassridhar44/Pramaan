@@ -206,3 +206,16 @@ class TestAsOf:
 )
 def test_dates_tolerate_ocr_slips(raw: str, expected: str) -> None:
     assert normalise(FieldName.ISSUE_DATE, raw) == expected
+
+
+def test_display_gives_one_format_per_field() -> None:
+    from app.domain.provenance import display
+
+    assert display(FieldName.AMOUNT, "300000000") == "Rs 30,00,000"
+    assert display(FieldName.MATURITY_DATE, "2028-08-10") == "10 Aug 2028"
+    assert display(FieldName.LIEN, "no") == "No"
+    runs = char_diff(
+        display(FieldName.MATURITY_DATE, "2028-08-10"),
+        display(FieldName.MATURITY_DATE, "2023-08-11"),
+    )
+    assert "".join(t for t, changed in runs if changed) == "13"

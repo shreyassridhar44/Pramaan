@@ -193,3 +193,37 @@ def _append(runs: list[tuple[str, bool]], ch: str, changed: bool) -> None:
         runs[-1] = (runs[-1][0] + ch, changed)
     else:
         runs.append((ch, changed))
+
+
+_MONTH_ABBR = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def _grouped(n: int) -> str:
+    s = str(n)
+    if len(s) <= 3:
+        return s
+    head, tail = s[:-3], s[-3:]
+    groups: list[str] = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    if head:
+        groups.insert(0, head)
+    return ",".join(groups) + "," + tail
+
+
+def display(field: FieldName, value_norm: str) -> str:
+    """A single human format per field, so values from different sources can be compared by eye
+    and diffed character by character."""
+    match field:
+        case FieldName.AMOUNT:
+            paise = int(value_norm)
+            rupees, rem = divmod(paise, 100)
+            return f"Rs {_grouped(rupees)}" + (f".{rem:02d}" if rem else "")
+        case FieldName.ISSUE_DATE | FieldName.MATURITY_DATE:
+            d = date.fromisoformat(value_norm)
+            return f"{d.day:02d} {_MONTH_ABBR[d.month - 1]} {d.year}"
+        case FieldName.LIEN:
+            return {"yes": "Yes", "no": "No"}.get(value_norm, value_norm)
+        case _:
+            return value_norm.upper() if field in (FieldName.NUMBER, FieldName.IFSC) else value_norm

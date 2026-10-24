@@ -6,7 +6,7 @@ from sqlalchemy import func, or_, select
 
 from app.api.deps import CurrentPrincipal, DbSession, instrument_scope
 from app.domain.asof import state_on
-from app.domain.provenance import Observation, char_diff, compare_field
+from app.domain.provenance import Observation, char_diff, compare_field, display
 from app.domain.rules.maturity import reminder_schedule
 from app.domain.types import FieldName, MatchState, Role, Source
 from app.models import (
@@ -222,12 +222,20 @@ async def _load_visible(
     return inst
 
 
+def _display(obs: FieldObservation) -> str:
+    try:
+        return display(FieldName(obs.field), obs.value_norm)
+    except ValueError:
+        return obs.value_raw
+
+
 def _source_value(obs: FieldObservation | None) -> SourceValue | None:
     if obs is None:
         return None
     return SourceValue(
         raw=obs.value_raw,
         norm=obs.value_norm,
+        display=_display(obs),
         observed_on=obs.observed_on.isoformat(),
         confidence=obs.confidence,
         evidence_type=obs.evidence_type,
@@ -280,7 +288,7 @@ async def get_instrument(
             if other.value_norm == base.value_norm:
                 return None
             return [
-                DiffRun(text=t, changed=c) for t, c in char_diff(base.value_raw, other.value_raw)
+                DiffRun(text=t, changed=c) for t, c in char_diff(_display(base), _display(other))
             ]
 
         provenance.append(

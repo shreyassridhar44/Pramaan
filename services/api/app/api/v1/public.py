@@ -25,7 +25,10 @@ async def public_summary(db: DbSession) -> PublicSummary:
     s = await svc.summary(db, svc.Scope("all"), date.today())
     confirmed = s.by_assurance_paise[2] + s.by_assurance_paise[3]
     return PublicSummary(
-        as_of=s.as_of.isoformat(), held_paise=str(s.held_paise), held_count=s.held_count,
+        as_of=s.as_of.isoformat(),
+        held_paise=str(s.held_paise),
+        held_count=s.held_count,
         bank_confirmed_share=confirmed / s.held_paise if s.held_paise else 0.0,
-        data_source="synthetic", demo_mode=get_settings().demo_mode,
+        data_source="synthetic",
+        demo_mode=get_settings().demo_mode,
     )

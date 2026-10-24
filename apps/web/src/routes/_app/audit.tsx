@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PendingPage } from '@/components/shell/pending-page'
+import { AuditPage } from '@/features/audit/audit-page'
 
 export const Route = createFileRoute('/_app/audit')({
   staticData: { title: 'Audit' },
-  component: () => <PendingPage title="Audit" step={5} />,
+  component: AuditPage,
 })

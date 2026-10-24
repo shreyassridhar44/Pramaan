@@ -540,8 +540,10 @@ class Generator:
             recent = (anchor - maturity).days < 150
             outcome = rng.choices(
                 ["released", "renewed", "unclaimed", "pending_release", "cleared", "lien"],
-                [15, 5, 45, 30, 4, 1] if recent
-                else [78, 9, 8, 3, 1, 1] if (anchor - maturity).days < 1100
+                [15, 5, 45, 30, 4, 1]
+                if recent
+                else [78, 9, 8, 3, 1, 1]
+                if (anchor - maturity).days < 1100
                 else [92, 4, 2, 1, 0, 1],
             )[0]
             if (anchor - maturity).days > 900 and outcome in ("pending_release", "cleared"):
@@ -570,7 +572,12 @@ class Generator:
         elif f["verified_on"] and rng.random() < 0.006 and maturity > anchor:
             encashed = issue + timedelta(days=rng.randint(400, 2000))
             f["encashed_on"] = encashed if encashed <= anchor else None
-        if inst.dispute and f["lien_hold_since"] is None and f["verified_on"]:
+        if (
+            inst.dispute
+            and f["lien_hold_since"] is None
+            and f["verified_on"]
+            and maturity > anchor - timedelta(days=400)
+        ):
             f["lien_hold_since"] = anchor - timedelta(days=rng.randint(20, 300))
 
         # Evidence.

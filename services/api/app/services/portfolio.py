@@ -25,7 +25,16 @@ from app.domain.asof import (
 )
 from app.domain.rules.params import RuleSet
 from app.domain.types import Assurance, Role, Status
-from app.models import Bank, DataVersion, Institution, Instrument, Region, Reminder, User
+from app.models import (
+    Bank,
+    DataVersion,
+    Institution,
+    Instrument,
+    Region,
+    Reminder,
+    Signal,
+    User,
+)
 from app.services.facts import load_facts, load_rules
 
 
@@ -265,6 +274,22 @@ async def action_queue(
     )
     top = items[:limit]
     ids = [i["instrument_id"] for i in top]
+    conflicts = dict(
+        (
+            await session.execute(
+                select(Signal.entity_id, Signal.evidence).where(
+                    Signal.entity_type == "instrument",
+                    Signal.code == "field_conflict",
+                    Signal.status == "open",
+                    Signal.entity_id.in_(ids),
+                )
+            )
+        ).all()
+    )
+    for i in top:
+        ev = conflicts.get(i["instrument_id"])
+        if i["kind"] == "discrepancy" and ev and ev.get("field"):
+            i["title"] = f"Bank record differs on {str(ev['field']).replace('_', ' ')}"
     owner_ids = {i["owner_id"] for i in top if i["owner_id"]}
     rows = (
         await session.execute(

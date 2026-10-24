@@ -38,6 +38,7 @@ class DiffRun(BaseModel):
 class SourceValue(BaseModel):
     raw: str
     norm: str
+    display: str
     observed_on: str
     confidence: float | None
     evidence_type: str | None

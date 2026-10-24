@@ -11,7 +11,7 @@ Update this file at the end of every working session and every completed step.
 | 2 | Domain model, rules, synthetic portfolio | Done (81 API tests; seed 2,600 institutions in about 25 s) | see git log |
 | 3 | ML kit | Done: renderer (12 layouts), degradation, tamper generator, dataset builder, localiser training and ONNX export, field extractor training, evaluation scripts, document pipeline in the API; smoke-tested on CPU; full training pending on the owner's RTX 4090 | see git log |
 | 4 | Design system and shell | Done: tokens (Ledger and Command themes), primitives, AssuranceRing, chips, AsOfControl, command palette, shell, sign-in with personas, route guards, first command view (headline band, assurance composition, action queue); 20 web tests with axe. ProvenanceGrid, SignalCard, BankMessage and AuditChain are built in Steps 5 to 7 where they are first used (recorded deviation) | see git log |
-| 5 | Registry, detail, institutions | Not started | |
+| 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
 | 6 | Intake and document intelligence | Not started | |
 | 7 | Bank network, monitoring, notifications | Not started | |
 | 8 | Release, letters, verification | Not started | |
@@ -45,7 +45,9 @@ Update this file at the end of every working session and every completed step.
 
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 5: registry, instrument detail (ProvenanceGrid), institutions, audit page.
+2. Step 6: institution portal, submission wizard, DocumentViewer, signals actions, verification queue.
+
+Dev tip: on Windows, run the API without `--reload` (stale reloader processes kept serving old code); restart it after backend changes and regenerate web types with `npm run api:types`.
 
 Notes from Step 3:
 - Smoke results on 40 training documents showed the trained extractor ahead of the rule baseline; an evaluation bug (amount truth normalised twice) and OCR date slips were fixed afterwards. No smoke number is reported anywhere.

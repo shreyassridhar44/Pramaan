@@ -146,6 +146,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Meta */
+        get: operations["meta_api_v1_meta_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/summary": {
         parameters: {
             query?: never;
@@ -448,6 +465,17 @@ export interface components {
             prev_hash: string;
             /** Hash */
             hash: string;
+        };
+        /** BankOption */
+        BankOption: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Integration */
+            integration: string;
+            /** Simulated */
+            simulated: boolean;
         };
         /** ChainLink */
         ChainLink: {
@@ -862,6 +890,20 @@ export interface components {
             /** Demo Mode */
             demo_mode: boolean;
         };
+        /** Meta */
+        Meta: {
+            /** Regions */
+            regions: components["schemas"]["Option"][];
+            /** Banks */
+            banks: components["schemas"]["BankOption"][];
+        };
+        /** Option */
+        Option: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+        };
         /** Persona */
         Persona: {
             /** Key */
@@ -1022,6 +1064,8 @@ export interface components {
             raw: string;
             /** Norm */
             norm: string;
+            /** Display */
+            display: string;
             /** Observed On */
             observed_on: string;
             /** Confidence */
@@ -1337,6 +1381,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicSummary"];
+                };
+            };
+        };
+    };
+    meta_api_v1_meta_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
                 };
             };
         };

@@ -5,6 +5,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Step 5 officer workspace: instrument registry (virtualised, URL-driven filters, sort, CSV export), instrument detail with field-level provenance grid and character-level diffs on a normalised display form, signals, reminder ladder, renewal chain, linked demand, timeline and audit tabs, institutions list and profile with the Table 1.4 demand explained, audit trail page with animated chain verification, reference-data endpoint, and action-queue titles that name the conflicting field.
 - Step 4 interface foundation: design tokens with Ledger and Command themes, base components, assurance ring, status and severity chips, global as-of control kept in the URL, command palette, application shell with role badge, sign-in page with live portfolio figures and demo personas, role-based route guards, and the first command view.
 
 ### Fixed
