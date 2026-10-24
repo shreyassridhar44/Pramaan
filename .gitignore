@@ -43,3 +43,6 @@ ml/assets/fonts/
 ml/models/*.txt
 ml/eval/results/*smoke*
 ml/models/*smoke*
+
+# Local logs
+*.log
