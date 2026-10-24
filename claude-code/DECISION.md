@@ -123,6 +123,20 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Revisit if.** A managed service (ElastiCache) is adopted later; it supports Valkey.
 
 ## D15. Licensing of the repository
-- **Date.** 24 Oct 2026. **Status.** Open question for the owner.
+- **Date.** 24 Oct 2026. **Status.** Accepted (owner).
 - **Context.** No licence file yet. Without one, all rights are reserved by default.
-- **Choice.** Leave unlicensed (all rights reserved) until the owner decides.
+- **Choice.** All rights reserved; no LICENSE file.
+
+## D17. Filesystem document storage in development
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Context.** The plan used MinIO locally. The `minio/minio` image is no longer pullable from Docker Hub.
+- **Alternatives.** SeaweedFS or LocalStack as S3 emulators; a filesystem backend.
+- **Choice.** A `Storage` interface with `LocalStorage` (files under `.data/storage`) and `S3Storage`. Deployment uses S3.
+- **Trade-offs.** Pre-signed URLs are emulated locally by API-served signed links.
+- **Revisit if.** S3-specific behaviour needs testing locally.
+
+## D18. TypeScript 5.9 instead of 7.0
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Context.** TypeScript 7.0.2 is the latest, but compatibility of the native compiler with typescript-eslint and the TanStack Router plugin was not confirmed.
+- **Choice.** Pin 5.9.3.
+- **Revisit if.** After the submission.

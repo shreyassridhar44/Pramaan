@@ -1,0 +1,20 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff (api)
+        entry: bash -c 'cd services/api && uv run ruff check --fix . && uv run ruff format .'
+        language: system
+        files: ^services/api/.*\.py$
+        pass_filenames: false
+      - id: web-lint
+        name: eslint and prettier (web)
+        entry: bash -c 'cd apps/web && npx prettier --write . >/dev/null && npm run lint'
+        language: system
+        files: ^apps/web/src/
+        pass_filenames: false
+      - id: no-em-dash
+        name: no em dashes in copy and docs
+        entry: bash -c '! grep -rIl $'"'"'\xe2\x80\x94'"'"' -- "$@"' --
+        language: system
+        files: \.(md|tsx|ts|py)$
