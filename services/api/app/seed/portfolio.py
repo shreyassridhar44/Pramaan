@@ -14,6 +14,7 @@ import random
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time, timedelta
+from time import time_ns
 from typing import Any
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -539,7 +540,9 @@ class Generator:
             recent = (anchor - maturity).days < 150
             outcome = rng.choices(
                 ["released", "renewed", "unclaimed", "pending_release", "cleared", "lien"],
-                [15, 5, 45, 30, 4, 1] if recent else [72, 9, 11, 5, 2, 1],
+                [15, 5, 45, 30, 4, 1] if recent
+                else [78, 9, 8, 3, 1, 1] if (anchor - maturity).days < 1100
+                else [92, 4, 2, 1, 0, 1],
             )[0]
             if (anchor - maturity).days > 900 and outcome in ("pending_release", "cleared"):
                 outcome = "released"
@@ -1036,7 +1039,7 @@ class Generator:
         self.ds.rows["data_version"].append(
             {
                 "id": 1,
-                "version": 1,
+                "version": time_ns() // 1_000_000,  # new cache key on every seed
                 "seed_label": f"synthetic seed {self.seed}",
                 "anchor_date": self.anchor,
             }

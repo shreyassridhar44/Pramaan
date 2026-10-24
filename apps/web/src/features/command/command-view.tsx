@@ -1,0 +1,258 @@
+import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
+import { ArrowUpRight, Inbox } from 'lucide-react'
+
+import { AssuranceRing } from '@/components/signature/assurance'
+import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
+import { Amount, SeverityChip, StatusChip } from '@/components/signature/chips'
+import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
+import { api, unwrap } from '@/lib/api/client'
+import { useAsOf } from '@/lib/asof'
+import {
+  formatCount,
+  formatDate,
+  formatINRCompact,
+  formatPercent,
+  formatRelativeDays,
+} from '@/lib/format'
+
+import { HeadlineFigure, RollingNumber } from './headline'
+import { useSummary } from './queries'
+
+export function CommandView() {
+  const summary = useSummary()
+  return (
+    <div className="grid gap-5">
+      <HeadlineBand />
+      <div className="grid gap-5 xl:grid-cols-12">
+        <div className="xl:col-span-8">
+          <ActionQueue />
+        </div>
+        <div className="xl:col-span-4">
+          <AssuranceComposition data={summary.data} loading={summary.isPending} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function HeadlineBand() {
+  const { data, isPending, isError, error, refetch } = useSummary()
+  if (isError)
+    return (
+      <Panel>
+        <ErrorState error={error} onRetry={() => void refetch()} />
+      </Panel>
+    )
+  if (isPending || !data)
+    return (
+      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-surface px-6 py-5">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="mt-3 h-12 w-40" />
+            <Skeleton className="mt-3 h-3 w-48" />
+          </div>
+        ))}
+      </div>
+    )
+  const held = Number(data.held_paise)
+  const confirmed = Number(data.by_assurance_paise.a2) + Number(data.by_assurance_paise.a3)
+  const share = held ? confirmed / held : 0
+  return (
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
+      <HeadlineFigure
+        label="Value held in trust"
+        figure={<RollingNumber value={held} format={(n) => formatINRCompact(Math.round(n))} />}
+        caption={`${formatCount(data.held_count)} instruments across ${Object.keys(data.by_bank_paise).length} banks`}
+      />
+      <HeadlineFigure
+        label="Bank-confirmed"
+        tone="a2"
+        figure={<RollingNumber value={share * 100} format={(n) => `${n.toFixed(0)}%`} />}
+        caption={`${formatINRCompact(confirmed)} proven by the issuing bank`}
+        aside={<AssuranceRing level={share >= 0.5 ? 2 : 1} size={40} />}
+      />
+      <HeadlineFigure
+        label="Needs action"
+        tone={data.needs_action_count ? 'overdue' : 'default'}
+        figure={<RollingNumber value={data.needs_action_count} format={(n) => formatCount(n)} />}
+        caption={`${data.overdue_count} matured without action, ${data.discrepancy_count} discrepancies, ${data.pending_verification_count} awaiting scrutiny`}
+      />
+      <HeadlineFigure
+        label="Maturing in 90 days"
+        tone="due"
+        figure={
+          <RollingNumber
+            value={Number(data.maturing_90_paise)}
+            format={(n) => formatINRCompact(Math.round(n))}
+          />
+        }
+        caption={`${data.maturing_90_count} instruments need a renewal or release plan`}
+      />
+    </div>
+  )
+}
+
+function AssuranceComposition({
+  data,
+  loading,
+}: {
+  data: ReturnType<typeof useSummary>['data']
+  loading: boolean
+}) {
+  const levels: AssuranceLevel[] = [3, 2, 1, 0]
+  const total = data ? Number(data.held_paise) : 0
+  return (
+    <Panel className="h-full">
+      <PanelHeader
+        title="How well the money is proven"
+        caption="Share of value held, by assurance level"
+      />
+      <div className="px-5 pb-5">
+        {loading || !data ? (
+          <Skeleton className="h-4 w-full" />
+        ) : (
+          <>
+            <div
+              className="flex h-3 w-full overflow-hidden rounded-full bg-sunken"
+              role="img"
+              aria-label="Assurance composition"
+            >
+              {levels.map((l) => {
+                const v = Number(data.by_assurance_paise[`a${l}` as 'a0'])
+                return (
+                  <div
+                    key={l}
+                    style={{
+                      width: `${total ? (v / total) * 100 : 0}%`,
+                      background: ASSURANCE[l].color,
+                    }}
+                    className="h-full transition-[width] duration-500"
+                  />
+                )
+              })}
+            </div>
+            <ul className="mt-4 grid gap-2.5">
+              {levels.map((l) => {
+                const v = Number(data.by_assurance_paise[`a${l}` as 'a0'])
+                return (
+                  <li key={l} className="flex items-center gap-3 text-[0.8125rem]">
+                    <AssuranceRing level={l} size={18} />
+                    <span className="flex-1 text-ink-2">{ASSURANCE[l].name}</span>
+                    <span className="font-mono tabular-nums text-ink">{formatINRCompact(v)}</span>
+                    <span className="w-12 text-right font-mono tabular-nums text-ink-3">
+                      {formatPercent(total ? v / total : 0)}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        )}
+      </div>
+    </Panel>
+  )
+}
+
+function ActionQueue() {
+  const { asOf, isToday } = useAsOf()
+  const q = useQuery({
+    queryKey: ['portfolio', 'action-queue', asOf],
+    queryFn: async () =>
+      unwrap(
+        await api.GET('/api/v1/portfolio/action-queue', {
+          params: { query: { as_of: asOf, limit: 10 } },
+        }),
+      ),
+    placeholderData: (prev) => prev,
+  })
+  return (
+    <Panel>
+      <PanelHeader
+        title="Action queue"
+        caption="The next things to do, by severity and due date"
+        actions={
+          <Link
+            to="/instruments"
+            search={isToday ? {} : { asOf }}
+            className="inline-flex items-center gap-1 text-[0.8125rem] font-medium text-brand hover:underline"
+          >
+            Open registry <ArrowUpRight className="size-3.5" />
+          </Link>
+        }
+      />
+      {q.isError ? (
+        <ErrorState error={q.error} onRetry={() => void q.refetch()} compact />
+      ) : q.isPending ? (
+        <div className="grid gap-2 px-5 pb-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-9 w-full" />
+          ))}
+        </div>
+      ) : q.data.length === 0 ? (
+        <EmptyState
+          icon={<Inbox />}
+          title="Nothing needs action on this date"
+          body="Reminders run every morning at 06:00."
+        />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-[0.8125rem]">
+            <thead>
+              <tr className="border-y border-line bg-sunken/60 text-left text-[0.6875rem] font-medium tracking-[0.04em] text-ink-3 uppercase">
+                <th className="px-5 py-2 font-medium">Severity</th>
+                <th className="px-3 py-2 font-medium">What</th>
+                <th className="px-3 py-2 font-medium">Institution</th>
+                <th className="px-3 py-2 text-right font-medium">Amount</th>
+                <th className="px-3 py-2 font-medium">Due</th>
+                <th className="px-5 py-2 font-medium">Owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              {q.data.map((item) => (
+                <tr
+                  key={`${item.kind}-${item.instrument_id}`}
+                  className="border-b border-line last:border-0 hover:bg-sunken/50"
+                >
+                  <td className="px-5 py-2.5">
+                    <SeverityChip severity={item.severity} />
+                  </td>
+                  <td className="max-w-[280px] px-3 py-2.5">
+                    <Link
+                      to="/instruments/$instrumentId"
+                      params={{ instrumentId: String(item.instrument_id) }}
+                      search={isToday ? {} : { asOf }}
+                      className="block truncate font-medium text-ink hover:text-brand"
+                    >
+                      {item.title}
+                    </Link>
+                    <span className="mt-0.5 flex items-center gap-2 font-mono text-[0.6875rem] text-ink-3">
+                      {item.number}{' '}
+                      <StatusChip status={item.status} className="h-5 px-2 text-[0.6875rem]" />
+                    </span>
+                  </td>
+                  <td className="max-w-[190px] truncate px-3 py-2.5 text-ink-2">
+                    {item.institution}
+                  </td>
+                  <td className="px-3 py-2.5 text-right">
+                    <Amount paise={item.amount_paise} compact />
+                  </td>
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <span className="font-mono text-ink">{formatDate(item.due)}</span>
+                    <span className="block text-[0.6875rem] text-ink-3">
+                      {formatRelativeDays(item.due, asOf)}
+                    </span>
+                  </td>
+                  <td className="px-5 py-2.5 whitespace-nowrap text-ink-2">
+                    {item.owner ?? 'Unassigned'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
+  )
+}

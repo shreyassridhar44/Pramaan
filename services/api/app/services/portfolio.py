@@ -191,6 +191,7 @@ async def region_rows(session: AsyncSession, scope: Scope, as_of: date) -> list[
 
 
 _SEVERITY_RANK = {"high": 0, "medium": 1, "low": 2}
+_KIND_RANK = {"discrepancy": 0, "overdue": 1, "maturing": 2, "verification": 3, "discharge": 4}
 
 
 async def action_queue(
@@ -253,7 +254,15 @@ async def action_queue(
                 }
             )
             items.append(item)
-    items.sort(key=lambda i: (_SEVERITY_RANK[i["severity"]], i["due"]))
+    # Severity first, then kind; within overdue items the most recently matured come first, because
+    # a fresh escalation is more actionable than a years-old backlog entry.
+    items.sort(
+        key=lambda i: (
+            _SEVERITY_RANK[i["severity"]],
+            _KIND_RANK[i["kind"]],
+            -i["due"].toordinal() if i["kind"] == "overdue" else i["due"].toordinal(),
+        )
+    )
     top = items[:limit]
     ids = [i["instrument_id"] for i in top]
     owner_ids = {i["owner_id"] for i in top if i["owner_id"]}

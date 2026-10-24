@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import audit, auth, demo, health, institutions, instruments, portfolio
+from app.api.v1 import audit, auth, demo, health, institutions, instruments, portfolio, public
 from app.config import get_settings
 from app.errors import install_error_handlers
 from app.observability import RequestContextMiddleware, configure_logging
@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
     register_default_checks()
 
     v1 = APIRouter(prefix="/api/v1")
-    for module in (health, auth, portfolio, instruments, institutions, audit, demo):
+    for module in (health, auth, public, portfolio, instruments, institutions, audit, demo):
         v1.include_router(module.router)
     app.include_router(v1)
     return app

@@ -9,50 +9,374 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as BankRouteImport } from './routes/bank'
+import { Route as ClearancesRouteImport } from './routes/clearances'
+import { Route as PortalRouteImport } from './routes/portal'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppAuditRouteImport } from './routes/_app/audit'
+import { Route as AppForecastRouteImport } from './routes/_app/forecast'
+import { Route as AppLettersRouteImport } from './routes/_app/letters'
+import { Route as AppQueueRouteImport } from './routes/_app/queue'
+import { Route as AppAdminRulesRouteImport } from './routes/_app/admin/rules'
+import { Route as AppInstitutionsIndexRouteImport } from './routes/_app/institutions/index'
+import { Route as AppInstitutionsInstitutionIdRouteImport } from './routes/_app/institutions/$institutionId'
+import { Route as AppInstrumentsIndexRouteImport } from './routes/_app/instruments/index'
+import { Route as AppInstrumentsInstrumentIdRouteImport } from './routes/_app/instruments/$instrumentId'
+import { Route as AppReleasesIndexRouteImport } from './routes/_app/releases/index'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BankRoute = BankRouteImport.update({
+  id: '/bank',
+  path: '/bank',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClearancesRoute = ClearancesRouteImport.update({
+  id: '/clearances',
+  path: '/clearances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAuditRoute = AppAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppForecastRoute = AppForecastRouteImport.update({
+  id: '/forecast',
+  path: '/forecast',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLettersRoute = AppLettersRouteImport.update({
+  id: '/letters',
+  path: '/letters',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQueueRoute = AppQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRulesRoute = AppAdminRulesRouteImport.update({
+  id: '/admin/rules',
+  path: '/admin/rules',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInstitutionsIndexRoute = AppInstitutionsIndexRouteImport.update({
+  id: '/institutions/',
+  path: '/institutions/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInstitutionsInstitutionIdRoute =
+  AppInstitutionsInstitutionIdRouteImport.update({
+    id: '/institutions/$institutionId',
+    path: '/institutions/$institutionId',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppInstrumentsIndexRoute = AppInstrumentsIndexRouteImport.update({
+  id: '/instruments/',
+  path: '/instruments/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInstrumentsInstrumentIdRoute =
+  AppInstrumentsInstrumentIdRouteImport.update({
+    id: '/instruments/$instrumentId',
+    path: '/instruments/$instrumentId',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppReleasesIndexRoute = AppReleasesIndexRouteImport.update({
+  id: '/releases/',
+  path: '/releases/',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/bank': typeof BankRoute
+  '/clearances': typeof ClearancesRoute
+  '/portal': typeof PortalRoute
+  '/signin': typeof SigninRoute
+  '/audit': typeof AppAuditRoute
+  '/forecast': typeof AppForecastRoute
+  '/letters': typeof AppLettersRoute
+  '/queue': typeof AppQueueRoute
+  '/admin/rules': typeof AppAdminRulesRoute
+  '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
+  '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/institutions/': typeof AppInstitutionsIndexRoute
+  '/instruments/': typeof AppInstrumentsIndexRoute
+  '/releases/': typeof AppReleasesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/bank': typeof BankRoute
+  '/clearances': typeof ClearancesRoute
+  '/portal': typeof PortalRoute
+  '/signin': typeof SigninRoute
+  '/audit': typeof AppAuditRoute
+  '/forecast': typeof AppForecastRoute
+  '/letters': typeof AppLettersRoute
+  '/queue': typeof AppQueueRoute
+  '/': typeof AppIndexRoute
+  '/admin/rules': typeof AppAdminRulesRoute
+  '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
+  '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/institutions': typeof AppInstitutionsIndexRoute
+  '/instruments': typeof AppInstrumentsIndexRoute
+  '/releases': typeof AppReleasesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/bank': typeof BankRoute
+  '/clearances': typeof ClearancesRoute
+  '/portal': typeof PortalRoute
+  '/signin': typeof SigninRoute
+  '/_app/audit': typeof AppAuditRoute
+  '/_app/forecast': typeof AppForecastRoute
+  '/_app/letters': typeof AppLettersRoute
+  '/_app/queue': typeof AppQueueRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/admin/rules': typeof AppAdminRulesRoute
+  '/_app/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
+  '/_app/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/_app/institutions/': typeof AppInstitutionsIndexRoute
+  '/_app/instruments/': typeof AppInstrumentsIndexRoute
+  '/_app/releases/': typeof AppReleasesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/bank'
+    | '/clearances'
+    | '/portal'
+    | '/signin'
+    | '/audit'
+    | '/forecast'
+    | '/letters'
+    | '/queue'
+    | '/admin/rules'
+    | '/institutions/$institutionId'
+    | '/instruments/$instrumentId'
+    | '/institutions/'
+    | '/instruments/'
+    | '/releases/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/bank'
+    | '/clearances'
+    | '/portal'
+    | '/signin'
+    | '/audit'
+    | '/forecast'
+    | '/letters'
+    | '/queue'
+    | '/'
+    | '/admin/rules'
+    | '/institutions/$institutionId'
+    | '/instruments/$instrumentId'
+    | '/institutions'
+    | '/instruments'
+    | '/releases'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/bank'
+    | '/clearances'
+    | '/portal'
+    | '/signin'
+    | '/_app/audit'
+    | '/_app/forecast'
+    | '/_app/letters'
+    | '/_app/queue'
+    | '/_app/'
+    | '/_app/admin/rules'
+    | '/_app/institutions/$institutionId'
+    | '/_app/instruments/$instrumentId'
+    | '/_app/institutions/'
+    | '/_app/instruments/'
+    | '/_app/releases/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  BankRoute: typeof BankRoute
+  ClearancesRoute: typeof ClearancesRoute
+  PortalRoute: typeof PortalRoute
+  SigninRoute: typeof SigninRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bank': {
+      id: '/bank'
+      path: '/bank'
+      fullPath: '/bank'
+      preLoaderRoute: typeof BankRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clearances': {
+      id: '/clearances'
+      path: '/clearances'
+      fullPath: '/clearances'
+      preLoaderRoute: typeof ClearancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/audit': {
+      id: '/_app/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/forecast': {
+      id: '/_app/forecast'
+      path: '/forecast'
+      fullPath: '/forecast'
+      preLoaderRoute: typeof AppForecastRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/letters': {
+      id: '/_app/letters'
+      path: '/letters'
+      fullPath: '/letters'
+      preLoaderRoute: typeof AppLettersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/queue': {
+      id: '/_app/queue'
+      path: '/queue'
+      fullPath: '/queue'
+      preLoaderRoute: typeof AppQueueRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/rules': {
+      id: '/_app/admin/rules'
+      path: '/admin/rules'
+      fullPath: '/admin/rules'
+      preLoaderRoute: typeof AppAdminRulesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/institutions/': {
+      id: '/_app/institutions/'
+      path: '/institutions'
+      fullPath: '/institutions/'
+      preLoaderRoute: typeof AppInstitutionsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/institutions/$institutionId': {
+      id: '/_app/institutions/$institutionId'
+      path: '/institutions/$institutionId'
+      fullPath: '/institutions/$institutionId'
+      preLoaderRoute: typeof AppInstitutionsInstitutionIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/instruments/': {
+      id: '/_app/instruments/'
+      path: '/instruments'
+      fullPath: '/instruments/'
+      preLoaderRoute: typeof AppInstrumentsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/instruments/$instrumentId': {
+      id: '/_app/instruments/$instrumentId'
+      path: '/instruments/$instrumentId'
+      fullPath: '/instruments/$instrumentId'
+      preLoaderRoute: typeof AppInstrumentsInstrumentIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/releases/': {
+      id: '/_app/releases/'
+      path: '/releases'
+      fullPath: '/releases/'
+      preLoaderRoute: typeof AppReleasesIndexRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppAuditRoute: typeof AppAuditRoute
+  AppForecastRoute: typeof AppForecastRoute
+  AppLettersRoute: typeof AppLettersRoute
+  AppQueueRoute: typeof AppQueueRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppAdminRulesRoute: typeof AppAdminRulesRoute
+  AppInstitutionsInstitutionIdRoute: typeof AppInstitutionsInstitutionIdRoute
+  AppInstrumentsInstrumentIdRoute: typeof AppInstrumentsInstrumentIdRoute
+  AppInstitutionsIndexRoute: typeof AppInstitutionsIndexRoute
+  AppInstrumentsIndexRoute: typeof AppInstrumentsIndexRoute
+  AppReleasesIndexRoute: typeof AppReleasesIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAuditRoute: AppAuditRoute,
+  AppForecastRoute: AppForecastRoute,
+  AppLettersRoute: AppLettersRoute,
+  AppQueueRoute: AppQueueRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppAdminRulesRoute: AppAdminRulesRoute,
+  AppInstitutionsInstitutionIdRoute: AppInstitutionsInstitutionIdRoute,
+  AppInstrumentsInstrumentIdRoute: AppInstrumentsInstrumentIdRoute,
+  AppInstitutionsIndexRoute: AppInstitutionsIndexRoute,
+  AppInstrumentsIndexRoute: AppInstrumentsIndexRoute,
+  AppReleasesIndexRoute: AppReleasesIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  BankRoute: BankRoute,
+  ClearancesRoute: ClearancesRoute,
+  PortalRoute: PortalRoute,
+  SigninRoute: SigninRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

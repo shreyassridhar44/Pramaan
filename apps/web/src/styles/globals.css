@@ -41,3 +41,37 @@
     scroll-behavior: auto !important;
   }
 }
+
+@layer components {
+  .palette-group [cmdk-group-heading] {
+    padding: 0.5rem 0.75rem 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border-radius: var(--radius-control);
+    font-size: 0.875rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .palette-item[data-selected='true'] {
+    background: var(--surface-sunken);
+  }
+  .ledger-lines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      color-mix(in srgb, var(--line) 55%, transparent) 31px,
+      color-mix(in srgb, var(--line) 55%, transparent) 32px
+    );
+  }
+}

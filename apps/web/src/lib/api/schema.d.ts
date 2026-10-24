@@ -38,16 +38,882 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_api_v1_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/personas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Personas
+         * @description Demo personas shown on the sign-in page. Empty unless demo mode is on.
+         */
+        get: operations["personas_api_v1_auth_personas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/persona/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign In As Persona */
+        post: operations["sign_in_as_persona_api_v1_auth_persona__key__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Summary
+         * @description Aggregate figures for the sign-in page. No institution-level data.
+         */
+        get: operations["public_summary_api_v1_public_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summary */
+        get: operations["summary_api_v1_portfolio_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/river": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** River */
+        get: operations["river_api_v1_portfolio_river_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Regions */
+        get: operations["regions_api_v1_portfolio_regions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/action-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Action Queue */
+        get: operations["action_queue_api_v1_portfolio_action_queue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Portfolio Timeline
+         * @description Weekly forecast from current rules and data. Read-only.
+         */
+        get: operations["portfolio_timeline_api_v1_portfolio_timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Impact */
+        get: operations["impact_api_v1_portfolio_impact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/instruments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Instruments
+         * @description Statuses and assurance are computed by the as-of engine for `as_of`, so the registry always
+         *     agrees with the command view and the forecast.
+         */
+        get: operations["list_instruments_api_v1_instruments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/instruments/{instrument_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Instrument */
+        get: operations["get_instrument_api_v1_instruments__instrument_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/institutions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Institutions */
+        get: operations["list_institutions_api_v1_institutions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/institutions/{institution_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Institution */
+        get: operations["get_institution_api_v1_institutions__institution_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Audit */
+        get: operations["list_audit_api_v1_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify */
+        post: operations["verify_api_v1_audit_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/demo/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset
+         * @description Replaces all data with a fresh synthetic portfolio anchored to today. Demo mode only.
+         */
+        post: operations["reset_api_v1_demo_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionItem */
+        ActionItem: {
+            /** Kind */
+            kind: string;
+            /** Severity */
+            severity: string;
+            /** Title */
+            title: string;
+            /** Due */
+            due: string;
+            /** Instrument Id */
+            instrument_id: number;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Owner */
+            owner: string | null;
+            /** Region */
+            region: string;
+            /** Status */
+            status: string;
+            /** Escalation */
+            escalation?: string | null;
+        };
+        /** AssuranceSplit */
+        AssuranceSplit: {
+            /** A0 */
+            a0: string;
+            /** A1 */
+            a1: string;
+            /** A2 */
+            a2: string;
+            /** A3 */
+            a3: string;
+        };
+        /** AuditPage */
+        AuditPage: {
+            /** Total */
+            total: number;
+            /** Items */
+            items: components["schemas"]["AuditRow"][];
+        };
+        /** AuditRow */
+        AuditRow: {
+            /** Id */
+            id: number;
+            /** At */
+            at: string;
+            /** Actor */
+            actor: string;
+            /** Action */
+            action: string;
+            /** Entity Type */
+            entity_type: string;
+            /** Entity Id */
+            entity_id: number | null;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+            /** Prev Hash */
+            prev_hash: string;
+            /** Hash */
+            hash: string;
+        };
+        /** ChainLink */
+        ChainLink: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Issue Date */
+            issue_date: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Status */
+            status: string;
+        };
+        /** ChainResult */
+        ChainResult: {
+            /** Checked */
+            checked: number;
+            /** Valid */
+            valid: boolean;
+            /** First Bad Id */
+            first_bad_id: number | null;
+            /** Reason */
+            reason: string | null;
+        };
+        /** ComplaintOut */
+        ComplaintOut: {
+            /** Reference */
+            reference: string;
+            /** Cell */
+            cell: string;
+            /** Category */
+            category: string;
+            /** Status */
+            status: string;
+            /** Opened On */
+            opened_on: string;
+            /** Closed On */
+            closed_on: string | null;
+        };
+        /** DemandLineOut */
+        DemandLineOut: {
+            /** Discipline */
+            discipline: string;
+            /** Level */
+            level: string;
+            /** Base Paise */
+            base_paise: string;
+            /** Multiplier */
+            multiplier: number;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Note */
+            note: string;
+        };
+        /** DemandOut */
+        DemandOut: {
+            /** Id */
+            id: number;
+            /** Reason */
+            reason: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Intimated On */
+            intimated_on: string;
+            /** Due On */
+            due_on: string;
+            /** Furnished On */
+            furnished_on: string | null;
+            /** Aph Ref */
+            aph_ref: string;
+            /** Lines */
+            lines: components["schemas"]["DemandLineOut"][];
+        };
+        /** DemandPreview */
+        DemandPreview: {
+            /** Exempt */
+            exempt: boolean;
+            /** Exemption Reason */
+            exemption_reason: string | null;
+            /** Total Paise */
+            total_paise: string;
+            /** Aph Ref */
+            aph_ref: string;
+            /** Rule Version */
+            rule_version: number;
+            /** Lines */
+            lines: components["schemas"]["DemandPreviewLine"][];
+        };
+        /** DemandPreviewLine */
+        DemandPreviewLine: {
+            /** Discipline */
+            discipline: string;
+            /** Level */
+            level: string;
+            /** Base Paise */
+            base_paise: string;
+            /** Multiplier */
+            multiplier: number;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Note */
+            note: string;
+        };
+        /** DiffRun */
+        DiffRun: {
+            /** Text */
+            text: string;
+            /** Changed */
+            changed: boolean;
+        };
+        /** EvidenceOut */
+        EvidenceOut: {
+            /** Document Checked On */
+            document_checked_on: string | null;
+            /** Bank Confirmed On */
+            bank_confirmed_on: string | null;
+            /** Last Confirmed On */
+            last_confirmed_on: string | null;
+            /** Conflict Since */
+            conflict_since: string | null;
+            /** Conflict Resolved On */
+            conflict_resolved_on: string | null;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** Health */
         Health: {
             /** Status */
             status: string;
             /** Environment */
             environment: string;
+            /** Demo Mode */
+            demo_mode: boolean;
+        };
+        /** Impact */
+        Impact: {
+            /** Data Source */
+            data_source: string;
+            verification_turnaround_days: components["schemas"]["Turnaround"];
+            /** Field Agreement Rate */
+            field_agreement_rate: number | null;
+            /** Bank Confirmed Share By Count */
+            bank_confirmed_share_by_count: number | null;
+            /** Reminders On Time Rate */
+            reminders_on_time_rate: number | null;
+            /** Reminders Sample */
+            reminders_sample: number;
+            /** Held Without Owner */
+            held_without_owner: number;
+            /** Held Count */
+            held_count: number;
+        };
+        /** InstitutionDetail */
+        InstitutionDetail: {
+            /** Id */
+            id: number;
+            /** Aicte Id */
+            aicte_id: string;
+            /** Name */
+            name: string;
+            /** Trust Name */
+            trust_name: string;
+            /** City */
+            city: string;
+            /** State */
+            state: string;
+            /** Region */
+            region: string;
+            /** Region Name */
+            region_name: string;
+            /** Ownership */
+            ownership: string;
+            /** Premises */
+            premises: string;
+            /** Established Year */
+            established_year: number;
+            /** Flags */
+            flags: {
+                [key: string]: boolean;
+            };
+            /** Programmes */
+            programmes: components["schemas"]["ProgrammeOut"][];
+            demand_preview: components["schemas"]["DemandPreview"];
+            /** Complaints */
+            complaints: components["schemas"]["ComplaintOut"][];
+            /** Release Cases */
+            release_cases: components["schemas"]["ReleaseCaseBrief"][];
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+        };
+        /** InstitutionPage */
+        InstitutionPage: {
+            /** Total */
+            total: number;
+            /** Offset */
+            offset: number;
+            /** Limit */
+            limit: number;
+            /** Items */
+            items: components["schemas"]["InstitutionRow"][];
+        };
+        /** InstitutionRow */
+        InstitutionRow: {
+            /** Id */
+            id: number;
+            /** Aicte Id */
+            aicte_id: string;
+            /** Name */
+            name: string;
+            /** City */
+            city: string;
+            /** State */
+            state: string;
+            /** Region */
+            region: string;
+            /** Ownership */
+            ownership: string;
+            /** Premises */
+            premises: string;
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+            /** By Assurance Paise */
+            by_assurance_paise: {
+                [key: string]: string;
+            };
+            /** Open Items */
+            open_items: number;
+            /** Flags */
+            flags: {
+                [key: string]: boolean;
+            };
+        };
+        /** InstrumentDetail */
+        InstrumentDetail: {
+            /** As Of */
+            as_of: string;
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Kind */
+            kind: string;
+            /** Status */
+            status: string;
+            /** Stored Status */
+            stored_status: string;
+            /** Assurance */
+            assurance: number;
+            /** Escalation */
+            escalation: string | null;
+            /** Days To Maturity */
+            days_to_maturity: number;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Interest Rate */
+            interest_rate: number | null;
+            /** Issue Date */
+            issue_date: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Tenure Months */
+            tenure_months: number;
+            /** Auto Renew */
+            auto_renew: boolean;
+            /** Branch */
+            branch: string;
+            /** Ifsc */
+            ifsc: string;
+            /** Bank Id */
+            bank_id: number;
+            /** Bank Code */
+            bank_code: string;
+            /** Bank */
+            bank: string;
+            /** Bank Integration */
+            bank_integration: string;
+            /** Bank Simulated */
+            bank_simulated: boolean;
+            /** Institution Id */
+            institution_id: number;
+            /** Institution */
+            institution: string;
+            /** Institution Aicte Id */
+            institution_aicte_id: string;
+            /** Trust Name */
+            trust_name: string;
+            /** Region */
+            region: string;
+            /** Region Name */
+            region_name: string;
+            /** Owner */
+            owner: string | null;
+            /** Next Action */
+            next_action: string | null;
+            /** Next Action Due */
+            next_action_due: string | null;
+            /** Submitted On */
+            submitted_on: string;
+            /** Verified On */
+            verified_on: string | null;
+            evidence: components["schemas"]["EvidenceOut"];
+            /** Provenance */
+            provenance: components["schemas"]["ProvenanceRow"][];
+            /** Chain */
+            chain: components["schemas"]["ChainLink"][];
+            /** Signals */
+            signals: components["schemas"]["SignalOut"][];
+            /** Reminders */
+            reminders: components["schemas"]["ReminderOut"][];
+            demand: components["schemas"]["DemandOut"] | null;
+            /** Timeline */
+            timeline: components["schemas"]["TimelineItem"][];
+        };
+        /** InstrumentPage */
+        InstrumentPage: {
+            /** As Of */
+            as_of: string;
+            /** Total */
+            total: number;
+            /** Total Paise */
+            total_paise: string;
+            /** Offset */
+            offset: number;
+            /** Limit */
+            limit: number;
+            /** Items */
+            items: components["schemas"]["InstrumentRow"][];
+        };
+        /** InstrumentRow */
+        InstrumentRow: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Kind */
+            kind: string;
+            /** Institution Id */
+            institution_id: number;
+            /** Institution */
+            institution: string;
+            /** Region */
+            region: string;
+            /** Bank Code */
+            bank_code: string;
+            /** Bank */
+            bank: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Issue Date */
+            issue_date: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Days To Maturity */
+            days_to_maturity: number;
+            /** Status */
+            status: string;
+            /** Assurance */
+            assurance: number;
+            /** Escalation */
+            escalation: string | null;
+            /** Open Signals */
+            open_signals: number;
+            /** Owner */
+            owner: string | null;
+        };
+        /** LoginRequest */
+        LoginRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Password */
+            password: string;
+        };
+        /** Me */
+        Me: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /** Designation */
+            designation: string;
+            /** Role */
+            role: string;
+            /** Cell */
+            cell: string | null;
+            /** Region */
+            region: string | null;
+            /** Region Name */
+            region_name: string | null;
+            /** Institution Id */
+            institution_id: number | null;
+            /** Institution Name */
+            institution_name: string | null;
+            /** Bank Id */
+            bank_id: number | null;
+            /** Bank Name */
+            bank_name: string | null;
+            /** Demo Mode */
+            demo_mode: boolean;
+        };
+        /** Persona */
+        Persona: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Designation */
+            designation: string;
+            /** Role */
+            role: string;
+            /** Context */
+            context: string;
+        };
+        /** ProgrammeOut */
+        ProgrammeOut: {
+            /** Discipline */
+            discipline: string;
+            /** Level */
+            level: string;
+            /** Intake */
+            intake: number;
+            /** Approved From */
+            approved_from: string;
+        };
+        /** ProvenanceRow */
+        ProvenanceRow: {
+            /** Field */
+            field: string;
+            /** Label */
+            label: string;
+            /** State */
+            state: string;
+            declared: components["schemas"]["SourceValue"] | null;
+            extracted: components["schemas"]["SourceValue"] | null;
+            confirmed: components["schemas"]["SourceValue"] | null;
+            /** Diff Extracted */
+            diff_extracted: components["schemas"]["DiffRun"][] | null;
+            /** Diff Confirmed */
+            diff_confirmed: components["schemas"]["DiffRun"][] | null;
+        };
+        /** PublicSummary */
+        PublicSummary: {
+            /** As Of */
+            as_of: string;
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+            /** Bank Confirmed Share */
+            bank_confirmed_share: number;
+            /** Data Source */
+            data_source: string;
             /** Demo Mode */
             demo_mode: boolean;
         };
@@ -59,6 +925,230 @@ export interface components {
             checks: {
                 [key: string]: string;
             };
+        };
+        /** RegionRow */
+        RegionRow: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Office City */
+            office_city: string;
+            /** Camp */
+            camp: boolean;
+            /** Lat */
+            lat: number;
+            /** Lng */
+            lng: number;
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+            /** Confirmed Paise */
+            confirmed_paise: string;
+            /** Overdue */
+            overdue: number;
+            /** Discrepancy */
+            discrepancy: number;
+        };
+        /** ReleaseCaseBrief */
+        ReleaseCaseBrief: {
+            /** Id */
+            id: number;
+            /** Reference */
+            reference: string;
+            /** Status */
+            status: string;
+            /** Applied On */
+            applied_on: string;
+        };
+        /** ReminderOut */
+        ReminderOut: {
+            /** Offset Days */
+            offset_days: number;
+            /** Due On */
+            due_on: string;
+            /** Status */
+            status: string;
+            /** Overdue */
+            overdue: boolean;
+        };
+        /** ResetResult */
+        ResetResult: {
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /** RiverWeek */
+        RiverWeek: {
+            /** Week */
+            week: string;
+            /** Count */
+            count: number;
+            /** By Assurance Paise */
+            by_assurance_paise: {
+                [key: string]: string;
+            };
+        };
+        /** SignalOut */
+        SignalOut: {
+            /** Id */
+            id: number;
+            /** Code */
+            code: string;
+            /** Severity */
+            severity: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Source */
+            source: string;
+            /** Source Version */
+            source_version: string;
+            /** Raised On */
+            raised_on: string;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            };
+            /** Resolution Note */
+            resolution_note: string | null;
+        };
+        /** SourceValue */
+        SourceValue: {
+            /** Raw */
+            raw: string;
+            /** Norm */
+            norm: string;
+            /** Observed On */
+            observed_on: string;
+            /** Confidence */
+            confidence: number | null;
+            /** Evidence Type */
+            evidence_type: string | null;
+        };
+        /** Summary */
+        Summary: {
+            /** As Of */
+            as_of: string;
+            /** Data Source */
+            data_source: string;
+            /** Held Count */
+            held_count: number;
+            /** Held Paise */
+            held_paise: string;
+            by_assurance_paise: components["schemas"]["AssuranceSplit"];
+            /** By Assurance Count */
+            by_assurance_count: {
+                [key: string]: number;
+            };
+            /** By Status Count */
+            by_status_count: {
+                [key: string]: number;
+            };
+            /** Maturing 90 Count */
+            maturing_90_count: number;
+            /** Maturing 90 Paise */
+            maturing_90_paise: string;
+            /** Overdue Count */
+            overdue_count: number;
+            /** Discrepancy Count */
+            discrepancy_count: number;
+            /** Pending Verification Count */
+            pending_verification_count: number;
+            /** Escalations */
+            escalations: {
+                [key: string]: number;
+            };
+            /** Needs Action Count */
+            needs_action_count: number;
+            /** By Bank Paise */
+            by_bank_paise: {
+                [key: string]: string;
+            };
+        };
+        /** TimelineEventOut */
+        TimelineEventOut: {
+            /** On */
+            on: string;
+            /** Kind */
+            kind: string;
+            /** Instrument Id */
+            instrument_id: number;
+            /** Region */
+            region: string;
+            /** Detail */
+            detail: string;
+        };
+        /** TimelineItem */
+        TimelineItem: {
+            /** On */
+            on: string;
+            /** Type */
+            type: string;
+            /** Actor */
+            actor: string | null;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
+        /** TimelineStepOut */
+        TimelineStepOut: {
+            /** Start */
+            start: string;
+            /** End */
+            end: string;
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+            /** Confirmed Paise */
+            confirmed_paise: string;
+            /** Maturing 90 Count */
+            maturing_90_count: number;
+            /** Overdue Count */
+            overdue_count: number;
+            /** Escalations */
+            escalations: {
+                [key: string]: number;
+            };
+            /** By Region */
+            by_region: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Events */
+            events: components["schemas"]["TimelineEventOut"][];
+            /** Event Counts */
+            event_counts: {
+                [key: string]: number;
+            };
+        };
+        /** Turnaround */
+        Turnaround: {
+            /** Median */
+            median: number | null;
+            /** P90 */
+            p90: number | null;
+            /** Sample */
+            sample: number;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -105,6 +1195,566 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Readiness"];
+                };
+            };
+        };
+    };
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_v1_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_api_v1_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    personas_api_v1_auth_personas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"][];
+                };
+            };
+        };
+    };
+    sign_in_as_persona_api_v1_auth_persona__key__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_summary_api_v1_public_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSummary"];
+                };
+            };
+        };
+    };
+    summary_api_v1_portfolio_summary_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Summary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    river_api_v1_portfolio_river_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiverWeek"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regions_api_v1_portfolio_regions_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionRow"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    action_queue_api_v1_portfolio_action_queue_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portfolio_timeline_api_v1_portfolio_timeline_get: {
+        parameters: {
+            query?: {
+                start?: string | null;
+                weeks?: number;
+                events_per_step?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelineStepOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    impact_api_v1_portfolio_impact_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Impact"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_instruments_api_v1_instruments_get: {
+        parameters: {
+            query?: {
+                as_of?: string | null;
+                q?: string | null;
+                region?: string[] | null;
+                bank?: string[] | null;
+                kind?: string[] | null;
+                status?: string[] | null;
+                assurance?: number[] | null;
+                maturity_from?: string | null;
+                maturity_to?: string | null;
+                institution_id?: number | null;
+                has_signals?: boolean | null;
+                include_closed?: boolean;
+                sort?: "maturity" | "-maturity" | "amount" | "-amount" | "institution" | "status" | "assurance";
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_instrument_api_v1_instruments__instrument_id__get: {
+        parameters: {
+            query?: {
+                as_of?: string | null;
+            };
+            header?: never;
+            path: {
+                instrument_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_institutions_api_v1_institutions_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                region?: string[] | null;
+                as_of?: string | null;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstitutionPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_institution_api_v1_institutions__institution_id__get: {
+        parameters: {
+            query?: {
+                as_of?: string | null;
+            };
+            header?: never;
+            path: {
+                institution_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstitutionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_audit_api_v1_audit_get: {
+        parameters: {
+            query?: {
+                entity_type?: string | null;
+                entity_id?: number | null;
+                action?: string | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                before_id?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_api_v1_audit_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChainResult"];
+                };
+            };
+        };
+    };
+    reset_api_v1_demo_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetResult"];
                 };
             };
         };
