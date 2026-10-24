@@ -5,11 +5,11 @@
 Prerequisites: Docker Desktop, Node.js 22 or later, Python 3.12, `uv`.
 
 1. `cp .env.example .env` and adjust if needed.
-2. `docker compose -f infra/compose.dev.yml up -d` starts Postgres, Redis, MinIO and Mailpit.
+2. `docker compose -f infra/compose.dev.yml up -d` starts Postgres, Valkey and Mailpit. Documents are stored under `.data/storage` locally.
 3. API: `cd services/api && uv sync && uv run alembic upgrade head && uv run python -m scripts.seed && uv run uvicorn app.main:app --reload`
 4. Worker: `cd services/api && uv run arq app.workers.settings.WorkerSettings`
 5. Web: `cd apps/web && npm install && npm run dev`, then open http://localhost:5173
-6. Mailpit inbox: http://localhost:8025; MinIO console: http://localhost:9001
+6. Mailpit inbox: http://localhost:8025
 
 ## 2. AWS (ap-south-1)
 

@@ -1,0 +1,39 @@
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
+
+from app.api.v1 import health
+from app.config import get_settings
+from app.errors import install_error_handlers
+from app.observability import RequestContextMiddleware, configure_logging
+
+
+def create_app() -> FastAPI:
+    settings = get_settings()
+    configure_logging(settings.log_level)
+
+    app = FastAPI(
+        title="Pramaan API",
+        version="0.1.0",
+        description="Security deposit and FDR management for the AICTE Regulation Bureau.",
+        default_response_class=ORJSONResponse,
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+    )
+    app.add_middleware(RequestContextMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    install_error_handlers(app)
+
+    v1 = APIRouter(prefix="/api/v1")
+    v1.include_router(health.router)
+    app.include_router(v1)
+    return app
+
+
+app = create_app()

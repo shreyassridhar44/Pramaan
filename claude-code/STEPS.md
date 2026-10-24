@@ -18,7 +18,7 @@ Target calendar (deadline 28 October 2026, submission planned for the night of 2
 
 **Tasks**
 1. Create the layout in `ARCHITECTURE.md` Section 2.
-2. `infra/compose.dev.yml`: Postgres 16, Redis 7, MinIO, Mailpit; `infra/compose.yml` for the deployment set.
+2. `infra/compose.dev.yml`: Postgres 16, Valkey 8, Mailpit; `infra/compose.yml` for the deployment set.
 3. API skeleton: FastAPI app factory, settings (pydantic-settings), structured logging, `/healthz`, `/readyz`, error handler with request IDs.
 4. Web skeleton: Vite, React 19, TypeScript strict, Tailwind v4 with `tokens.css`, TanStack Router and Query, fonts self-hosted.
 5. Tooling: ruff, mypy, pytest; ESLint, Prettier, Vitest; `scripts/check-contrast.mjs`; pre-commit config.

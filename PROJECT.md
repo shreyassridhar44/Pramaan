@@ -302,7 +302,7 @@ Summary only; full detail and diagrams are in `ARCHITECTURE.md`, and the reasoni
 | Jobs | arq workers for document analysis, rule runs, notifications, letter generation |
 | ML inference | ONNX Runtime on CPU: OCR (PP-OCR models via RapidOCR), edit-localisation model, field extractor; scikit-learn Isolation Forest |
 | ML training | PyTorch and segmentation-models-pytorch on the team's GPU machine; export to ONNX |
-| Documents | Object storage: S3 in deployment, MinIO locally; server-side encryption |
+| Documents | Object storage: S3 in deployment, local filesystem in development behind the same interface; server-side encryption in S3 |
 | PDFs and QR | ReportLab, segno; pypdfium2 for rendering PDFs to images |
 | Signing | Ed25519 (cryptography library) for bank messages and letter tokens |
 | LLM | Amazon Bedrock, India-resident inference profile, structured output only |

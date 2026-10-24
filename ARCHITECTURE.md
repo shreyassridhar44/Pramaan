@@ -18,7 +18,7 @@ flowchart LR
     WK[Workers<br/>arq]
     DB[(PostgreSQL)]
     RQ[(Valkey)]
-    OBJ[(Object storage<br/>S3 / MinIO)]
+    OBJ[(Object storage<br/>S3 / local files)]
     ML[ML inference<br/>ONNX Runtime]
   end
   BR[Amazon Bedrock<br/>India profile]
@@ -73,7 +73,7 @@ claude-code/              implementation instructions and logs
 | Scheduler | arq cron | Daily rule run 06:00 IST, re-confirmation sweep, backups trigger |
 | Database | PostgreSQL 16 | System of record; JSONB for evidence payloads |
 | Cache and queue | Valkey 8 (Redis-compatible) | Job queue, short-lived caches (portfolio snapshots keyed by data and rule version), rate-limit counters |
-| Object storage | S3 (deployment), MinIO (local) | Documents, rendered page images, heatmaps, letters, backups; SSE-S3 or SSE-KMS |
+| Object storage | S3 (deployment), local filesystem behind the same interface (development) | Documents, rendered page images, heatmaps, letters, backups; SSE-S3 or SSE-KMS |
 | ML inference | ONNX Runtime CPU, RapidOCR, LightGBM, scikit-learn | OCR, field extraction, edit localisation, anomaly score |
 
 ## 4. Domain core

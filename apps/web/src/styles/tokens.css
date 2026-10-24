@@ -1,0 +1,122 @@
+/*
+  Pramaan design tokens. Two themes: Ledger (light, default) and Command (dark).
+  Components use these through Tailwind utilities (bg-surface, text-ink-2, ...), never raw hex.
+  Contrast pairs are verified by scripts/check-contrast.mjs.
+*/
+
+:root,
+[data-theme='ledger'] {
+  color-scheme: light;
+  --canvas: #f5f3ee;
+  --surface: #ffffff;
+  --surface-sunken: #efece5;
+  --line: #e4dfd4;
+  --line-strong: #cfc8b9;
+  --ink: #121726;
+  --ink-2: #474e63;
+  --ink-3: #6e7488;
+  --brand: #1d2b5c;
+  --brand-hover: #26387a;
+  --brand-contrast: #ffffff;
+  --accent: #b6531c;
+  --accent-soft: #f7e6dc;
+
+  --a0: #6e7488;
+  --a1: #2f5bd3;
+  --a2: #0f7a55;
+  --a3: #0a5a40;
+  --a0-soft: #ecebe8;
+  --a1-soft: #e3eafb;
+  --a2-soft: #dcf1e8;
+  --a3-soft: #d3ebe1;
+
+  --due: #8f5305;
+  --due-soft: #fbefd9;
+  --overdue: #b42318;
+  --overdue-soft: #fbe4e1;
+  --info: #2f5bd3;
+  --simulated: #6b4fa0;
+  --simulated-soft: #eee8f8;
+
+  --shadow-overlay: 0 12px 32px -8px rgb(18 23 38 / 0.18), 0 2px 6px rgb(18 23 38 / 0.06);
+}
+
+[data-theme='command'] {
+  color-scheme: dark;
+  --canvas: #0a0e17;
+  --surface: #111726;
+  --surface-sunken: #0d1220;
+  --line: #222b3f;
+  --line-strong: #33405c;
+  --ink: #e9ecf4;
+  --ink-2: #a9b1c6;
+  --ink-3: #8a93ab;
+  --brand: #9db1ff;
+  --brand-hover: #b8c7ff;
+  --brand-contrast: #0a0e17;
+  --accent: #f0915a;
+  --accent-soft: #3a2418;
+
+  --a0: #8a93ab;
+  --a1: #6e93ff;
+  --a2: #35c58f;
+  --a3: #5be0ae;
+  --a0-soft: #1c2233;
+  --a1-soft: #18244a;
+  --a2-soft: #0f2e25;
+  --a3-soft: #0f3529;
+
+  --due: #f2b54b;
+  --due-soft: #33270f;
+  --overdue: #ff7a6e;
+  --overdue-soft: #3a1714;
+  --info: #6e93ff;
+  --simulated: #b69cff;
+  --simulated-soft: #261d3d;
+
+  --shadow-overlay: 0 16px 40px -8px rgb(0 0 0 / 0.55), 0 2px 8px rgb(0 0 0 / 0.35);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-a0: var(--a0);
+  --color-a1: var(--a1);
+  --color-a2: var(--a2);
+  --color-a3: var(--a3);
+  --color-a0-soft: var(--a0-soft);
+  --color-a1-soft: var(--a1-soft);
+  --color-a2-soft: var(--a2-soft);
+  --color-a3-soft: var(--a3-soft);
+  --color-due: var(--due);
+  --color-due-soft: var(--due-soft);
+  --color-overdue: var(--overdue);
+  --color-overdue-soft: var(--overdue-soft);
+  --color-info: var(--info);
+  --color-simulated: var(--simulated);
+  --color-simulated-soft: var(--simulated-soft);
+
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-deva: 'Noto Sans Devanagari Variable', 'Geist Variable', sans-serif;
+
+  --radius-control: 6px;
+  --radius-panel: 10px;
+
+  --shadow-overlay: var(--shadow-overlay);
+
+  --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}

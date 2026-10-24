@@ -7,7 +7,7 @@ Update this file at the end of every working session and every completed step.
 | Step | Name | State | Commit |
 |---|---|---|---|
 | 0 | Research and specification | Done, awaiting owner approval | docs commit (24 Oct 2026) |
-| 1 | Foundation and tooling | Not started | |
+| 1 | Foundation and tooling | In progress: API skeleton, dev compose, web skeleton done; CI, contrast script, pre-commit pending | see git log |
 | 2 | Domain model, rules, synthetic portfolio | Not started | |
 | 3 | ML kit | Not started | |
 | 4 | Design system and shell | Not started | |
@@ -44,5 +44,6 @@ Update this file at the end of every working session and every completed step.
 5. Whether the AWS account may send email through SES to team members' addresses (needs identity verification of each recipient while in the SES sandbox).
 
 ## Exact next steps
-1. On approval: Step 1 in `STEPS.md`.
+1. Finish Step 1: `.github/workflows/ci.yml`, `scripts/check-contrast.mjs`, pre-commit config; then Step 2.
+   Notes: MinIO image is no longer on Docker Hub, so local storage uses the filesystem (record as D17); TypeScript pinned to 5.9.3; in Git Bash add `C:\Program Files\Docker\Dockeresourcesin` to PATH for docker pulls.
 2. Immediately after Step 2: hand the ML kit (Step 3) to the owner for GPU training.
