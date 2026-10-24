@@ -9,7 +9,7 @@ Update this file at the end of every working session and every completed step.
 | 0 | Research and specification | Done, awaiting owner approval | docs commit (24 Oct 2026) |
 | 1 | Foundation and tooling | Done (API 2 tests, web 12 tests, lint, types, contrast) | see git log |
 | 2 | Domain model, rules, synthetic portfolio | Done (81 API tests; seed 2,600 institutions in about 25 s) | see git log |
-| 3 | ML kit | Not started | |
+| 3 | ML kit | Done: renderer (12 layouts), degradation, tamper generator, dataset builder, localiser training and ONNX export, field extractor training, evaluation scripts, document pipeline in the API; smoke-tested on CPU; full training pending on the owner's RTX 4090 | see git log |
 | 4 | Design system and shell | Not started | |
 | 5 | Registry, detail, institutions | Not started | |
 | 6 | Intake and document intelligence | Not started | |
@@ -44,8 +44,13 @@ Update this file at the end of every working session and every completed step.
 5. Whether the AWS account may send email through SES to team members' addresses (needs identity verification of each recipient while in the SES sandbox).
 
 ## Exact next steps
-1. Step 3: ML kit (FDR renderer, tamper generator, training scripts for the RTX 4090, ONNX export, baseline inference in the worker).
-2. Then Step 4: design system and shell.
+1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
+2. Step 4: design system and shell (in progress in apps/web).
+
+Notes from Step 3:
+- Smoke results on 40 training documents showed the trained extractor ahead of the rule baseline; an evaluation bug (amount truth normalised twice) and OCR date slips were fixed afterwards. No smoke number is reported anywhere.
+- The API falls back to classical forensics and the rule extractor until `ml/models/localiser.onnx` and `ml/models/field_extractor.txt` exist.
+- OCR-heavy tests are marked `slow`.
 
 Notes from Step 2:
 - Seed: `cd services/api && uv run python -m scripts.seed` (anchor defaults to today). Demo password for every persona: `Pramaan@2026`.

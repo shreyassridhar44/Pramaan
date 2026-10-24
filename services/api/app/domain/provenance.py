@@ -24,8 +24,40 @@ def normalise_amount(raw: str) -> str:
     return str(int(rupees) * 100 + int(fraction.ljust(2, "0") or 0))
 
 
+_MONTH_NUM = {
+    m: i
+    for i, m in enumerate(
+        ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"),
+        start=1,
+    )
+}
+_OCR_LETTERS = str.maketrans({"0": "o", "1": "l", "5": "s", "8": "b", "|": "l"})
+_TEXT_DATE = re.compile(r"^(\d{1,2})[\s.\-/]*([A-Za-z][A-Za-z0-9|]{2,8})[\s.\-/,]*(\d{4})$")
+
+
+def _text_month_date(text: str) -> str | None:
+    """Day, month name, year, tolerating OCR slips such as "03Jun2024", "01Ju1 2024" or
+    "02 0ctober 2022" (digits misread for letters inside the month name)."""
+    m = _TEXT_DATE.match(text)
+    if not m:
+        m = re.match(r"^(\d{1,2})[\s.\-/]*([0O][A-Za-z]{2,8})[\s.\-/,]*(\d{4})$", text)
+    if not m:
+        return None
+    day, month_word, year = m.groups()
+    month = _MONTH_NUM.get(month_word.translate(_OCR_LETTERS).lower()[:3])
+    if month is None:
+        return None
+    try:
+        return date(int(year), month, int(day)).isoformat()
+    except ValueError:
+        return None
+
+
 def normalise_date(raw: str) -> str:
     text = raw.strip()
+    tolerant = _text_month_date(text)
+    if tolerant:
+        return tolerant
     for fmt in _DATE_FORMATS:
         try:
             return datetime.strptime(text, fmt).date().isoformat()

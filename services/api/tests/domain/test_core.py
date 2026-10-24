@@ -191,3 +191,18 @@ class TestAsOf:
     def test_timeline_stops_events_after_renewal(self) -> None:
         steps = timeline([facts(renewed_on=date(2027, 2, 1))], date(2027, 2, 8), 12, R)
         assert all(not step.events for step in steps)
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("03Jun 2024", "2024-06-03"),
+        ("01Ju1 2024", "2024-07-01"),
+        ("02 0ctober 2022", "2022-10-02"),
+        ("10Dec2031", "2031-12-10"),
+        ("22 April 2025", "2025-04-22"),
+        ("12-Nov-2017", "2017-11-12"),
+    ],
+)
+def test_dates_tolerate_ocr_slips(raw: str, expected: str) -> None:
+    assert normalise(FieldName.ISSUE_DATE, raw) == expected

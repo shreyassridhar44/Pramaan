@@ -133,6 +133,15 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Context.** The plan placed it under `ml/synth`. The API seeds and resets demo data, so importing across packages inside containers would be fragile.
 - **Choice.** `services/api/app/seed/portfolio.py`. The ML package keeps the document renderer and tamper generator.
 
+## D21. Edits are made on the scan, not before printing
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Context.** Synthetic tampering could be applied before or after the print-scan simulation.
+- **Choice.** After: a receipt is usually scanned, edited in software, re-saved and uploaded, which leaves noise and compression traces the model can learn. Clean samples are re-saved the same way so re-compression alone is not a cue.
+
+## D22. Field-extractor features shared with the API
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Choice.** `services/api/app/services/documents/features.py` is the single source of token features; the training script imports it, so training and inference cannot drift.
+
 ## D15. Licensing of the repository
 - **Date.** 24 Oct 2026. **Status.** Accepted (owner).
 - **Context.** No licence file yet. Without one, all rights are reserved by default.

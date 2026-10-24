@@ -28,7 +28,10 @@ Licences below are as published by each project and are re-verified when the dep
 | Valkey (Redis-compatible server) | Cache and queue | BSD-3-Clause | Notice. Chosen over Redis server, whose licence changed in 2024 and 2025 (see `claude-code/DECISION.md` D16) |
 | PostgreSQL | Database | PostgreSQL Licence | Notice |
 | ONNX Runtime | Inference | MIT | Notice |
-| RapidOCR and PP-OCR models | OCR | Apache 2.0 (to verify for model files) | Notice |
+| rapidocr-onnxruntime and bundled PP-OCR models | OCR | Apache 2.0 (package and PaddleOCR models) | Notice |
+| pypdfium2 | PDF page rendering | Apache 2.0 / BSD-3 | Notice |
+| Pillow | Image I/O and synthetic rendering | MIT-CMU (HPND) | Notice |
+| NumPy | Arrays | BSD-3-Clause | Notice |
 | LightGBM | Field extractor | MIT | Notice |
 | scikit-learn | Anomaly model | BSD-3-Clause | Notice |
 | OpenCV (headless) | Image processing | Apache 2.0 | Notice |
@@ -46,8 +49,10 @@ Licences below are as published by each project and are re-verified when the dep
 |---|---|
 | PyTorch | BSD-3-Clause |
 | segmentation-models-pytorch | MIT |
-| timm and EfficientNet weights | Apache 2.0 for code; pretrained ImageNet weights to verify per checkpoint |
-| albumentations | MIT |
+| EfficientNet-B0 ImageNet weights (efficientnet-pytorch, via segmentation-models-pytorch) | Apache 2.0 |
+| ONNX | Apache 2.0 |
+| tqdm | MPL-2.0 and MIT |
+| (no augmentation library; augmentations are implemented with OpenCV) | |
 
 ## 3. Explicitly excluded
 
@@ -59,6 +64,10 @@ Licences below are as published by each project and are re-verified when the dep
 | Forensics weights with non-commercial licences | Not suitable for a government product |
 
 ## 4. Fonts
+
+Synthetic FDR documents (training data only) use OFL fonts from google/fonts, downloaded by `ml/synth/fonts.py`: Noto Serif, Source Serif 4, PT Serif, IBM Plex Sans and Mono, Open Sans, Lato, Courier Prime, Inconsolata, Roboto Mono (Apache 2.0), PT Mono, Noto Sans Devanagari.
+
+Web application fonts:
 
 | Font | Licence | Source |
 |---|---|---|

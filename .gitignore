@@ -39,3 +39,7 @@ Thumbs.db
 
 # Local runtime data
 .data/
+ml/assets/fonts/
+ml/models/*.txt
+ml/eval/results/*smoke*
+ml/models/*smoke*

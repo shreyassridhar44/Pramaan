@@ -1,0 +1,36 @@
+[project]
+name = "pramaan-ml"
+version = "0.1.0"
+description = "Synthetic FDR documents, tampering, training and evaluation for Pramaan"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "pillow>=11.3",
+    "numpy>=2.3",
+    "opencv-python-headless>=4.12",
+    "tqdm>=4.67",
+]
+
+[dependency-groups]
+train = [
+    "torch>=2.8",
+    "segmentation-models-pytorch>=0.5",
+    "lightgbm>=4.6",
+    "scikit-learn>=1.7",
+    "onnx>=1.19",
+    "onnxruntime>=1.23",
+    "rapidocr-onnxruntime>=1.2.3",
+]
+dev = ["pytest>=9.1", "ruff>=0.14"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
