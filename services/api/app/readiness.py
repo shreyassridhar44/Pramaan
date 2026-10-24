@@ -19,3 +19,16 @@ async def run_checks() -> dict[str, str]:
         except Exception as exc:
             results[name] = f"error: {type(exc).__name__}"
     return results
+
+
+def register_default_checks() -> None:
+    from sqlalchemy import text
+
+    from app.db import engine
+
+    async def database() -> str:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        return "ok"
+
+    register("database", database)

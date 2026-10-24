@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     demo_mode: bool = True
     log_level: str = "INFO"
 
-    database_url: str = "postgresql+psycopg://pramaan:pramaan@localhost:5432/pramaan"
+    database_url: str = "postgresql+asyncpg://pramaan:pramaan@localhost:5432/pramaan"
     redis_url: str = "redis://localhost:6379/0"
 
     session_secret: str = Field(default="dev-only-session-secret-change-me", min_length=16)
@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     models_dir: str = "../../ml/models"
     cors_origins: list[str] = ["http://localhost:5173"]
     allow_demo_in_production: bool = False
+
+    @field_validator("database_url")
+    @classmethod
+    def _use_async_driver(cls, value: str) -> str:
+        """Accept plain or psycopg Postgres URLs (as AWS and CI often provide) and use asyncpg."""
+        for prefix in ("postgresql+psycopg://", "postgresql://", "postgres://"):
+            if value.startswith(prefix):
+                return "postgresql+asyncpg://" + value[len(prefix) :]
+        return value
 
     @model_validator(mode="after")
     def _production_requires_real_secrets(self) -> "Settings":

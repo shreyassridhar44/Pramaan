@@ -122,6 +122,17 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Choice.** Valkey 8 container. The code talks the Redis protocol, so the server can be swapped by changing the image.
 - **Revisit if.** A managed service (ElastiCache) is adopted later; it supports Valkey.
 
+## D19. asyncpg instead of psycopg for the async driver
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Context.** psycopg's async mode cannot run on the Windows Proactor event loop used by the development machine.
+- **Choice.** asyncpg (Apache 2.0), which works on Windows and Linux.
+- **Revisit if.** Never for this release.
+
+## D20. Synthetic portfolio generator lives in the API package
+- **Date.** 24 Oct 2026. **Status.** Accepted.
+- **Context.** The plan placed it under `ml/synth`. The API seeds and resets demo data, so importing across packages inside containers would be fragile.
+- **Choice.** `services/api/app/seed/portfolio.py`. The ML package keeps the document renderer and tamper generator.
+
 ## D15. Licensing of the repository
 - **Date.** 24 Oct 2026. **Status.** Accepted (owner).
 - **Context.** No licence file yet. Without one, all rights are reserved by default.

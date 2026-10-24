@@ -4,7 +4,7 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
 from app.observability import request_id_var
@@ -35,25 +35,25 @@ def _body(code: str, message: str, details: object | None = None) -> dict[str, o
 
 def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(DomainError)
-    async def domain_error(_: Request, exc: DomainError) -> ORJSONResponse:
-        return ORJSONResponse(_body(exc.code, exc.message, exc.details), exc.status_code)
+    async def domain_error(_: Request, exc: DomainError) -> JSONResponse:
+        return JSONResponse(_body(exc.code, exc.message, exc.details), exc.status_code)
 
     @app.exception_handler(HTTPException)
-    async def http_error(_: Request, exc: HTTPException) -> ORJSONResponse:
+    async def http_error(_: Request, exc: HTTPException) -> JSONResponse:
         code = {401: "unauthenticated", 403: "forbidden", 404: "not_found"}.get(
             exc.status_code, "http_error"
         )
-        return ORJSONResponse(_body(code, str(exc.detail)), exc.status_code)
+        return JSONResponse(_body(code, str(exc.detail)), exc.status_code)
 
     @app.exception_handler(RequestValidationError)
-    async def validation_error(_: Request, exc: RequestValidationError) -> ORJSONResponse:
-        return ORJSONResponse(
+    async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
+        return JSONResponse(
             _body("invalid_request", "Some fields are missing or invalid.", exc.errors()), 422
         )
 
     @app.exception_handler(Exception)
-    async def unhandled(_: Request, exc: Exception) -> ORJSONResponse:
+    async def unhandled(_: Request, exc: Exception) -> JSONResponse:
         logging.getLogger("pramaan").exception("unhandled error", exc_info=exc)
-        return ORJSONResponse(
+        return JSONResponse(
             _body("internal_error", "Something went wrong on our side. Try again."), 500
         )

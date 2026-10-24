@@ -30,7 +30,7 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | sonner | 2.0.8 |
 | vitest | 5.0.5 |
 | @playwright/test | 1.64.1 |
-| typescript | 7.0.2 is latest; compatibility with the toolchain to verify in Step 1, otherwise pin the latest 5.x |
+| typescript | 5.9.3 (7.0.2 is latest; see DECISION D18) |
 
 ## API and ML (latest on 24 Oct 2026)
 
@@ -41,7 +41,8 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | pydantic | 2.14.1 |
 | sqlalchemy | 2.1.6 |
 | alembic | 1.20.1 |
-| psycopg | 3.3.6 |
+| asyncpg | 0.31 or later (resolved in uv.lock) |
+| email-validator | 2.3.0 |
 | arq | 0.28.0 |
 | onnxruntime | 1.31.0 |
 | rapidocr-onnxruntime | 1.2.3 (also `rapidocr` 3.10.0; choose in Step 3) |

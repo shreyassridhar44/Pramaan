@@ -20,3 +20,10 @@ async def test_unknown_route_uses_error_envelope() -> None:
     body = response.json()
     assert body["error"]["code"] == "not_found"
     assert body["error"]["request_id"]
+
+
+def test_database_url_is_normalised_to_asyncpg() -> None:
+    from app.config import Settings
+
+    for url in ("postgresql://u:p@h/db", "postgresql+psycopg://u:p@h/db", "postgres://u:p@h/db"):
+        assert Settings(database_url=url).database_url == "postgresql+asyncpg://u:p@h/db"

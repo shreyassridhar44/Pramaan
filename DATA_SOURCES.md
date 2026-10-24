@@ -13,11 +13,11 @@ All data used by Pramaan in this repository is either public reference material 
 
 ## 2. Synthetic data
 
-### 2.1 Portfolio (`ml/synth/portfolio.py`)
-- About 1,200 institutions across 8 regional offices and 3 camp offices, with states and districts drawn from the real list of Indian states and union territories.
+### 2.1 Portfolio (`services/api/app/seed/portfolio.py`)
+- About 2,600 institutions across 8 regional offices and 3 camp offices (about 2,800 instruments, 1,200 held on the anchor date), with states and districts drawn from the real list of Indian states and union territories.
 - Institution names are generated from neutral patterns (for example "Sahyadri Institute of Technology, Pune"); any resemblance to a real institution is accidental, and the generator avoids names from a blocklist of real institutions we know of.
 - Programmes and levels drawn from the APH disciplines; demands computed with the Table 1.4 rule; leased premises at a set rate.
-- About 3,000 instruments over 10 years: joint FDRs, a smaller share of RPGF and RTGS; maturities, renewals, releases, premature encashments at low rates.
+- Instruments over 10 years: joint FDRs, a smaller share of RPGF and RTGS; maturities, renewals, releases, premature encashments at low rates.
 - Simulated bank records generated alongside, with deliberate mismatches (amount, dates, holder, lien) at a controlled rate for testing discrepancy detection.
 - Complaints, clearances, events and reminder history consistent with the rules.
 - Deterministic by seed; version recorded in the database.

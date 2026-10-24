@@ -20,7 +20,10 @@ Licences below are as published by each project and are re-verified when the dep
 | FastAPI, Starlette | API | MIT, BSD-3-Clause | Notice |
 | Pydantic | Validation | MIT | Notice |
 | SQLAlchemy, Alembic | Database | MIT | Notice |
-| psycopg 3 | Postgres driver | LGPL-3.0 | Dynamic linking only; notice |
+| asyncpg | Postgres driver | Apache 2.0 | Notice |
+| itsdangerous | Signed session cookies | BSD-3-Clause | Notice |
+| email-validator | Email validation | Unlicense | No |
+| hypothesis (dev) | Property tests | MPL-2.0 | Not shipped |
 | arq | Job queue | MIT | Notice |
 | Valkey (Redis-compatible server) | Cache and queue | BSD-3-Clause | Notice. Chosen over Redis server, whose licence changed in 2024 and 2025 (see `claude-code/DECISION.md` D16) |
 | PostgreSQL | Database | PostgreSQL Licence | Notice |
