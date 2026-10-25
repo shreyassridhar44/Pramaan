@@ -53,6 +53,13 @@ KINDS = {
         "short_en": "No Objection Certificate",
         "short_hi": "अनापत्ति प्रमाण पत्र",
     },
+    "deficiency": {
+        "code": "DEF",
+        "title_en": "Deficiency letter on a security deposit submission",
+        "title_hi": "सुरक्षा जमा प्रस्तुति पर कमी सूचना पत्र",
+        "short_en": "Deficiency letter",
+        "short_hi": "कमी सूचना पत्र",
+    },
     "release_sanction": {
         "code": "SO",
         "title_en": "Sanction order for refund of security deposit",
@@ -242,6 +249,9 @@ def _register_fonts() -> None:
         ("Serif", "InstrumentSerif-Regular.ttf"),
     ):
         pdfmetrics.registerFont(TTFont(name, str(FONTS / file)))
+    # Lets <b> in paragraphs pick the semibold face.
+    pdfmetrics.registerFontFamily("Sans", normal="Sans", bold="Sans-SemiBold")
+    pdfmetrics.registerFontFamily("Deva", normal="Deva", bold="Deva-SemiBold")
 
 
 INK = colors.HexColor("#1B1F24")
@@ -346,6 +356,55 @@ def _footer(c: Canvas, letter: Letter, token: str) -> None:
     c.restoreState()
 
 
+def _deficiency_body(f: dict[str, Any], st: dict[str, ParagraphStyle]) -> list[Any]:
+    out: list[Any] = [
+        Paragraph(
+            f"The Regulation Bureau has examined the submission and returned it for the following "
+            f"reason: <b>{f['reason']}</b>",
+            st["body"],
+        ),
+        Spacer(1, 3 * mm),
+    ]
+    if f.get("discrepancies"):
+        rows = [
+            [Paragraph(h, st["label"]) for h in ("FIELD", "DECLARED", "ON THE RECEIPT", "BANK")]
+        ]
+        for d in f["discrepancies"]:
+            rows.append(
+                [
+                    Paragraph(d["field"], st["cell"]),
+                    Paragraph(d.get("declared") or "None", st["cell"]),
+                    Paragraph(d.get("extracted") or "Not read", st["cell"]),
+                    Paragraph(d.get("confirmed") or "Not yet confirmed", st["cell"]),
+                ]
+            )
+        table = Table(rows, colWidths=[34 * mm, 46 * mm, 46 * mm, 44 * mm])
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), SOFT),
+                    ("LINEBELOW", (0, 0), (-1, -1), 0.4, LINE),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ]
+            )
+        )
+        out += [
+            Paragraph("The values below do not agree with each other:", st["body"]),
+            Spacer(1, 2 * mm),
+            table,
+            Spacer(1, 3 * mm),
+        ]
+    out.append(
+        Paragraph(
+            "Please correct the submission and resubmit it through the Pramaan institution portal "
+            f"within {f.get('respond_within_days', 15)} days. Earlier entries remain on record. "
+            "This letter does not withdraw any approval.",
+            st["body"],
+        )
+    )
+    return out
+
+
 def render_pdf(letter: Letter) -> bytes:
     _register_fonts()
     st = _styles()
@@ -371,7 +430,10 @@ def render_pdf(letter: Letter) -> bytes:
         Paragraph(f"To<br/>{letter.recipient.replace(chr(10), '<br/>')}", st["body"]),
         Spacer(1, 4 * mm),
         Paragraph(
-            f"Subject: {meta['short_en']} for release of the security deposit of "
+            f"Subject: Deficiencies in the security deposit submitted by {f['institution']} "
+            f"({f['aicte_id']})."
+            if letter.kind == "deficiency"
+            else f"Subject: {meta['short_en']} for release of the security deposit of "
             f"{f['institution']} ({f['aicte_id']}). Release case {f['case_reference']}.",
             st["subject"],
         ),
@@ -380,7 +442,7 @@ def render_pdf(letter: Letter) -> bytes:
     rows = [
         [
             Paragraph(h, st["label"])
-            for h in ("INSTRUMENT", "TYPE", "BANK AND BRANCH", "ISSUED", "MATURED", "AMOUNT")
+            for h in ("INSTRUMENT", "TYPE", "BANK AND BRANCH", "ISSUED", "MATURITY", "AMOUNT")
         ]
     ]
     for i in f["instruments"]:
@@ -407,7 +469,9 @@ def render_pdf(letter: Letter) -> bytes:
         )
     )
     story += [table, Spacer(1, 4 * mm)]
-    if letter.kind == "release_noc":
+    if letter.kind == "deficiency":
+        story += _deficiency_body(f, st)
+    elif letter.kind == "release_noc":
         body = (
             f"The deposit above is held jointly in favour of the Member Secretary, AICTE and "
             f"{f['trust']}. The All India Council for Technical Education has no objection to its "
@@ -421,16 +485,30 @@ def render_pdf(letter: Letter) -> bytes:
             f"Section may credit {rupees(int(f['amount_paise']) // 100)} to the institution's "
             f"registered bank account after recording this order."
         )
-    story += [Paragraph(body, st["body"]), Spacer(1, 3 * mm)]
-    checks = "; ".join(f"{c['label']} ({c['aph_ref']})" for c in f["checks"])
+    if letter.kind != "deficiency":
+        checks = "; ".join(f"{c['label']} ({c['aph_ref']})" for c in f["checks"])
+        story += [
+            Paragraph(body, st["body"]),
+            Spacer(1, 3 * mm),
+            Paragraph(f"Conditions verified before issue: {checks}.", st["small"]),
+        ]
     story += [
-        Paragraph(f"Conditions verified before issue: {checks}.", st["small"]),
         Spacer(1, 8 * mm),
         Paragraph(f"<b>{f['authority']['name']}</b>", st["body"]),
         Paragraph(f["authority"]["designation"], st["small"]),
-        Paragraph("Approved electronically in Pramaan", st["small"]),
+        Paragraph(
+            "Issued electronically in Pramaan"
+            if letter.kind == "deficiency"
+            else "Approved electronically in Pramaan",
+            st["small"],
+        ),
         Spacer(1, 5 * mm),
-        Paragraph(f"Copy to: {f['institution']}, {f['address']}", st["small"]),
+        Paragraph(
+            "Copy to: Regional Office concerned"
+            if letter.kind == "deficiency"
+            else f"Copy to: {f['institution']}, {f['address']}",
+            st["small"],
+        ),
     ]
 
     def decorate(c: Canvas, _doc: object) -> None:

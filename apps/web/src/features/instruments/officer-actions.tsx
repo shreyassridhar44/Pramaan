@@ -17,6 +17,7 @@ import { ApiError, api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
+import { eventDetail, eventLabel } from '@/lib/events'
 import { formatDate } from '@/lib/format'
 import { useMe } from '@/lib/session'
 
@@ -508,5 +509,85 @@ function CorrectionDialog({
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
+  )
+}
+
+const NOTE_TYPES = new Set(['officer.observe', 'officer.correction', 'officer.return'])
+
+/** Scrutiny observations and corrections, newest first, with a composer for officers. */
+export function ObservationsPanel({ d }: { d: Detail }) {
+  const me = useMe().data
+  const { isToday } = useAsOf()
+  const invalidate = useInvalidate(d.id)
+  const [text, setText] = useState('')
+  const notes = d.timeline.filter((e) => NOTE_TYPES.has(e.type)).reverse()
+  const add = useMutation({
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/instruments/{instrument_id}/actions/{action}', {
+          params: { path: { instrument_id: d.id, action: 'observe' } },
+          body: { reason: text.trim() },
+        }),
+      ),
+    onSuccess: () => {
+      toast.success('Observation recorded.')
+      setText('')
+      invalidate()
+    },
+    onError: (e) => toast.error((e as ApiError).message),
+  })
+  const canWrite = !!me && CAN_ACT.has(me.role) && isToday
+  return (
+    <Panel>
+      <PanelHeader
+        title="Observations"
+        caption="Scrutiny notes and corrections. Each is kept in the audit trail."
+      />
+      {notes.length ? (
+        <ul className="px-5">
+          {notes.map((n, i) => (
+            <li key={i} className="border-t border-line py-3 first:border-0">
+              <p className="text-[0.75rem] text-ink-3">
+                {eventLabel(n.type)} · {formatDate(n.on)}
+                {n.actor ? ` · ${n.actor}` : ''}
+              </p>
+              <p className="mt-0.5 text-[0.875rem] text-ink">{eventDetail(n.type, n.payload)}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-5 text-[0.8125rem] text-ink-3">No observations yet.</p>
+      )}
+      {canWrite ? (
+        <form
+          className="mt-3 border-t border-line p-5"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (text.trim().length >= 3) add.mutate()
+          }}
+        >
+          <label className="block text-[0.8125rem] font-medium text-ink">
+            Add an observation
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={2}
+              className="mt-1.5 w-full rounded-[var(--radius-control)] border border-line-strong bg-surface p-3 text-[0.875rem] font-normal focus-visible:border-accent focus-visible:outline-none"
+            />
+          </label>
+          <div className="mt-2 flex justify-end">
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={text.trim().length < 3 || add.isPending}
+            >
+              Record observation
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="h-4" />
+      )}
+    </Panel>
   )
 }

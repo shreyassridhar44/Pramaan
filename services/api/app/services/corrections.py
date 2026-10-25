@@ -111,3 +111,39 @@ async def refresh_conflict(db: AsyncSession, inst: Instrument, on: date) -> bool
     elif not conflict and inst.conflict_since and not inst.conflict_resolved_on:
         inst.conflict_resolved_on = on
     return conflict
+
+
+FIELD_LABEL = {
+    FieldName.NUMBER: "Instrument number",
+    FieldName.BANK: "Bank",
+    FieldName.IFSC: "IFSC",
+    FieldName.AMOUNT: "Amount",
+    FieldName.ISSUE_DATE: "Issue date",
+    FieldName.MATURITY_DATE: "Maturity date",
+    FieldName.HOLDERS: "Holders",
+    FieldName.LIEN: "Lien",
+}
+
+
+async def discrepancies(db: AsyncSession, inst: Instrument, on: date) -> list[dict[str, str]]:
+    """Fields whose declared, extracted and confirmed values disagree, with each value shown."""
+    rows = (
+        await db.scalars(
+            select(FieldObservation)
+            .where(FieldObservation.instrument_id == inst.id, FieldObservation.observed_on <= on)
+            .order_by(FieldObservation.observed_on, FieldObservation.id)
+        )
+    ).all()
+    observations = [
+        Observation(FieldName(o.field), Source(o.source), o.value_norm, o.observed_on) for o in rows
+    ]
+    out = []
+    for f in FieldName:
+        if compare_field(f, observations, on).state != MatchState.CONFLICT:
+            continue
+        latest: dict[str, str] = {}
+        for o in rows:
+            if o.field == f.value:
+                latest[o.source] = display(f, o.value_norm)
+        out.append({"field": FIELD_LABEL[f], **latest})
+    return out

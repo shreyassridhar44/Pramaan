@@ -11,8 +11,8 @@ from sqlalchemy import func, select
 from app.api.deps import DbSession, Principal, instrument_scope, require_roles
 from app.domain.state_machine import TransitionRefused, check_transition
 from app.domain.types import FieldName, Role, Status
-from app.models import Event, Institution, Instrument, Signal, User
-from app.services import audit, corrections
+from app.models import Event, Institution, Instrument, Letter, Signal, User
+from app.services import audit, corrections, letters
 from app.services import portfolio as psvc
 
 router = APIRouter(tags=["actions"])
@@ -111,7 +111,8 @@ async def act(
                 "Await corrected submission",
                 today + timedelta(days=15),
             )
-            message = "Returned to the institution with your reason."
+            letter = await _deficiency_letter(db, inst, body.reason or "", principal, today)
+            message = f"Returned to the institution with deficiency letter {letter.reference}."
         else:
             inst.next_action = "Complete scrutiny"
             message = "Scrutiny started."
@@ -151,6 +152,51 @@ async def act(
     await psvc.bump_data_version(db)
     await db.commit()
     return ActionResult(instrument_id=inst.id, status=inst.status, message=message)
+
+
+async def _deficiency_letter(
+    db: DbSession, inst: Instrument, reason: str, principal: Principal, today: date
+) -> Letter:
+    institution = await db.get(Institution, inst.institution_id)
+    assert institution is not None
+    return await letters.issue(
+        db,
+        kind="deficiency",
+        entity_type="instrument",
+        entity_id=inst.id,
+        institution_id=institution.id,
+        recipient="\n".join(
+            (f"The Secretary, {institution.trust_name}", f"{institution.name}, {institution.city}")
+        ),
+        fields={
+            "institution": institution.name,
+            "trust": institution.trust_name,
+            "aicte_id": institution.aicte_id,
+            "address": f"{institution.city}, {institution.state}",
+            "amount_paise": str(inst.amount_paise),
+            "reason": reason,
+            "respond_within_days": 15,
+            "discrepancies": await corrections.discrepancies(db, inst, today),
+            "instruments": [
+                {
+                    "number": inst.number,
+                    "kind_label": {"joint_fdr": "Joint FDR", "rpgf": "RPGF"}.get(inst.kind, "RTGS"),
+                    "bank": inst.bank.name,
+                    "branch": inst.branch,
+                    "issue_date": inst.issue_date.isoformat(),
+                    "maturity_date": inst.maturity_date.isoformat(),
+                    "amount_paise": str(inst.amount_paise),
+                }
+            ],
+            "authority": {
+                "name": principal.user.name,
+                "designation": principal.user.designation,
+            },
+        },
+        actor_id=principal.user.id,
+        actor_label=principal.label,
+        on=today,
+    )
 
 
 class ResolveBody(BaseModel):

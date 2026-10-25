@@ -55,3 +55,28 @@ export function eventLabel(type: string): string {
   const words = type.replace(/[._]/g, ' ').trim()
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
+
+const FIELD: Record<string, string> = {
+  amount: 'Amount',
+  issue_date: 'Issue date',
+  maturity_date: 'Maturity date',
+  ifsc: 'IFSC',
+  holders: 'Holders',
+  lien: 'Lien',
+}
+
+/** The human detail of an event, such as the reason for a return or what a correction changed. */
+export function eventDetail(type: string, payload: Record<string, unknown> | undefined) {
+  if (!payload) return null
+  const reason = typeof payload.reason === 'string' ? payload.reason : null
+  const note = typeof payload.note === 'string' ? payload.note : null
+  if (type === 'officer.correction') {
+    const field = FIELD[String(payload.field)] ?? String(payload.field)
+    return `${field} changed from ${payload.from ?? 'blank'} to ${payload.to}. ${reason ?? ''}`.trim()
+  }
+  if (type === 'instrument.resubmitted' && Array.isArray(payload.changed)) {
+    const changed = payload.changed.map((c) => FIELD[String(c)] ?? String(c)).join(', ')
+    return `Changed: ${changed}. ${note ?? ''}`.trim()
+  }
+  return reason ?? note
+}

@@ -26,11 +26,17 @@ import { api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
-import { eventLabel } from '@/lib/events'
+import { eventDetail, eventLabel } from '@/lib/events'
 import { formatDate, formatINR, formatRelativeDays } from '@/lib/format'
 
 import { BankTab } from './bank-tab'
-import { ActionBar, CorrectableProvenance, DocumentsTab, SignalsPanel } from './officer-actions'
+import {
+  ActionBar,
+  CorrectableProvenance,
+  DocumentsTab,
+  ObservationsPanel,
+  SignalsPanel,
+} from './officer-actions'
 import { useInstrument } from './queries'
 
 type Detail = components['schemas']['InstrumentDetail']
@@ -182,6 +188,7 @@ export function InstrumentDetailPage({ id }: { id: number }) {
               <CorrectableProvenance d={d} />
             </Panel>
             <SignalsPanel d={d} />
+            <ObservationsPanel d={d} />
           </div>
           <div className="grid content-start gap-5 xl:col-span-4">
             <KeyDates d={d} />
@@ -388,6 +395,11 @@ function TimelinePanel({ d }: { d: Detail }) {
                 {formatDate(e.on)}
                 {e.actor ? ` · ${e.actor}` : ''}
               </p>
+              {eventDetail(e.type, e.payload) ? (
+                <p className="mt-0.5 text-[0.8125rem] text-ink-2">
+                  {eventDetail(e.type, e.payload)}
+                </p>
+              ) : null}
             </div>
           </li>
         ))}

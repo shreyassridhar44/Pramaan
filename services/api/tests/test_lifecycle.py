@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 from app.db import SessionLocal
 from app.models import Escalation, FieldObservation, Instrument
+from app.services import portfolio as psvc
 from app.services.monitoring import run_monitoring
 from tests.conftest import ANCHOR, sign_in
 
@@ -43,6 +44,9 @@ async def _new_instrument(status: str, verified: bool, tag: str) -> Instrument:
             verified_on=date(2016, 11, 1) if verified else None,
         )
         db.add(inst)
+        # Endpoints bump the data version on every write; direct inserts must too, or cached
+        # portfolio facts would not include the new deposit.
+        await psvc.bump_data_version(db)
         await db.commit()
         return inst
 
@@ -192,8 +196,17 @@ async def test_returned_submission_is_corrected_and_resubmitted(client: AsyncCli
         json={"reason": "Issue date on the receipt differs from the form"},
     )
     assert r.status_code == 200, r.text
+    assert "deficiency letter AICTE/RB/SD/DEF/" in r.json()["message"]
 
     await _as(client, "institution")
+    letters = (await client.get("/api/v1/letters")).json()
+    deficiency = next(lt for lt in letters if lt["kind"] == "deficiency")
+    pdf = await client.get(f"/api/v1/letters/{deficiency['id']}/pdf")
+    assert pdf.content.startswith(b"%PDF")
+    token = deficiency["verify_url"].rsplit("/", 1)[1]
+    verified = (await client.get(f"/api/v1/public/verify/{token}")).json()
+    assert verified["result"] == "genuine"
+    assert verified["letter"]["title"] == "Deficiency letter"
     home = (await client.get("/api/v1/portal/home")).json()
     item = next(i for i in home["instruments"] if i["id"] == inst_id)
     assert item["status"] == "returned"
@@ -322,3 +335,29 @@ async def test_renewal_chain_links_and_closes_the_predecessor(client: AsyncClien
         },
     )
     assert twice.status_code == 409
+
+
+async def test_reminders_go_out_once_at_each_offset(seeded: None) -> None:
+    """S3: a deposit approaching maturity gets T-90, T-60, T-30, T-15, T-7 and T-0 reminders,
+    each exactly once, however often the daily run executes."""
+    from app.models import Reminder
+
+    pred = await _new_instrument("active", verified=True, tag="RM")
+    async with SessionLocal() as db:
+        inst = await db.get(Instrument, pred.id)
+        assert inst is not None
+        maturity = date.today() + timedelta(days=500)
+        inst.maturity_date = maturity
+        await psvc.bump_data_version(db)
+        await db.commit()
+        for back in range(95, -1, -4):
+            await run_monitoring(db, today=maturity - timedelta(days=back), actor_label="test")
+        await run_monitoring(db, today=maturity, actor_label="test")
+        offsets = (
+            await db.scalars(
+                select(Reminder.offset_days)
+                .where(Reminder.instrument_id == inst.id)
+                .order_by(Reminder.offset_days.desc())
+            )
+        ).all()
+    assert offsets == [90, 60, 30, 15, 7, 0]
