@@ -72,7 +72,7 @@ async def load_facts(
     return [row_to_facts(r) for r in result]
 
 
-_RULE_CLASSES: dict[str, tuple[str, type]] = {
+RULE_CLASSES: dict[str, tuple[str, type]] = {
     "demand.rate_card": ("demand", p.DemandRules),
     "deadline.furnishing": ("deadline", p.DeadlineRules),
     "monitoring.reminders": ("maturity", p.MaturityRules),
@@ -82,29 +82,37 @@ _RULE_CLASSES: dict[str, tuple[str, type]] = {
 }
 
 
-def _tuplify(value: Any) -> Any:
+def tuplify(value: Any) -> Any:
     if isinstance(value, list):
-        return tuple(_tuplify(v) for v in value)
+        return tuple(tuplify(v) for v in value)
     return value
 
 
 async def load_rules(session: AsyncSession, as_of: date | None = None) -> p.RuleSet:
-    """Latest version of each rule effective on `as_of` (default: all). Falls back to the APH
-    defaults for any rule not yet stored."""
-    query = select(RuleVersion).order_by(RuleVersion.code, RuleVersion.version)
-    if as_of is not None:
-        query = query.where(RuleVersion.effective_from <= as_of)
+    """Latest version of each rule effective on `as_of` (default today), so a version scheduled
+    for a later date has no effect until then. Falls back to the APH defaults for any rule not yet
+    stored."""
+    query = (
+        select(RuleVersion)
+        .where(RuleVersion.effective_from <= (as_of or date.today()))
+        .order_by(RuleVersion.code, RuleVersion.version)
+    )
     latest: dict[str, RuleVersion] = {}
     for rv in (await session.scalars(query)).all():
         latest[rv.code] = rv
     kwargs: dict[str, Any] = {}
-    for code, (attr, cls) in _RULE_CLASSES.items():
+    for code, (attr, cls) in RULE_CLASSES.items():
         stored = latest.get(code)
         if stored is None:
             continue
         rv = stored
         ref = p.RuleRef(rv.code, rv.version, rv.aph_ref, rv.is_assumption)
-        params = {k: (_tuplify(v) if k != "rate_card_lakh" else v) for k, v in rv.params.items()}
+        # Keys starting with "_" (the change note) are metadata, not parameters.
+        params = {
+            k: (tuplify(v) if k != "rate_card_lakh" else v)
+            for k, v in rv.params.items()
+            if not k.startswith("_")
+        }
         kwargs[attr] = cls(ref=ref, **params)
     return p.RuleSet(**kwargs)
 
@@ -113,7 +121,7 @@ def default_rule_rows() -> list[dict[str, Any]]:
     """Rows that seed the rules table from the APH defaults."""
     rs = p.RuleSet()
     rows = []
-    for code, (attr, _cls) in _RULE_CLASSES.items():
+    for code, (attr, _cls) in RULE_CLASSES.items():
         rule = getattr(rs, attr)
         params = {f.name: getattr(rule, f.name) for f in dc_fields(rule) if f.name != "ref"}
         rows.append(

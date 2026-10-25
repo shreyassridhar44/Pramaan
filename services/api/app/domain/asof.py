@@ -150,6 +150,13 @@ class PortfolioSummary:
 
 
 def summarise(facts: Iterable[InstrumentFacts], as_of: date, rules: RuleSet) -> PortfolioSummary:
+    return summarise_states(((f, state_on(f, as_of, rules)) for f in facts), as_of)
+
+
+def summarise_states(
+    pairs: Iterable[tuple[InstrumentFacts, "InstrumentState | None"]], as_of: date
+) -> PortfolioSummary:
+    """Portfolio figures from states already computed for `as_of`."""
     s = PortfolioSummary(as_of)
     status_counts: dict[str, int] = defaultdict(int)
     escalations: dict[str, int] = defaultdict(int)
@@ -163,8 +170,7 @@ def summarise(facts: Iterable[InstrumentFacts], as_of: date, rules: RuleSet) -> 
         }
     )
     banks: dict[str, int] = defaultdict(int)
-    for f in facts:
-        st = state_on(f, as_of, rules)
+    for f, st in pairs:
         if st is None or st.status not in HELD_STATUSES:
             continue
         status_counts[st.status] += 1
@@ -225,12 +231,18 @@ def timeline(
     """
     steps: list[TimelineStep] = []
     ladder = rules.escalation.ladder
+    # Released, renewed, forfeited and encashed are final, so those instruments add nothing to
+    # any later week; dropping them once keeps a year of weekly steps fast.
+    final = {Status.RELEASED, Status.RENEWED, Status.FORFEITED, Status.ENCASHED_PREMATURELY}
+    facts = [
+        f for f in facts if (st := state_on(f, start, rules)) is None or st.status not in final
+    ]
     for w in range(weeks):
         wk_start = start + timedelta(days=7 * w)
         wk_end = wk_start + timedelta(days=6)
         events: list[TimelineEvent] = []
-        for f in facts:
-            st = state_on(f, wk_end, rules)
+        pairs = [(f, state_on(f, wk_end, rules)) for f in facts]
+        for f, st in pairs:
             if (
                 st is None
                 or st.status not in HELD_STATUSES
@@ -253,5 +265,5 @@ def timeline(
                 if wk_start <= crossing <= wk_end:
                     events.append(TimelineEvent(crossing, "escalated", f.id, f.region, name))
         events.sort(key=lambda e: (e.on, e.kind, e.instrument_id))
-        steps.append(TimelineStep(wk_start, wk_end, summarise(facts, wk_end, rules), tuple(events)))
+        steps.append(TimelineStep(wk_start, wk_end, summarise_states(pairs, wk_end), tuple(events)))
     return steps

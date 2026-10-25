@@ -436,6 +436,23 @@ async def impact(session: AsyncSession, scope: Scope, as_of: date) -> dict[str, 
     )
     total_rem, on_time = sent.one()
     p90 = turnaround[int(0.9 * (len(turnaround) - 1))] if turnaround else None
+    by_month: dict[str, list[int]] = defaultdict(list)
+    for f in facts:
+        if f.verified_on and window_start <= f.verified_on <= as_of:
+            by_month[f.verified_on.strftime("%Y-%m")].append((f.verified_on - f.submitted_on).days)
+    months = []
+    cursor = date(window_start.year, window_start.month, 1)
+    while cursor <= as_of:
+        key = cursor.strftime("%Y-%m")
+        vals = by_month.get(key, [])
+        months.append(
+            {
+                "month": key,
+                "median_days": statistics.median(vals) if vals else None,
+                "count": len(vals),
+            }
+        )
+        cursor = date(cursor.year + cursor.month // 12, cursor.month % 12 + 1, 1)
     return {
         "data_source": "synthetic",
         "verification_turnaround_days": {
@@ -443,6 +460,7 @@ async def impact(session: AsyncSession, scope: Scope, as_of: date) -> dict[str, 
             "p90": p90,
             "sample": len(turnaround),
         },
+        "turnaround_trend": months,
         "field_agreement_rate": (1 - len(conflicted) / len(proven)) if proven else None,
         "bank_confirmed_share_by_count": len(proven) / len(held) if held else None,
         "reminders_on_time_rate": (on_time / total_rem) if total_rem else None,
@@ -450,3 +468,44 @@ async def impact(session: AsyncSession, scope: Scope, as_of: date) -> dict[str, 
         "held_without_owner": len(needs_owner),
         "held_count": len(held),
     }
+
+
+async def exposures(
+    session: AsyncSession, scope: Scope, as_of: date, limit: int
+) -> list[dict[str, Any]]:
+    """The largest deposits held without bank confirmation (assurance A0 or A1)."""
+    st = await states(session, scope, as_of)
+    unproven = sorted(
+        (
+            (f, st[f.id])
+            for f in (await scoped_facts(session, scope))[0]
+            if f.id in st
+            and st[f.id].status in HELD_STATUSES
+            and st[f.id].assurance.value <= Assurance.DOCUMENT_CHECKED.value
+        ),
+        key=lambda p: -p[0].amount_paise,
+    )[:limit]
+    ids = [f.id for f, _ in unproven]
+    meta = {
+        r[0]: (r[1], r[2], r[3])
+        for r in (
+            await session.execute(
+                select(Instrument.id, Instrument.number, Institution.name, Bank.name)
+                .join(Institution, Institution.id == Instrument.institution_id)
+                .join(Bank, Bank.id == Instrument.bank_id)
+                .where(Instrument.id.in_(ids))
+            )
+        ).all()
+    }
+    return [
+        {
+            "instrument_id": f.id,
+            "number": meta[f.id][0],
+            "institution": meta[f.id][1],
+            "bank": meta[f.id][2],
+            "amount_paise": str(f.amount_paise),
+            "assurance": s.assurance.value,
+            "status": s.status.value,
+        }
+        for f, s in unproven
+    ]

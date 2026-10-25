@@ -18,6 +18,9 @@ from app.api.v1 import (
     portfolio,
     public,
     releases,
+    reports,
+    rules,
+    search,
 )
 from app.config import get_settings
 from app.errors import install_error_handlers
@@ -63,6 +66,9 @@ def create_app() -> FastAPI:
         portal,
         releases,
         letters,
+        reports,
+        rules,
+        search,
         audit,
         demo,
     ):

@@ -3,12 +3,16 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Query
+from sqlalchemy import select
 
-from app.api.deps import DbSession, OfficerReader
+from app.api.deps import DbSession, OfficerReader, instrument_scope
+from app.models import Institution, Instrument, Signal
 from app.schemas.portfolio import (
     ActionItem,
     AssuranceSplit,
+    Exposure,
     Impact,
+    RecentSignal,
     RegionRow,
     RiverWeek,
     Summary,
@@ -126,3 +130,52 @@ async def portfolio_timeline(
 async def impact(principal: OfficerReader, db: DbSession, as_of: AsOf = None) -> Impact:
     scope = await svc.scope_for(db, principal.user)
     return Impact(**await svc.impact(db, scope, _as_of(as_of)))
+
+
+@router.get("/exposures", response_model=list[Exposure])
+async def exposures(
+    principal: OfficerReader,
+    db: DbSession,
+    as_of: AsOf = None,
+    limit: Annotated[int, Query(ge=1, le=50)] = 5,
+) -> list[Exposure]:
+    """Largest deposits held without bank confirmation."""
+    scope = await svc.scope_for(db, principal.user)
+    return [Exposure(**e) for e in await svc.exposures(db, scope, _as_of(as_of), limit)]
+
+
+@router.get("/signals", response_model=list[RecentSignal])
+async def recent_signals(
+    principal: OfficerReader,
+    db: DbSession,
+    limit: Annotated[int, Query(ge=1, le=50)] = 6,
+) -> list[RecentSignal]:
+    """The latest open signals in scope, high severity first within the same day."""
+    rows = (
+        await db.execute(
+            select(Signal, Instrument.number, Institution.name)
+            .join(Instrument, Instrument.id == Signal.entity_id)
+            .join(Institution, Institution.id == Instrument.institution_id)
+            .where(
+                Signal.entity_type == "instrument",
+                Signal.status == "open",
+                instrument_scope(principal),
+            )
+            .order_by(Signal.raised_on.desc(), Signal.severity, Signal.id.desc())
+            .limit(limit)
+        )
+    ).all()
+    return [
+        RecentSignal(
+            id=s.id,
+            instrument_id=s.entity_id,
+            number=number,
+            institution=name,
+            code=s.code,
+            severity=s.severity,
+            title=s.title,
+            detail=(s.evidence or {}).get("detail"),
+            raised_on=s.raised_on.isoformat(),
+        )
+        for s, number, name in rows
+    ]

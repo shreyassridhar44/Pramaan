@@ -1,0 +1,17 @@
+[
+ {"query": "which deposits in Mumbai mature before April 2027", "expected": {"region": ["western"], "maturity_to": "2027-03-31"}},
+ {"query": "list everything at Malabar Federal Bank that is still unconfirmed", "expected": {"bank": ["MFBX"], "assurance": [0, 1]}},
+ {"query": "overdue RTGS deposits", "expected": {"kind": ["rtgs"], "status": ["matured"]}},
+ {"query": "Bengaluru deposits with open signals", "expected": {"region": ["south_western"], "has_signals": true}},
+ {"query": "deposits expiring in December 2026", "expected": {"status": ["maturing"], "maturity_from": "2026-12-01", "maturity_to": "2026-12-31"}},
+ {"query": "show me returned submissions in Odisha", "expected": {"region": ["eastern"], "status": ["returned"]}},
+ {"query": "Brahmaputra Bank FDRs maturing next year", "expected": {"bank": ["BRPX"], "kind": ["joint_fdr"], "maturity_from": "2027-01-01", "maturity_to": "2027-12-31"}},
+ {"query": "everything maturing in the next 2 weeks", "expected": {"maturity_from": "2026-10-25", "maturity_to": "2026-11-08"}},
+ {"query": "discrepancies in the Northern region", "expected": {"region": ["northern"], "status": ["discrepancy"]}},
+ {"query": "bank confirmed RPGF deposits", "expected": {"kind": ["rpgf"], "assurance": [2, 3]}},
+ {"query": "deposits held by Godavari Polytechnic", "expected": {"q": "Godavari Polytechnic"}},
+ {"query": "matured deposits at ICICI", "expected": {"status": ["matured"]}},
+ {"query": "deposits under scrutiny in Telangana", "expected": {"region": ["south_central"], "status": ["under_scrutiny"]}},
+ {"query": "deposits in Kerala and Tamil Nadu maturing after 2027", "expected": {"region": ["kerala", "southern"], "maturity_from": "2028-01-01"}},
+ {"query": "declared only deposits with signals in Chhattisgarh", "expected": {"region": ["central"], "assurance": [0], "has_signals": true}}
+]

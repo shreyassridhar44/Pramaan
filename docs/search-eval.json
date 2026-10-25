@@ -1,0 +1,23 @@
+{
+  "interpreter": "rules",
+  "today": "2026-10-25",
+  "queries": 60,
+  "exact_match": 1.0,
+  "field_accuracy": {
+    "q": 1.0,
+    "region": 1.0,
+    "bank": 1.0,
+    "kind": 1.0,
+    "status": 1.0,
+    "assurance": 1.0,
+    "maturity_from": 1.0,
+    "maturity_to": 1.0,
+    "has_signals": 1.0
+  },
+  "misses": [],
+  "heldout": {
+    "queries": 15,
+    "exact_match": 1.0,
+    "misses": []
+  }
+}

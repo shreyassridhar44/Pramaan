@@ -89,12 +89,41 @@ class Turnaround(BaseModel):
     sample: int
 
 
+class TrendPoint(BaseModel):
+    month: str
+    median_days: float | None
+    count: int
+
+
 class Impact(BaseModel):
     data_source: str
     verification_turnaround_days: Turnaround
+    turnaround_trend: list[TrendPoint]
     field_agreement_rate: float | None
     bank_confirmed_share_by_count: float | None
     reminders_on_time_rate: float | None
     reminders_sample: int
     held_without_owner: int
     held_count: int
+
+
+class Exposure(BaseModel):
+    instrument_id: int
+    number: str
+    institution: str
+    bank: str
+    amount_paise: str
+    assurance: int
+    status: str
+
+
+class RecentSignal(BaseModel):
+    id: int
+    instrument_id: int
+    number: str
+    institution: str
+    code: str
+    severity: str
+    title: str
+    detail: str | None
+    raised_on: str

@@ -240,7 +240,7 @@ def pdf_bytes(letter: Letter) -> bytes:
 
 
 @cache
-def _register_fonts() -> None:
+def register_fonts() -> None:
     for name, file in (
         ("Sans", "NotoSans-Regular.ttf"),
         ("Sans-SemiBold", "NotoSans-SemiBold.ttf"),
@@ -406,7 +406,7 @@ def _deficiency_body(f: dict[str, Any], st: dict[str, ParagraphStyle]) -> list[A
 
 
 def render_pdf(letter: Letter) -> bytes:
-    _register_fonts()
+    register_fonts()
     st = _styles()
     meta = KINDS[letter.kind]
     f = letter.fields
