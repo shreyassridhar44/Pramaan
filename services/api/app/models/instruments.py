@@ -69,6 +69,7 @@ class Instrument(Base):
     submitted_on: Mapped[date] = mapped_column(Date)
     verified_on: Mapped[date | None] = mapped_column(Date)
     returned_on: Mapped[date | None] = mapped_column(Date)
+    resubmitted_on: Mapped[date | None] = mapped_column(Date)
     release_requested_on: Mapped[date | None] = mapped_column(Date)
     release_cleared_on: Mapped[date | None] = mapped_column(Date)
     released_on: Mapped[date | None] = mapped_column(Date)

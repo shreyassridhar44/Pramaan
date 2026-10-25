@@ -42,6 +42,9 @@ class SourceValue(BaseModel):
     observed_on: str
     confidence: float | None
     evidence_type: str | None
+    corrected_from: str | None = None
+    corrected_by: str | None = None
+    note: str | None = None
 
 
 class ProvenanceRow(BaseModel):
@@ -53,6 +56,7 @@ class ProvenanceRow(BaseModel):
     confirmed: SourceValue | None
     diff_extracted: list[DiffRun] | None
     diff_confirmed: list[DiffRun] | None
+    correctable: bool = False
 
 
 class EvidenceOut(BaseModel):

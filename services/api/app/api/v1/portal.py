@@ -11,6 +11,7 @@ from app.api.deps import DbSession, Principal, require_roles
 from app.domain.asof import state_on
 from app.domain.provenance import normalise, rupees
 from app.domain.rules.deadlines import furnishing_status, slab_date
+from app.domain.state_machine import TransitionRefused, check_transition
 from app.domain.types import FieldName, Role, Status
 from app.models import (
     Analysis,
@@ -23,11 +24,33 @@ from app.models import (
     Instrument,
     Signal,
 )
-from app.services import audit
+from app.services import audit, corrections
 from app.services import portfolio as psvc
 from app.services.facts import load_rules
 
 router = APIRouter(prefix="/portal", tags=["portal"])
+
+
+def _record_extracted(
+    db: DbSession, inst: Instrument, extracted: list[dict[str, Any]], doc_id: int, on: date
+) -> None:
+    for f in extracted:
+        if f["field"] in {x.value for x in FieldName} and f.get("norm"):
+            db.add(
+                FieldObservation(
+                    instrument_id=inst.id,
+                    field=f["field"],
+                    source="extracted",
+                    value_raw=f["value"],
+                    value_norm=f["norm"],
+                    confidence=f["confidence"],
+                    evidence_type="document",
+                    evidence_id=doc_id,
+                    observed_on=on,
+                )
+            )
+
+
 Institutional = Annotated[Principal, Depends(require_roles(Role.INSTITUTION_USER))]
 
 
@@ -65,6 +88,7 @@ class PortalInstrument(BaseModel):
     assurance: int
     next_step: str
     can_renew: bool
+    return_reason: str | None = None
 
 
 class PortalHome(BaseModel):
@@ -152,6 +176,19 @@ async def home(principal: Institutional, db: DbSession) -> PortalHome:
         .all()
     )
     by_id = {f.id: f for f in facts}
+    reasons: dict[int, str] = {}
+    for ev in (
+        await db.scalars(
+            select(Event)
+            .where(
+                Event.entity_type == "instrument",
+                Event.entity_id.in_([i.id for i in rows]),
+                Event.type == "officer.return",
+            )
+            .order_by(Event.id)
+        )
+    ).all():
+        reasons[ev.entity_id] = (ev.payload or {}).get("reason", "")
     items = []
     for i in rows:
         f = by_id.get(i.id)
@@ -174,8 +211,11 @@ async def home(principal: Institutional, db: DbSession) -> PortalHome:
                 next_step=_NEXT.get(st.status.value, ""),
                 can_renew=st.status in (Status.MATURING, Status.MATURED)
                 and not any(r.predecessor_id == i.id for r in rows),
+                return_reason=reasons.get(i.id) if st.status == Status.RETURNED else None,
             )
         )
+        if st.status == Status.RETURNED:
+            tasks.append(f"Correct and resubmit {i.number}: {reasons.get(i.id, 'see the note')}")
         if st.status == Status.MATURING:
             tasks.append(
                 f"Instrument {i.number} matures in {st.days_to_maturity} days:"
@@ -322,21 +362,7 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
                 observed_on=today,
             )
         )
-    for f in extracted:
-        if f["field"] in {x.value for x in FieldName} and f.get("norm"):
-            db.add(
-                FieldObservation(
-                    instrument_id=inst.id,
-                    field=f["field"],
-                    source="extracted",
-                    value_raw=f["value"],
-                    value_norm=f["norm"],
-                    confidence=f["confidence"],
-                    evidence_type="document",
-                    evidence_id=docs["fdr"].id,
-                    observed_on=today,
-                )
-            )
+    _record_extracted(db, inst, extracted, docs["fdr"].id, today)
     for doc in docs.values():
         doc.entity_type, doc.entity_id = "instrument", inst.id
     required = demand.amount_paise if demand else predecessor.amount_paise if predecessor else 0
@@ -412,3 +438,131 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
     await psvc.bump_data_version(db)
     await db.commit()
     return SubmissionResult(instrument_id=inst.id, status=inst.status, signals=len(checks))
+
+
+class ResubmitBody(BaseModel):
+    changes: dict[str, str] = Field(default_factory=dict, max_length=8)
+    fdr_document_id: int | None = None
+    note: str = Field(min_length=3, max_length=2000)
+
+
+class ResubmitResult(BaseModel):
+    instrument_id: int
+    status: str
+    changed: list[str]
+    signals: int
+
+
+@router.post("/instruments/{instrument_id}/resubmit", response_model=ResubmitResult)
+async def resubmit(
+    instrument_id: int, body: ResubmitBody, principal: Institutional, db: DbSession
+) -> ResubmitResult:
+    """Corrects a returned submission and sends it back for scrutiny. Each changed value is added
+    as a new declared value with the institution's note; earlier values stay in the history."""
+    inst = await db.get(Instrument, instrument_id)
+    if inst is None or inst.institution_id != principal.user.institution_id:
+        raise HTTPException(404, "Deposit not found.")
+    try:
+        target = check_transition("resubmit", Status(inst.status), principal.role, None)
+    except TransitionRefused as exc:
+        raise HTTPException(409, exc.message) from exc
+    if not body.changes and body.fdr_document_id is None:
+        raise HTTPException(422, "Change a value or upload a new receipt before resubmitting.")
+    today = date.today()
+    changed: list[str] = []
+    for key, raw in body.changes.items():
+        try:
+            fld = FieldName(key)
+        except ValueError as exc:
+            raise HTTPException(422, f"Unknown field: {key}.") from exc
+        if fld not in corrections.CORRECTABLE:
+            raise HTTPException(422, "The number and bank cannot change; submit a new deposit.")
+        try:
+            change = await corrections.declare(
+                db,
+                inst,
+                fld,
+                raw,
+                evidence_type="resubmission",
+                actor_id=principal.user.id,
+                note=body.note.strip(),
+                on=today,
+            )
+        except ValueError as exc:
+            raise HTTPException(422, f"The {key.replace('_', ' ')} could not be read.") from exc
+        if change:
+            changed.append(fld.value)
+    signals = 0
+    if body.fdr_document_id is not None:
+        doc = await db.get(Document, body.fdr_document_id)
+        if (
+            doc is None
+            or doc.uploaded_by != principal.user.id
+            or doc.entity_type != "pending"
+            or doc.kind != "fdr_scan"
+        ):
+            raise HTTPException(422, "Upload the corrected receipt first.")
+        analysis = await db.scalar(select(Analysis).where(Analysis.document_id == doc.id))
+        _record_extracted(
+            db,
+            inst,
+            (analysis.extraction or {}).get("fields", []) if analysis else [],
+            doc.id,
+            today,
+        )
+        for c in (analysis.forensics or {}).get("checks", []) if analysis else []:
+            if c["code"] == "declared_mismatch":
+                continue  # Re-evaluated against the corrected values below.
+            signals += 1
+            db.add(
+                Signal(
+                    entity_type="instrument",
+                    entity_id=inst.id,
+                    code=c["code"],
+                    severity=c["severity"],
+                    title=c["title"],
+                    evidence={
+                        **c.get("evidence", {}),
+                        "detail": c["detail"],
+                        "field": c.get("field"),
+                        "document_id": doc.id,
+                    },
+                    source="document.checks",
+                    source_version=(analysis.model_versions or {}).get("forensics", "1")
+                    if analysis
+                    else "1",
+                    status="open",
+                    raised_on=today,
+                )
+            )
+        doc.entity_type, doc.entity_id = "instrument", inst.id
+        changed.append("receipt")
+    await corrections.refresh_conflict(db, inst, today)
+    inst.status = target.value
+    inst.resubmitted_on = today
+    inst.next_action, inst.next_action_due = "Scrutinise resubmission", today + timedelta(days=7)
+    db.add(
+        Event(
+            entity_type="instrument",
+            entity_id=inst.id,
+            type="instrument.resubmitted",
+            payload={"changed": changed, "note": body.note.strip()},
+            actor_id=principal.user.id,
+            occurred_on=today,
+        )
+    )
+    await audit.append(
+        db,
+        actor_id=principal.user.id,
+        actor_label=principal.label,
+        action="instrument.resubmitted",
+        entity_type="instrument",
+        entity_id=inst.id,
+        data={"changed": changed},
+        note=body.note.strip(),
+    )
+    await psvc.bump_data_version(db)
+    await db.commit()
+    return ResubmitResult(
+        instrument_id=inst.id, status=inst.status, changed=changed, signals=signals
+    )

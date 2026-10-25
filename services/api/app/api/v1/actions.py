@@ -10,9 +10,9 @@ from sqlalchemy import func, select
 
 from app.api.deps import DbSession, Principal, instrument_scope, require_roles
 from app.domain.state_machine import TransitionRefused, check_transition
-from app.domain.types import Role, Status
+from app.domain.types import FieldName, Role, Status
 from app.models import Event, Institution, Instrument, Signal, User
-from app.services import audit
+from app.services import audit, corrections
 from app.services import portfolio as psvc
 
 router = APIRouter(tags=["actions"])
@@ -212,3 +212,88 @@ async def resolve(
     await psvc.bump_data_version(db)
     await db.commit()
     return ResolveResult(signal_id=sig.id, status=sig.status, open_high_remaining=max(0, remaining))
+
+
+class CorrectionBody(BaseModel):
+    field: str
+    value: str = Field(min_length=1, max_length=400)
+    reason: str = Field(min_length=3, max_length=2000)
+
+
+class CorrectionResult(BaseModel):
+    instrument_id: int
+    field: str
+    corrected_from: str | None
+    corrected_to: str
+    conflict_remaining: bool
+    message: str
+
+
+@router.post("/instruments/{instrument_id}/corrections", response_model=CorrectionResult)
+async def correct(
+    instrument_id: int, body: CorrectionBody, principal: Officer, db: DbSession
+) -> CorrectionResult:
+    """Corrects a declared value with a reason. The original stays in the history, and extracted
+    and bank-confirmed values are never changed, so a correction cannot hide an altered receipt."""
+    inst = await _instrument(db, principal, instrument_id)
+    try:
+        fld = FieldName(body.field)
+    except ValueError as exc:
+        raise HTTPException(422, "Unknown field.") from exc
+    if fld not in corrections.CORRECTABLE:
+        raise HTTPException(422, "This field identifies the deposit and cannot be corrected.")
+    if inst.released_on or inst.renewed_on or inst.forfeited_on:
+        raise HTTPException(409, "A closed instrument cannot be corrected.")
+    today = date.today()
+    try:
+        change = await corrections.declare(
+            db,
+            inst,
+            fld,
+            body.value,
+            evidence_type="correction",
+            actor_id=principal.user.id,
+            note=body.reason.strip(),
+            on=today,
+        )
+    except ValueError as exc:
+        raise HTTPException(422, "The value could not be read for this field.") from exc
+    if change is None:
+        raise HTTPException(409, "The value is the same as the current declared value.")
+    remaining = await corrections.refresh_conflict(db, inst, today)
+    db.add(
+        Event(
+            entity_type="instrument",
+            entity_id=inst.id,
+            type="officer.correction",
+            payload={
+                "field": fld.value,
+                "from": change.old,
+                "to": change.new,
+                "reason": body.reason.strip(),
+            },
+            actor_id=principal.user.id,
+            occurred_on=today,
+        )
+    )
+    await audit.append(
+        db,
+        actor_id=principal.user.id,
+        actor_label=principal.label,
+        action="instrument.correction",
+        entity_type="instrument",
+        entity_id=inst.id,
+        data={"field": fld.value, "from": change.old, "to": change.new},
+        note=body.reason.strip(),
+    )
+    await psvc.bump_data_version(db)
+    await db.commit()
+    return CorrectionResult(
+        instrument_id=inst.id,
+        field=fld.value,
+        corrected_from=change.old,
+        corrected_to=change.new,
+        conflict_remaining=remaining,
+        message="Corrected. The original value stays in the history."
+        + (" Another source still disagrees." if remaining else ""),
+    )

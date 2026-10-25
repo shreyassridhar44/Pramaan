@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, CalendarClock, CheckCircle2, ListTodo } from 'lucide-react'
+import { useState } from 'react'
 
 import { AssuranceRing } from '@/components/signature/assurance'
 import { type AssuranceLevel } from '@/components/signature/assurance-meta'
@@ -18,6 +19,7 @@ import { cn } from '@/lib/cn'
 import { formatDate, formatINR, formatRelativeDays } from '@/lib/format'
 
 import { usePortalHome } from './queries'
+import { ResubmitDialog } from './resubmit-dialog'
 
 const DISCIPLINE: Record<string, string> = {
   engineering_technology: 'Engineering and Technology',
@@ -34,8 +36,11 @@ const LEVEL: Record<string, string> = {
   pg: 'Post Graduate',
 }
 
+type Held = NonNullable<ReturnType<typeof usePortalHome>['data']>['instruments'][number]
+
 export function PortalHome() {
   const q = usePortalHome()
+  const [resubmit, setResubmit] = useState<Held | null>(null)
   const today = todayIso()
   if (q.isError)
     return (
@@ -171,12 +176,32 @@ export function PortalHome() {
                     {formatRelativeDays(i.maturity_date, today)})
                   </p>
                   <p className="mt-0.5 text-[0.8125rem] text-ink-2">{i.next_step}</p>
+                  {i.return_reason ? (
+                    <p className="mt-1.5 rounded-md bg-due-soft px-2.5 py-1.5 text-[0.8125rem] text-ink">
+                      <span className="font-medium">AICTE:</span> {i.return_reason}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="text-right">
                   <Amount paise={i.amount_paise} className="text-[0.9375rem]" />
                   <div className="mt-1">
                     <StatusChip status={i.status} />
                   </div>
+                  {i.status === 'returned' ? (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="mt-2"
+                      onClick={() => setResubmit(i)}
+                    >
+                      Correct and resubmit
+                    </Button>
+                  ) : null}
+                  {i.status === 'matured' ? (
+                    <Button asChild size="sm" variant="ghost" className="mt-2">
+                      <Link to="/portal/release">Apply for release</Link>
+                    </Button>
+                  ) : null}
                   {i.can_renew ? (
                     <Button asChild size="sm" variant="secondary" className="mt-2">
                       <Link to="/portal/submit" search={{ renew: i.id }}>
@@ -190,6 +215,14 @@ export function PortalHome() {
           </ul>
         )}
       </Panel>
+      {resubmit ? (
+        <ResubmitDialog
+          instrumentId={resubmit.id}
+          number={resubmit.number}
+          reason={resubmit.return_reason}
+          onClose={() => setResubmit(null)}
+        />
+      ) : null}
     </div>
   )
 }

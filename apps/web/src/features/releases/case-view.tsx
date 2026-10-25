@@ -26,10 +26,11 @@ import { ErrorState, Label, Panel, PanelHeader, Skeleton } from '@/components/ui
 import { ReasonDialog } from '@/features/instruments/officer-actions'
 import { ApiError, api, unwrap } from '@/lib/api/client'
 import { cn } from '@/lib/cn'
+import { eventLabel } from '@/lib/events'
 import { formatDate, formatINR } from '@/lib/format'
 import { useMe } from '@/lib/session'
 
-import { CASE_STATUS, EVENT_LABEL, KIND_LABEL } from './meta'
+import { CASE_STATUS, KIND_LABEL } from './meta'
 import { type ReleaseDetail, useCaseMutation, useRelease } from './queries'
 
 type Mode = 'officer' | 'cell' | 'portal'
@@ -686,7 +687,7 @@ function TimelinePanel({ d }: { d: ReleaseDetail }) {
         {d.events.map((e, i) => (
           <li key={i} className="relative border-l border-line pb-4 pl-4 last:pb-0">
             <span className="absolute top-1 -left-[4.5px] size-2 rounded-full bg-accent" />
-            <p className="text-[0.8125rem] text-ink">{EVENT_LABEL[e.type] ?? e.type}</p>
+            <p className="text-[0.8125rem] text-ink">{eventLabel(e.type)}</p>
             <p className="text-[0.6875rem] text-ink-3">
               {formatDate(e.occurred_on)}
               {e.actor ? ` · ${e.actor}` : ''}

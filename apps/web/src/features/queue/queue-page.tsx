@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { AssuranceRing } from '@/components/signature/assurance'
 import { type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, StatusChip } from '@/components/signature/chips'
-import { ProvenanceGrid } from '@/components/signature/provenance-grid'
 import {
   EmptyState,
   ErrorState,
@@ -15,7 +14,12 @@ import {
   PanelHeader,
   Skeleton,
 } from '@/components/ui/primitives'
-import { ActionBar, DocumentsTab, SignalsPanel } from '@/features/instruments/officer-actions'
+import {
+  ActionBar,
+  CorrectableProvenance,
+  DocumentsTab,
+  SignalsPanel,
+} from '@/features/instruments/officer-actions'
 import { useInstrument } from '@/features/instruments/queries'
 import { api, unwrap } from '@/lib/api/client'
 import { useAsOf } from '@/lib/asof'
@@ -161,7 +165,7 @@ function QueueDetail({ id }: { id: number }) {
       {d.documents.length ? <DocumentsTab d={d} stacked /> : null}
       <Panel>
         <PanelHeader title="Where every value comes from" />
-        <ProvenanceGrid rows={d.provenance} />
+        <CorrectableProvenance d={d} />
       </Panel>
     </div>
   )

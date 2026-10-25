@@ -45,6 +45,7 @@ class InstrumentFacts:
     submitted_on: date
     verified_on: date | None = None
     returned_on: date | None = None
+    resubmitted_on: date | None = None
     release_requested_on: date | None = None
     release_cleared_on: date | None = None
     released_on: date | None = None
@@ -84,10 +85,17 @@ def status_on(f: InstrumentFacts, as_of: date, rules: RuleSet) -> Status | None:
         ev.conflict_resolved_on, as_of
     )
     if not _on_or_before(f.verified_on, as_of):
+        # Returned outranks a conflict: the next move is the institution's, until it resubmits.
+        returned = _on_or_before(f.returned_on, as_of)
+        resubmitted = (
+            returned
+            and _on_or_before(f.resubmitted_on, as_of)
+            and f.resubmitted_on >= f.returned_on  # type: ignore[operator]
+        )
+        if returned and not resubmitted:
+            return Status.RETURNED
         if conflict_open:
             return Status.DISCREPANCY
-        if _on_or_before(f.returned_on, as_of):
-            return Status.RETURNED
         return Status.SUBMITTED
     if conflict_open:
         return Status.DISCREPANCY

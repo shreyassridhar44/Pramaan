@@ -16,6 +16,7 @@ _EVIDENCE = [f.name for f in dc_fields(EvidenceDates)]
 _LIFECYCLE = [
     "verified_on",
     "returned_on",
+    "resubmitted_on",
     "release_requested_on",
     "release_cleared_on",
     "released_on",

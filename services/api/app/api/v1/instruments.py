@@ -40,6 +40,7 @@ from app.schemas.instruments import (
     SourceValue,
     TimelineItem,
 )
+from app.services import corrections
 from app.services import portfolio as psvc
 
 router = APIRouter(prefix="/instruments", tags=["instruments"])
@@ -272,14 +273,38 @@ async def get_instrument(
         Observation(FieldName(o.field), Source(o.source), o.value_norm, o.observed_on)
         for o in obs_rows
     ]
+    actor_ids = {o.actor_id for o in obs_rows if o.actor_id}
+    actors = (
+        {u.id: u.name for u in (await db.scalars(select(User).where(User.id.in_(actor_ids)))).all()}
+        if actor_ids
+        else {}
+    )
     provenance = []
     for fld in FieldName:
         cmp = compare_field(fld, observations, d)
         latest: dict[str, FieldObservation] = {}
+        previous_declared: FieldObservation | None = None
         for o in obs_rows:
             if o.field == fld.value and o.observed_on <= d:
+                if o.source == "declared" and "declared" in latest:
+                    previous_declared = latest["declared"]
                 latest[o.source] = o
         declared = latest.get("declared")
+        declared_value = _source_value(declared)
+        if (
+            declared is not None
+            and declared_value is not None
+            and declared.evidence_type
+            in (
+                "correction",
+                "resubmission",
+            )
+        ):
+            declared_value.corrected_from = (
+                _display(previous_declared) if previous_declared is not None else None
+            )
+            declared_value.corrected_by = actors.get(declared.actor_id or 0)
+            declared_value.note = declared.note
         extracted = latest.get("extracted")
         confirmed = latest.get("confirmed")
 
@@ -301,11 +326,12 @@ async def get_instrument(
                 field=fld.value,
                 label=FIELD_LABELS[fld],
                 state=cmp.state.value,
-                declared=_source_value(declared),
+                declared=declared_value,
                 extracted=_source_value(extracted),
                 confirmed=_source_value(confirmed),
                 diff_extracted=diff(extracted),
                 diff_confirmed=diff(confirmed),
+                correctable=fld in corrections.CORRECTABLE,
             )
         )
 

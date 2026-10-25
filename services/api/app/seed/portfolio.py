@@ -619,6 +619,7 @@ class Generator:
         f = dict(
             verified_on=verified if verified <= anchor else None,
             returned_on=None,
+            resubmitted_on=None,
             release_requested_on=None,
             release_cleared_on=None,
             released_on=None,

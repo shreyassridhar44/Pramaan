@@ -503,6 +503,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/instruments/{instrument_id}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Correct
+         * @description Corrects a declared value with a reason. The original stays in the history, and extracted
+         *     and bank-confirmed values are never changed, so a correction cannot hide an altered receipt.
+         */
+        post: operations["correct_api_v1_instruments__instrument_id__corrections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/institutions": {
         parameters: {
             query?: never;
@@ -656,6 +677,27 @@ export interface paths {
         put?: never;
         /** Submit */
         post: operations["submit_api_v1_portal_submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/instruments/{instrument_id}/resubmit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resubmit
+         * @description Corrects a returned submission and sends it back for scrutiny. Each changed value is added
+         *     as a new declared value with the institution's note; earlier values stay in the history.
+         */
+        post: operations["resubmit_api_v1_portal_instruments__instrument_id__resubmit_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1198,6 +1240,30 @@ export interface components {
             reason: string | null;
             /** Decided On */
             decided_on: string | null;
+        };
+        /** CorrectionBody */
+        CorrectionBody: {
+            /** Field */
+            field: string;
+            /** Value */
+            value: string;
+            /** Reason */
+            reason: string;
+        };
+        /** CorrectionResult */
+        CorrectionResult: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Field */
+            field: string;
+            /** Corrected From */
+            corrected_from: string | null;
+            /** Corrected To */
+            corrected_to: string;
+            /** Conflict Remaining */
+            conflict_remaining: boolean;
+            /** Message */
+            message: string;
         };
         /** Declared */
         Declared: {
@@ -1930,6 +1996,8 @@ export interface components {
             next_step: string;
             /** Can Renew */
             can_renew: boolean;
+            /** Return Reason */
+            return_reason?: string | null;
         };
         /** PortalReleases */
         PortalReleases: {
@@ -1973,6 +2041,11 @@ export interface components {
             diff_extracted: components["schemas"]["DiffRun"][] | null;
             /** Diff Confirmed */
             diff_confirmed: components["schemas"]["DiffRun"][] | null;
+            /**
+             * Correctable
+             * @default false
+             */
+            correctable: boolean;
         };
         /** PublicSummary */
         PublicSummary: {
@@ -2190,6 +2263,28 @@ export interface components {
             /** Open High Remaining */
             open_high_remaining: number;
         };
+        /** ResubmitBody */
+        ResubmitBody: {
+            /** Changes */
+            changes?: {
+                [key: string]: string;
+            };
+            /** Fdr Document Id */
+            fdr_document_id?: number | null;
+            /** Note */
+            note: string;
+        };
+        /** ResubmitResult */
+        ResubmitResult: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Status */
+            status: string;
+            /** Changed */
+            changed: string[];
+            /** Signals */
+            signals: number;
+        };
         /** RevokeBody */
         RevokeBody: {
             /** Reason */
@@ -2267,6 +2362,12 @@ export interface components {
             confidence: number | null;
             /** Evidence Type */
             evidence_type: string | null;
+            /** Corrected From */
+            corrected_from?: string | null;
+            /** Corrected By */
+            corrected_by?: string | null;
+            /** Note */
+            note?: string | null;
         };
         /** Submission */
         Submission: {
@@ -3285,6 +3386,41 @@ export interface operations {
             };
         };
     };
+    correct_api_v1_instruments__instrument_id__corrections_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                instrument_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_institutions_api_v1_institutions_get: {
         parameters: {
             query?: {
@@ -3554,6 +3690,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubmissionResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resubmit_api_v1_portal_instruments__instrument_id__resubmit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                instrument_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResubmitBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResubmitResult"];
                 };
             };
             /** @description Validation Error */

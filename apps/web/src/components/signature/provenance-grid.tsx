@@ -1,4 +1,13 @@
-import { AlertOctagon, Check, Clock, FileText, Landmark, Minus, PenLine } from 'lucide-react'
+import {
+  AlertOctagon,
+  Check,
+  Clock,
+  FileText,
+  Landmark,
+  Minus,
+  Pencil,
+  PenLine,
+} from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 
@@ -82,6 +91,15 @@ function Cell({
       >
         {diff ? <DiffText runs={diff} /> : conflict ? value.display : value.raw}
       </p>
+      {value.corrected_by || value.corrected_from ? (
+        <Tip content={value.note ? `Reason: ${value.note}` : 'No reason recorded'}>
+          <p className="mt-0.5 truncate text-[0.6875rem] font-medium text-due">
+            {value.evidence_type === 'resubmission' ? 'Resubmitted' : 'Corrected'}
+            {value.corrected_from ? ` from ${value.corrected_from}` : ''}
+            {value.corrected_by ? ` by ${value.corrected_by}` : ''}
+          </p>
+        </Tip>
+      ) : null}
       <p className="mt-0.5 flex items-center gap-1.5 text-[0.6875rem] text-ink-3">
         {formatDate(value.observed_on)}
         {value.confidence != null ? (
@@ -101,7 +119,14 @@ function Cell({
  * from the receipt and what the bank confirmed, side by side. A declared value is never shown in
  * the confirmed column. Conflicting characters are highlighted.
  */
-export function ProvenanceGrid({ rows }: { rows: Row[] }) {
+export function ProvenanceGrid({
+  rows,
+  onCorrect,
+}: {
+  rows: Row[]
+  /** When given, permitted fields show a correct button (officers only, on today's view). */
+  onCorrect?: (row: Row) => void
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[820px] table-fixed text-left">
@@ -145,7 +170,20 @@ export function ProvenanceGrid({ rows }: { rows: Row[] }) {
                 )}
               >
                 <th scope="row" className="px-5 py-3 text-[0.8125rem] font-medium text-ink-2">
-                  {r.label}
+                  <span className="flex items-center justify-between gap-2">
+                    {r.label}
+                    {onCorrect && r.correctable ? (
+                      <button
+                        type="button"
+                        onClick={() => onCorrect(r)}
+                        className="grid size-7 shrink-0 place-items-center rounded-md text-ink-3 hover:bg-sunken hover:text-ink"
+                        aria-label={`Correct ${r.label.toLowerCase()}`}
+                        title="Correct the declared value"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                    ) : null}
+                  </span>
                 </th>
                 <td className="px-4 py-3">
                   <Cell value={r.declared} conflict={conflict} source={SOURCES[0]} />

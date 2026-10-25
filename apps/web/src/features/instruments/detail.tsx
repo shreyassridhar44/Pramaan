@@ -14,7 +14,6 @@ import type { ReactNode } from 'react'
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, Chip, SimulatedBadge, StatusChip } from '@/components/signature/chips'
-import { ProvenanceGrid } from '@/components/signature/provenance-grid'
 import {
   EmptyState,
   ErrorState,
@@ -27,10 +26,11 @@ import { api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
+import { eventLabel } from '@/lib/events'
 import { formatDate, formatINR, formatRelativeDays } from '@/lib/format'
 
 import { BankTab } from './bank-tab'
-import { ActionBar, DocumentsTab, SignalsPanel } from './officer-actions'
+import { ActionBar, CorrectableProvenance, DocumentsTab, SignalsPanel } from './officer-actions'
 import { useInstrument } from './queries'
 
 type Detail = components['schemas']['InstrumentDetail']
@@ -53,20 +53,6 @@ const LEVEL: Record<string, string> = {
   diploma: 'Diploma',
   ug: 'Under Graduate',
   pg: 'Post Graduate',
-}
-const EVENT_LABEL: Record<string, string> = {
-  'instrument.submitted': 'Submitted by the institution',
-  'instrument.document_checked': 'Receipt read and checked against the declaration',
-  'instrument.verified': 'Verified by the Regulation Bureau',
-  'bank.confirmed': 'Confirmed by the issuing bank',
-  'bank.reconfirmed': 'Re-confirmed by the issuing bank',
-  'instrument.discrepancy': 'Discrepancy raised',
-  'release.requested': 'Release applied for',
-  'release.cleared': 'Cleared for release by the competent authority',
-  'instrument.released': 'Released, lien discharged by the bank',
-  'instrument.renewed': 'Renewed',
-  'instrument.encashed_prematurely': 'Encashed before maturity',
-  'instrument.lien_hold': 'Lien hold placed',
 }
 
 export function InstrumentDetailPage({ id }: { id: number }) {
@@ -193,7 +179,7 @@ export function InstrumentDetailPage({ id }: { id: number }) {
                 title="Where every value comes from"
                 caption="Declared, extracted and bank-confirmed values are stored separately and compared field by field"
               />
-              <ProvenanceGrid rows={d.provenance} />
+              <CorrectableProvenance d={d} />
             </Panel>
             <SignalsPanel d={d} />
           </div>
@@ -397,7 +383,7 @@ function TimelinePanel({ d }: { d: Detail }) {
             ) : null}
             <GitCommitVertical className="mt-0.5 size-5 shrink-0 text-ink-3" aria-hidden />
             <div className="min-w-0">
-              <p className="text-[0.875rem] text-ink">{EVENT_LABEL[e.type] ?? e.type}</p>
+              <p className="text-[0.875rem] text-ink">{eventLabel(e.type)}</p>
               <p className="font-mono text-[0.75rem] text-ink-3">
                 {formatDate(e.on)}
                 {e.actor ? ` · ${e.actor}` : ''}
@@ -445,7 +431,7 @@ function AuditForInstrument({ id }: { id: number }) {
           >
             <span className="font-mono text-ink-3">{e.at.slice(0, 10)}</span>
             <span className="truncate text-ink">
-              {EVENT_LABEL[e.action] ?? e.action} <span className="text-ink-3">· {e.actor}</span>
+              {eventLabel(e.action)} <span className="text-ink-3">· {e.actor}</span>
             </span>
             <span className="font-mono text-[0.6875rem] text-ink-3">{e.hash.slice(0, 12)}</span>
           </li>

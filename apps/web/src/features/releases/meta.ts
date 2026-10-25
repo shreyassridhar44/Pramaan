@@ -27,11 +27,3 @@ export const KIND_LABEL: Record<string, string> = {
   rpgf: 'RPGF',
   rtgs: 'RTGS',
 }
-
-export const EVENT_LABEL: Record<string, string> = {
-  'release.applied': 'Application received',
-  'clearance.cleared': 'Clearance given',
-  'clearance.blocked': 'Clearance blocked',
-  'release.authorised': 'Release authorised and letter issued',
-  'release.discharged': 'Lien discharged by the bank',
-}

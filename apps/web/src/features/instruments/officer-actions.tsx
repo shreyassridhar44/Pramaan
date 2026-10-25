@@ -10,6 +10,7 @@ import {
   type ViewerRegion,
 } from '@/components/signature/document-viewer'
 import { SeverityChip } from '@/components/signature/chips'
+import { ProvenanceGrid } from '@/components/signature/provenance-grid'
 import { Button } from '@/components/ui/button'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { ApiError, api, unwrap } from '@/lib/api/client'
@@ -366,5 +367,146 @@ export function DocumentsTab({ d, stacked }: { d: Detail; stacked?: boolean }) {
         ) : null}
       </div>
     </div>
+  )
+}
+
+type ProvRow = components['schemas']['ProvenanceRow']
+
+/** The provenance grid with officer corrections: a reason is required and the original value
+ * stays in the history ("corrected from X by Y"). */
+export function CorrectableProvenance({ d }: { d: Detail }) {
+  const me = useMe().data
+  const { isToday } = useAsOf()
+  const invalidate = useInvalidate(d.id)
+  const [row, setRow] = useState<ProvRow | null>(null)
+  const canCorrect = !!me && CAN_ACT.has(me.role) && isToday
+  return (
+    <>
+      <ProvenanceGrid rows={d.provenance} onCorrect={canCorrect ? setRow : undefined} />
+      {row ? (
+        <CorrectionDialog
+          key={row.field}
+          instrumentId={d.id}
+          row={row}
+          onClose={() => setRow(null)}
+          onDone={() => {
+            setRow(null)
+            invalidate()
+          }}
+        />
+      ) : null}
+    </>
+  )
+}
+
+function CorrectionDialog({
+  instrumentId,
+  row,
+  onClose,
+  onDone,
+}: {
+  instrumentId: number
+  row: ProvRow
+  onClose: () => void
+  onDone: () => void
+}) {
+  const kind =
+    row.field === 'issue_date' || row.field === 'maturity_date'
+      ? 'date'
+      : row.field === 'lien'
+        ? 'lien'
+        : 'text'
+  const initial =
+    kind === 'date'
+      ? (row.declared?.norm ?? '')
+      : row.field === 'amount' && row.declared
+        ? String(Number(row.declared.norm) / 100)
+        : (row.declared?.norm ?? '')
+  const [value, setValue] = useState(initial)
+  const [reason, setReason] = useState('')
+  const save = useMutation({
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/instruments/{instrument_id}/corrections', {
+          params: { path: { instrument_id: instrumentId } },
+          body: { field: row.field, value, reason: reason.trim() },
+        }),
+      ),
+    onSuccess: (r) => {
+      toast.success(r.message)
+      onDone()
+    },
+    onError: (e) => toast.error((e as ApiError).message),
+  })
+  const input =
+    'mt-1.5 w-full rounded-[var(--radius-control)] border border-line-strong bg-surface px-3 py-2 text-[0.875rem] focus-visible:border-accent focus-visible:outline-none'
+  return (
+    <Dialog.Root open onOpenChange={(o) => !o && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/25" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[520px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[14px] border border-line bg-surface p-6 shadow-[var(--shadow-overlay)]">
+          <Dialog.Title className="text-[1.0625rem] font-semibold text-ink">
+            Correct the declared {row.label.toLowerCase()}
+          </Dialog.Title>
+          <Dialog.Description className="mt-1 text-[0.875rem] text-ink-3">
+            The institution's original entry stays in the history. Values read from the receipt and
+            confirmed by the bank are not changed.
+          </Dialog.Description>
+          <dl className="mt-4 grid grid-cols-3 gap-2 rounded-[var(--radius-panel)] bg-sunken/60 p-3 text-[0.75rem]">
+            {(
+              [
+                ['Declared', row.declared],
+                ['Extracted', row.extracted],
+                ['Confirmed', row.confirmed],
+              ] as const
+            ).map(([label, v]) => (
+              <div key={label} className="min-w-0">
+                <dt className="text-ink-3">{label}</dt>
+                <dd className="truncate font-mono text-ink">{v?.display ?? 'None'}</dd>
+              </div>
+            ))}
+          </dl>
+          <label className="mt-4 block text-[0.8125rem] font-medium text-ink">
+            Corrected value{row.field === 'amount' ? ' (rupees)' : ''}
+            {kind === 'lien' ? (
+              <select value={value} onChange={(e) => setValue(e.target.value)} className={input}>
+                <option value="yes">Lien marked in favour of AICTE</option>
+                <option value="no">No lien</option>
+              </select>
+            ) : (
+              <input
+                type={kind === 'date' ? 'date' : 'text'}
+                inputMode={row.field === 'amount' ? 'decimal' : undefined}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className={cn(input, 'font-mono')}
+              />
+            )}
+          </label>
+          <label className="mt-3 block text-[0.8125rem] font-medium text-ink">
+            Reason
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={3}
+              placeholder="For example: typing error confirmed with the institution by phone"
+              className={cn(input, 'font-normal')}
+            />
+          </label>
+          <div className="mt-4 flex justify-end gap-2">
+            <Dialog.Close asChild>
+              <Button variant="ghost">Cancel</Button>
+            </Dialog.Close>
+            <Button
+              variant="primary"
+              disabled={!value.trim() || reason.trim().length < 3 || save.isPending}
+              onClick={() => save.mutate()}
+            >
+              Save correction
+            </Button>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
