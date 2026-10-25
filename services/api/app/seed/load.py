@@ -28,6 +28,8 @@ ORDER = (
     "field_observations",
     "signals",
     "events",
+    "bank_requests",
+    "bank_messages",
     "complaints",
     "release_cases",
     "release_case_instruments",

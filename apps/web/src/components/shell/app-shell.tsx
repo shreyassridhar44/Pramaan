@@ -28,6 +28,7 @@ import { ROLE_LABEL, useMe, useSignOut } from '@/lib/session'
 import { useTheme } from '@/lib/theme'
 
 import { CommandPalette } from './command-palette'
+import { NotificationsBell } from './notifications'
 
 type NavItem = { to: string; label: string; icon: LucideIcon; roles?: string[] }
 
@@ -169,6 +170,7 @@ function TopBar({ title, onSearch }: { title?: ReactNode; onSearch: () => void }
         </span>
       ) : null}
       <AsOfControl />
+      <NotificationsBell />
       {me ? (
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>

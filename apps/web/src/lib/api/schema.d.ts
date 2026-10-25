@@ -163,6 +163,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/monitoring/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run
+         * @description Runs today's monitoring now. The scheduler also runs it every morning at 06:00 IST.
+         */
+        post: operations["run_api_v1_monitoring_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notifications */
+        get: operations["notifications_api_v1_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read All */
+        post: operations["read_all_api_v1_notifications_read_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/summary": {
         parameters: {
             query?: never;
@@ -298,6 +352,115 @@ export interface paths {
         };
         /** Get Instrument */
         get: operations["get_instrument_api_v1_instruments__instrument_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/instruments/{instrument_id}/bank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Instrument Bank */
+        get: operations["instrument_bank_api_v1_instruments__instrument_id__bank_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/instruments/{instrument_id}/bank/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Confirmation */
+        post: operations["request_confirmation_api_v1_instruments__instrument_id__bank_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bank/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Desk Inbox */
+        get: operations["desk_inbox_api_v1_bank_requests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bank/requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Desk Detail */
+        get: operations["desk_detail_api_v1_bank_requests__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bank/requests/{request_id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Desk Respond
+         * @description The bank officer answers from the bank's own record. The message is signed with the bank's
+         *     key, then verified by Pramaan exactly like an automatic response.
+         */
+        post: operations["desk_respond_api_v1_bank_requests__request_id__respond_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/bank-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bank Keys
+         * @description Public keys used to verify bank messages. Published so anyone can check a signature.
+         */
+        get: operations["bank_keys_api_v1_public_bank_keys_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -641,6 +804,21 @@ export interface components {
             /** Hash */
             hash: string;
         };
+        /** BankKey */
+        BankKey: {
+            /** Bank Code */
+            bank_code: string;
+            /** Bank */
+            bank: string;
+            /** Key Id */
+            key_id: string;
+            /** Algorithm */
+            algorithm: string;
+            /** Public Key */
+            public_key: string;
+            /** Simulated */
+            simulated: boolean;
+        };
         /** BankOption */
         BankOption: {
             /** Code */
@@ -833,6 +1011,45 @@ export interface components {
             /** Note */
             note: string;
         };
+        /** DeskDetail */
+        DeskDetail: {
+            item: components["schemas"]["DeskItem"];
+            /** Bank */
+            bank: string;
+            /** Key Id */
+            key_id: string;
+            /** Record Found */
+            record_found: boolean;
+            /** Comparison */
+            comparison: components["schemas"]["FieldCompare"][];
+            /** History */
+            history: components["schemas"]["MessageOut"][];
+        };
+        /** DeskItem */
+        DeskItem: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Requested On */
+            requested_on: string;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Status */
+            status: string;
+        };
+        /** DeskResponse */
+        DeskResponse: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "confirm" | "discharge";
+        };
         /** DiffRun */
         DiffRun: {
             /** Text */
@@ -866,6 +1083,19 @@ export interface components {
             /** Conflict Resolved On */
             conflict_resolved_on: string | null;
         };
+        /** FieldCompare */
+        FieldCompare: {
+            /** Field */
+            field: string;
+            /** Label */
+            label: string;
+            /** Requested */
+            requested: string | null;
+            /** Bank Record */
+            bank_record: string | null;
+            /** Match */
+            match: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -897,6 +1127,13 @@ export interface components {
             held_without_owner: number;
             /** Held Count */
             held_count: number;
+        };
+        /** Inbox */
+        Inbox: {
+            /** Unread */
+            unread: number;
+            /** Items */
+            items: components["schemas"]["NotificationOut"][];
         };
         /** InstitutionDetail */
         InstitutionDetail: {
@@ -1156,12 +1393,55 @@ export interface components {
             /** Demo Mode */
             demo_mode: boolean;
         };
+        /** MessageOut */
+        MessageOut: {
+            /** Id */
+            id: number;
+            /** Received On */
+            received_on: string;
+            /** Received At */
+            received_at: string;
+            /** Signature Valid */
+            signature_valid: boolean;
+            /** Key Id */
+            key_id: string;
+            /** Signature */
+            signature: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
         /** Meta */
         Meta: {
             /** Regions */
             regions: components["schemas"]["Option"][];
             /** Banks */
             banks: components["schemas"]["BankOption"][];
+        };
+        /** NewRequest */
+        NewRequest: {
+            /**
+             * Kind
+             * @default confirm
+             * @enum {string}
+             */
+            kind: "confirm" | "reconfirm";
+        };
+        /** NotificationOut */
+        NotificationOut: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Link */
+            link: string | null;
+            /** Created At */
+            created_at: string;
+            /** Read */
+            read: boolean;
         };
         /** Option */
         Option: {
@@ -1208,6 +1488,12 @@ export interface components {
             number: string;
             /** Bank */
             bank: string;
+            /** Bank Code */
+            bank_code: string;
+            /** Branch */
+            branch: string;
+            /** Ifsc */
+            ifsc: string;
             /** Amount Paise */
             amount_paise: string;
             /** Maturity Date */
@@ -1220,6 +1506,8 @@ export interface components {
             assurance: number;
             /** Next Step */
             next_step: string;
+            /** Can Renew */
+            can_renew: boolean;
         };
         /** ProgrammeOut */
         ProgrammeOut: {
@@ -1319,6 +1607,37 @@ export interface components {
             /** Overdue */
             overdue: boolean;
         };
+        /** RequestOut */
+        RequestOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Adapter */
+            adapter: string;
+            /** Status */
+            status: string;
+            /** Requested On */
+            requested_on: string;
+            /** Requested By */
+            requested_by: string | null;
+            /** Bank */
+            bank: string;
+            /** Bank Code */
+            bank_code: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Messages */
+            messages: components["schemas"]["MessageOut"][];
+        };
+        /** RequestResult */
+        RequestResult: {
+            request: components["schemas"]["RequestOut"];
+            /** Answered */
+            answered: boolean;
+            /** Conflicts */
+            conflicts: string[];
+        };
         /** ResetResult */
         ResetResult: {
             /** Counts */
@@ -1355,6 +1674,21 @@ export interface components {
             by_assurance_paise: {
                 [key: string]: string;
             };
+        };
+        /** RunOut */
+        RunOut: {
+            /** Run On */
+            run_on: string;
+            /** Reminders */
+            reminders: number;
+            /** Escalations */
+            escalations: number;
+            /** Notifications */
+            notifications: number;
+            /** Emails Sent */
+            emails_sent: number;
+            /** Simulated Messages */
+            simulated_messages: number;
         };
         /** SignalOut */
         SignalOut: {
@@ -1406,7 +1740,9 @@ export interface components {
         /** Submission */
         Submission: {
             /** Demand Id */
-            demand_id: number;
+            demand_id?: number | null;
+            /** Predecessor Id */
+            predecessor_id?: number | null;
             declared: components["schemas"]["Declared"];
             /** Fdr Document Id */
             fdr_document_id: number;
@@ -1756,6 +2092,64 @@ export interface operations {
             };
         };
     };
+    run_api_v1_monitoring_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+        };
+    };
+    notifications_api_v1_notifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Inbox"];
+                };
+            };
+        };
+    };
+    read_all_api_v1_notifications_read_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     summary_api_v1_portfolio_summary_get: {
         parameters: {
             query?: {
@@ -2025,6 +2419,189 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    instrument_bank_api_v1_instruments__instrument_id__bank_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                instrument_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_confirmation_api_v1_instruments__instrument_id__bank_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                instrument_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    desk_inbox_api_v1_bank_requests_get: {
+        parameters: {
+            query?: {
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeskItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    desk_detail_api_v1_bank_requests__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeskDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    desk_respond_api_v1_bank_requests__request_id__respond_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeskResponse"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bank_keys_api_v1_public_bank_keys_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BankKey"][];
                 };
             };
         };

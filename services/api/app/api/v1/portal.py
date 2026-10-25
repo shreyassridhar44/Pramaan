@@ -55,12 +55,16 @@ class PortalInstrument(BaseModel):
     id: int
     number: str
     bank: str
+    bank_code: str
+    branch: str
+    ifsc: str
     amount_paise: str
     maturity_date: str
     days_to_maturity: int
     status: str
     assurance: int
     next_step: str
+    can_renew: bool
 
 
 class PortalHome(BaseModel):
@@ -159,12 +163,17 @@ async def home(principal: Institutional, db: DbSession) -> PortalHome:
                 id=i.id,
                 number=i.number,
                 bank=i.bank.name,
+                bank_code=i.bank.code,
+                branch=i.branch,
+                ifsc=i.ifsc,
                 amount_paise=str(i.amount_paise),
                 maturity_date=i.maturity_date.isoformat(),
                 days_to_maturity=st.days_to_maturity,
                 status=st.status.value,
                 assurance=st.assurance.value,
                 next_step=_NEXT.get(st.status.value, ""),
+                can_renew=st.status in (Status.MATURING, Status.MATURED)
+                and not any(r.predecessor_id == i.id for r in rows),
             )
         )
         if st.status == Status.MATURING:
@@ -197,7 +206,8 @@ class Declared(BaseModel):
 
 
 class Submission(BaseModel):
-    demand_id: int
+    demand_id: int | None = None
+    predecessor_id: int | None = None
     declared: Declared
     fdr_document_id: int
     affidavit_document_id: int
@@ -215,11 +225,22 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
     if not body.declaration_accepted:
         raise HTTPException(422, "Accept the declaration to submit.")
     inst_id = principal.user.institution_id
-    demand = await db.get(Demand, body.demand_id)
-    if demand is None or demand.institution_id != inst_id:
-        raise HTTPException(404, "Demand not found.")
-    if demand.status != "open":
-        raise HTTPException(409, "This demand has already been furnished.")
+    if (body.demand_id is None) == (body.predecessor_id is None):
+        raise HTTPException(422, "Submit against a demand or as a renewal of an existing deposit.")
+    demand: Demand | None = None
+    predecessor: Instrument | None = None
+    if body.demand_id is not None:
+        demand = await db.get(Demand, body.demand_id)
+        if demand is None or demand.institution_id != inst_id:
+            raise HTTPException(404, "Demand not found.")
+        if demand.status != "open":
+            raise HTTPException(409, "This demand has already been furnished.")
+    else:
+        predecessor = await db.get(Instrument, body.predecessor_id)
+        if predecessor is None or predecessor.institution_id != inst_id:
+            raise HTTPException(404, "Deposit not found.")
+        if predecessor.renewed_on or predecessor.released_on:
+            raise HTTPException(409, "This deposit has already been renewed or released.")
     d = body.declared
     if d.maturity_date <= d.issue_date:
         raise HTTPException(422, "The maturity date must be after the issue date.")
@@ -258,7 +279,8 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
         number=number,
         kind=d.kind,
         institution_id=inst_id,
-        demand_id=demand.id,
+        demand_id=demand.id if demand else predecessor.demand_id if predecessor else None,
+        predecessor_id=predecessor.id if predecessor else None,
         bank_id=bank.id,
         branch=d.branch,
         ifsc=d.ifsc.upper(),
@@ -317,13 +339,14 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
             )
     for doc in docs.values():
         doc.entity_type, doc.entity_id = "instrument", inst.id
-    if d.amount_rupees * 100 < demand.amount_paise:
+    required = demand.amount_paise if demand else predecessor.amount_paise if predecessor else 0
+    if d.amount_rupees * 100 < required:
         checks.append(
             {
                 "code": "shortfall",
                 "severity": "high",
                 "title": "Amount is less than the demand",
-                "detail": f"Demand {rupees(demand.amount_paise // 100)},"
+                "detail": f"Required {rupees(required // 100)},"
                 f" instrument {rupees(d.amount_rupees)}.",
                 "field": "amount",
                 "evidence": {},
@@ -351,7 +374,8 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
                 raised_on=today,
             )
         )
-    demand.status, demand.furnished_on = "furnished", today
+    if demand:
+        demand.status, demand.furnished_on = "furnished", today
     db.add(
         Event(
             entity_type="instrument",
@@ -379,7 +403,11 @@ async def submit(body: Submission, principal: Institutional, db: DbSession) -> S
         action="instrument.submitted",
         entity_type="instrument",
         entity_id=inst.id,
-        data={"demand_id": demand.id, "signals": len(checks)},
+        data={
+            "demand_id": body.demand_id,
+            "predecessor_id": body.predecessor_id,
+            "signals": len(checks),
+        },
     )
     await psvc.bump_data_version(db)
     await db.commit()

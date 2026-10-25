@@ -6,7 +6,6 @@ import {
   CalendarDays,
   CircleDot,
   GitCommitVertical,
-  Landmark,
   Link2,
   ShieldAlert,
 } from 'lucide-react'
@@ -30,6 +29,7 @@ import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
 import { formatDate, formatINR, formatRelativeDays } from '@/lib/format'
 
+import { BankTab } from './bank-tab'
 import { ActionBar, DocumentsTab, SignalsPanel } from './officer-actions'
 import { useInstrument } from './queries'
 
@@ -209,7 +209,7 @@ export function InstrumentDetailPage({ id }: { id: number }) {
         </Tabs.Content>
 
         <Tabs.Content value="bank" className="mt-5">
-          <BankEvidence d={d} />
+          <BankTab d={d} />
         </Tabs.Content>
 
         <Tabs.Content value="timeline" className="mt-5">
@@ -375,39 +375,6 @@ function DemandPanel({ demand }: { demand: NonNullable<Detail['demand']> }) {
         </span>
         <Amount paise={demand.amount_paise} className="font-semibold" />
       </div>
-    </Panel>
-  )
-}
-
-function BankEvidence({ d }: { d: Detail }) {
-  const confirmed = d.provenance.filter((p) => p.confirmed)
-  if (!confirmed.length)
-    return (
-      <Panel>
-        <EmptyState
-          icon={<Landmark />}
-          title="No bank confirmation yet"
-          body="When the issuing bank confirms this deposit, its signed response appears here."
-        />
-      </Panel>
-    )
-  return (
-    <Panel>
-      <PanelHeader
-        title={`${d.bank}`}
-        caption={`Confirmed ${formatDate(d.evidence.bank_confirmed_on ?? '')}${d.evidence.last_confirmed_on && d.evidence.last_confirmed_on !== d.evidence.bank_confirmed_on ? `, re-confirmed ${formatDate(d.evidence.last_confirmed_on)}` : ''}`}
-        actions={d.bank_simulated ? <SimulatedBadge /> : null}
-      />
-      <dl className="grid gap-x-8 gap-y-3 px-5 pb-5 text-[0.8125rem] sm:grid-cols-2">
-        {confirmed.map((p) => (
-          <div key={p.field} className="flex justify-between gap-4 border-b border-line pb-2">
-            <dt className="text-ink-3">{p.label}</dt>
-            <dd className={cn('font-mono', p.state === 'conflict' ? 'text-overdue' : 'text-ink')}>
-              {p.confirmed?.raw}
-            </dd>
-          </div>
-        ))}
-      </dl>
     </Panel>
   )
 }

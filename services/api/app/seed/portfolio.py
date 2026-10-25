@@ -1040,6 +1040,71 @@ class Generator:
                             },
                         )
 
+    def bank_history(self) -> None:
+        """Signed bank messages behind every seeded confirmation, so each one can be verified."""
+        from app.services.bank import canonical_json, sign
+
+        keys = {k["bank_id"]: k for k in self.ds.rows["sim_bank_keys"]}
+        codes = {v: k for k, v in self.bank_ids.items()}
+        records = {(r["bank_id"], r["number"]): r for r in self.ds.rows["sim_bank_deposits"]}
+        for inst in self.ds.rows["instruments"]:
+            dates = [inst["bank_confirmed_on"]]
+            if inst["last_confirmed_on"] and inst["last_confirmed_on"] != inst["bank_confirmed_on"]:
+                dates.append(inst["last_confirmed_on"])
+            for i, on in enumerate(d for d in dates if d):
+                rec = records.get((inst["bank_id"], inst["number"]))
+                if rec is None:
+                    continue
+                req_id = self.ds.add(
+                    "bank_requests",
+                    {
+                        "instrument_id": inst["id"],
+                        "bank_id": inst["bank_id"],
+                        "kind": "confirm" if i == 0 else "reconfirm",
+                        "adapter": "simulated_network",
+                        "status": "answered",
+                        "requested_by": None,
+                        "requested_on": on,
+                        "payload": {
+                            "number": inst["number"],
+                            "ifsc": inst["ifsc"],
+                            "amount_paise": inst["amount_paise"],
+                            "kind": "confirm",
+                        },
+                    },
+                )
+                payload = {
+                    "message_type": "deposit_confirmation",
+                    "request_id": req_id,
+                    "bank_code": codes[inst["bank_id"]],
+                    "result": "found",
+                    "number": rec["number"],
+                    "branch": rec["branch"],
+                    "ifsc": rec["ifsc"],
+                    "holders": rec["holders"],
+                    "amount": f"{rec['amount_paise'] // 100}.{rec['amount_paise'] % 100:02d}",
+                    "issue_date": rec["issue_date"].isoformat(),
+                    "maturity_date": rec["maturity_date"].isoformat(),
+                    "lien_in_favour_of_aicte": "yes" if rec["lien_aicte"] else "no",
+                    "encumbrance": "none",
+                    "deposit_status": "live",
+                    "responded_at": f"{on.isoformat()}T11:00:00+00:00",
+                }
+                key = keys[inst["bank_id"]]
+                self.ds.add(
+                    "bank_messages",
+                    {
+                        "request_id": req_id,
+                        "bank_id": inst["bank_id"],
+                        "payload": payload,
+                        "canonical": canonical_json(payload).decode(),
+                        "signature_b64": sign(key["private_key_b64"], payload),
+                        "key_id": key["key_id"],
+                        "signature_valid": True,
+                        "received_on": on,
+                    },
+                )
+
     def rules_and_version(self) -> None:
         from app.services.facts import default_rule_rows
 
@@ -1138,6 +1203,7 @@ class Generator:
         self._shape_demo_story(demo)
         self._open_demand_story(demo)
         self.workflow(insts)
+        self.bank_history()
         self.rules_and_version()
         self.audit_trail()
         return self.ds
@@ -1211,9 +1277,9 @@ class Generator:
         )
 
     def _shape_demo_story(self, demo: _Inst) -> None:
-        """The demo institution's FDRs mature about 95 days from the anchor, so the reminder and
-        renewal story is visible on day one."""
-        target = self.anchor + timedelta(days=95)
+        """The demo institution's FDRs mature about 85 days from the anchor: the T-90 reminder has
+        gone out and renewal is open, so the story is visible on day one."""
+        target = self.anchor + timedelta(days=85)
         for row in self.ds.rows["instruments"]:
             if row["institution_id"] == demo.id:
                 row["maturity_date"] = target

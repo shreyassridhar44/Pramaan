@@ -13,7 +13,7 @@ Update this file at the end of every working session and every completed step.
 | 4 | Design system and shell | Done: tokens (Ledger and Command themes), primitives, AssuranceRing, chips, AsOfControl, command palette, shell, sign-in with personas, route guards, first command view (headline band, assurance composition, action queue); 20 web tests with axe. ProvenanceGrid, SignalCard, BankMessage and AuditChain are built in Steps 5 to 7 where they are first used (recorded deviation) | see git log |
 | 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
 | 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
-| 7 | Bank network, monitoring, notifications | Not started | |
+| 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
 | 8 | Release, letters, verification | Not started | |
 | 9 | Command view, forecast, search, reports | Not started | |
 | 10 | Hardening, evaluation, deployment, demo | Not started | |
@@ -45,7 +45,12 @@ Update this file at the end of every working session and every completed step.
 
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 7: bank confirmation network (signed messages, bank desk), monitoring rule run, notifications, renewal.
+2. Step 8: release workflow (Clause 6.46 eligibility from `domain/rules/release.py`, PGRC, Vigilance and Grants clearance queues, authority NOC or sanction, bank discharge through a desk `discharge` request), bilingual letters with a signed QR token, and the public `/verify/:token` page.
+
+Notes from Step 7:
+- Bank flow demo: sign in as the institution, submit the altered specimen (declare Rs 35,00,000); as the bureau officer open the instrument, Bank tab, Request confirmation; as the bank persona (Bharat National Bank, a desk bank) sign the response; the officer sees the amount conflict with the bank's signed Rs 15,00,000.
+- Monitoring runs at 06:00 IST from the arq worker (`uv run arq app.workers.settings.WorkerSettings`) or on demand at `POST /api/v1/monitoring/run` (section head or admin). Each reminder is keyed by instrument, rung and date, so repeated runs send nothing new.
+- The submission wizard keeps its confirmation in the parent component, because the home refetch after submission closes the demand.
 
 Demo story assets: `services/api/app/demo_assets` holds a genuine and an altered specimen receipt for the Demo Institute's open demand, and the simulated bank holds the genuine record (Rs 15,00,000). The altered receipt reads Rs 35,00,000 in figures and Fifteen Lakh in words.
 

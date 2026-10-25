@@ -177,6 +177,13 @@ export function PortalHome() {
                   <div className="mt-1">
                     <StatusChip status={i.status} />
                   </div>
+                  {i.can_renew ? (
+                    <Button asChild size="sm" variant="secondary" className="mt-2">
+                      <Link to="/portal/submit" search={{ renew: i.id }}>
+                        Submit renewal
+                      </Link>
+                    </Button>
+                  ) : null}
                 </div>
               </li>
             ))}

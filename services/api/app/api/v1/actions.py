@@ -83,6 +83,22 @@ async def act(
         inst.status = target.value
         if action == "verify":
             inst.verified_on = today
+            if inst.predecessor_id:
+                pred = await db.get(Instrument, inst.predecessor_id)
+                if pred is not None and pred.renewed_on is None:
+                    pred.renewed_on = today
+                    pred.status = Status.RENEWED.value
+                    pred.next_action, pred.next_action_due = None, None
+                    db.add(
+                        Event(
+                            entity_type="instrument",
+                            entity_id=pred.id,
+                            type="instrument.renewed",
+                            payload={"successor_id": inst.id},
+                            actor_id=principal.user.id,
+                            occurred_on=today,
+                        )
+                    )
             inst.returned_on = None
             inst.next_action, inst.next_action_due = (
                 "Request bank confirmation",

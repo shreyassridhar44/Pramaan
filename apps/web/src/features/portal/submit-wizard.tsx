@@ -77,8 +77,11 @@ function plusYears(iso: string, years: number) {
   return d.toISOString().slice(0, 10)
 }
 
-export function SubmitWizard({ demandId }: { demandId?: number }) {
+export function SubmitWizard({ demandId, renewId }: { demandId?: number; renewId?: number }) {
   const home = usePortalHome()
+  // Held here so the confirmation survives the home refetch that closes the demand.
+  const [submitted, setSubmitted] = useState<{ id: number; signals: number } | null>(null)
+  if (submitted) return <Submitted id={submitted.id} signals={submitted.signals} />
   if (home.isPending)
     return (
       <Panel className="p-8">
@@ -91,6 +94,11 @@ export function SubmitWizard({ demandId }: { demandId?: number }) {
         <ErrorState error={home.error} />
       </Panel>
     )
+  if (renewId) {
+    const prev = home.data.instruments.find((i) => i.id === renewId && i.can_renew)
+    if (prev)
+      return <Wizard renewal={prev} trustName={home.data.trust_name} onSubmitted={setSubmitted} />
+  }
   const demand = home.data.demands.find((d) => (demandId ? d.id === demandId : d.status === 'open'))
   if (!demand || demand.status !== 'open')
     return (
@@ -103,32 +111,47 @@ export function SubmitWizard({ demandId }: { demandId?: number }) {
         </Link>
       </Panel>
     )
-  return <Wizard demand={demand} trustName={home.data.trust_name} />
+  return <Wizard demand={demand} trustName={home.data.trust_name} onSubmitted={setSubmitted} />
 }
 
-type DemandT = NonNullable<ReturnType<typeof usePortalHome>['data']>['demands'][number]
+type HomeT = NonNullable<ReturnType<typeof usePortalHome>['data']>
+type DemandT = HomeT['demands'][number]
+type HeldT = HomeT['instruments'][number]
 
-function Wizard({ demand, trustName }: { demand: DemandT; trustName: string }) {
+function Wizard({
+  demand,
+  renewal,
+  trustName,
+  onSubmitted,
+}: {
+  demand?: DemandT
+  renewal?: HeldT
+  trustName: string
+  onSubmitted: (r: { id: number; signals: number }) => void
+}) {
+  const draftKey = `${DRAFT_KEY}.${demand ? `d${demand.id}` : `r${renewal?.id}`}`
+  const required = demand?.amount_paise ?? renewal?.amount_paise ?? '0'
   const me = useMe().data
   const meta = useMeta()
   const qc = useQueryClient()
   const [step, setStep] = useState(0)
   const [form, setForm] = useState<Form>(() => {
     try {
-      const saved = localStorage.getItem(DRAFT_KEY)
+      const saved = localStorage.getItem(draftKey)
       if (saved) return JSON.parse(saved) as Form
     } catch {
       // A missing or unreadable draft just means starting fresh.
     }
     return {
       kind: 'joint_fdr',
-      bank_code: '',
-      branch: '',
-      ifsc: '',
+      // A renewal is normally booked at the same branch and starts the day the old one matures.
+      bank_code: renewal?.bank_code ?? '',
+      branch: renewal?.branch ?? '',
+      ifsc: renewal?.ifsc ?? '',
       number: '',
-      amount_rupees: String(Number(demand.amount_paise) / 100),
-      issue_date: '',
-      maturity_date: '',
+      amount_rupees: String(Number(required) / 100),
+      issue_date: renewal?.maturity_date ?? '',
+      maturity_date: renewal ? plusYears(renewal.maturity_date, 10) : '',
       holders: `Member Secretary, AICTE; Secretary, ${trustName}`,
       lien: true,
     }
@@ -139,11 +162,11 @@ function Wizard({ demand, trustName }: { demand: DemandT; trustName: string }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(form))
+      localStorage.setItem(draftKey, JSON.stringify(form))
     } catch {
       // Autosave is a convenience; ignore storage errors.
     }
-  }, [form])
+  }, [form, draftKey])
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }))
   const declared = {
@@ -168,7 +191,8 @@ function Wizard({ demand, trustName }: { demand: DemandT; trustName: string }) {
       unwrap(
         await api.POST('/api/v1/portal/submissions', {
           body: {
-            demand_id: demand.id,
+            demand_id: demand?.id ?? null,
+            predecessor_id: renewal?.id ?? null,
             declared: { ...form, amount_rupees: Number(form.amount_rupees) },
             fdr_document_id: scan!.document_id,
             affidavit_document_id: affidavit!.document_id,
@@ -176,18 +200,16 @@ function Wizard({ demand, trustName }: { demand: DemandT; trustName: string }) {
           },
         }),
       ),
-    onSuccess: () => {
+    onSuccess: (r) => {
+      onSubmitted({ id: r.instrument_id, signals: r.signals })
       try {
-        localStorage.removeItem(DRAFT_KEY)
+        localStorage.removeItem(draftKey)
       } catch {
         // Nothing to clean up if storage is unavailable.
       }
       void qc.invalidateQueries({ queryKey: ['portal'] })
     },
   })
-
-  if (submit.isSuccess)
-    return <Submitted id={submit.data.instrument_id} signals={submit.data.signals} />
 
   return (
     <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
@@ -201,9 +223,13 @@ function Wizard({ demand, trustName }: { demand: DemandT; trustName: string }) {
         <p lang="hi" className="mt-6 font-deva text-[0.875rem] text-ink-3">
           सुरक्षा जमा प्रस्तुत करें
         </p>
-        <h1 className="text-[1.375rem] font-semibold text-ink">Submit a deposit</h1>
+        <h1 className="text-[1.375rem] font-semibold text-ink">
+          {renewal ? 'Submit a renewal' : 'Submit a deposit'}
+        </h1>
         <p className="mt-1 text-[0.875rem] text-ink-2">
-          Demand of {formatINR(demand.amount_paise)}, due {formatDate(demand.due_on)}.
+          {demand
+            ? `Demand of ${formatINR(demand.amount_paise)}, due ${formatDate(demand.due_on)}.`
+            : `Renewal of ${renewal?.number}, ${formatINR(required)}, maturing ${formatDate(renewal!.maturity_date)}.`}
         </p>
         <ol className="mt-6 grid gap-1">
           {STEPS.map((s, i) => (

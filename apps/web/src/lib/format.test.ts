@@ -4,6 +4,7 @@ import {
   formatINR,
   formatINRCompact,
   formatRelativeDays,
+  formatRupeeText,
   groupIndian,
 } from './format'
 
@@ -25,6 +26,17 @@ describe('formatINR', () => {
   it('formats paise as rupees with Indian grouping', () => {
     expect(formatINR('150000000')).toBe('₹15,00,000')
     expect(formatINR(12345)).toBe('₹123.45')
+  })
+})
+
+describe('formatRupeeText', () => {
+  it('formats rupee strings as banks send them', () => {
+    expect(formatRupeeText('1500000.00')).toBe('₹15,00,000')
+    expect(formatRupeeText('1500000')).toBe('₹15,00,000')
+    expect(formatRupeeText('1250.5')).toBe('₹1,250.50')
+  })
+  it('leaves anything else untouched', () => {
+    expect(formatRupeeText('Fifteen Lakh')).toBe('Fifteen Lakh')
   })
 })
 

@@ -32,6 +32,14 @@ export function formatINR(paise: bigint | number | string): string {
   return rem === 0n ? base : `${base}.${rem.toString().padStart(2, '0')}`
 }
 
+/** A decimal rupee string as banks send it ("1500000.00" or "1500000"), shown as ₹15,00,000. */
+export function formatRupeeText(value: string): string {
+  const m = /^(-?)(\d+)(?:\.(\d{1,2}))?$/.exec(value.trim())
+  if (!m) return value
+  const paise = BigInt(m[2]!) * PAISE_PER_RUPEE + BigInt((m[3] ?? '0').padEnd(2, '0'))
+  return formatINR(m[1] ? -paise : paise)
+}
+
 /** Compact amount, for example ₹15 L or ₹412.6 Cr. */
 export function formatINRCompact(paise: bigint | number | string): string {
   const rupees = toPaise(paise) / PAISE_PER_RUPEE
