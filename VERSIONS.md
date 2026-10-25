@@ -49,7 +49,7 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | opencv-python-headless | 5.0.0.93 |
 | scikit-learn | 1.9.1 |
 | reportlab | 5.1.0 |
-| segno | 1.6.6 |
+| uharfbuzz | 0.57.0 |
 | cryptography | 50.0.2 |
 | boto3 | 1.43.118 |
 | pytest | 9.1.1 |

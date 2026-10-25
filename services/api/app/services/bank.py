@@ -247,9 +247,14 @@ async def receive(
         inst.conflict_since = inst.conflict_since or today
         inst.conflict_resolved_on = None
     elif req.kind == "discharge":
+        # Imported here because the release service itself sends discharge requests.
+        from app.services.release import after_discharge
+
         inst.released_on = today
         inst.status = Status.RELEASED.value
         inst.next_action, inst.next_action_due = None, None
+        await db.flush()
+        await after_discharge(db, inst.id, today)
     else:
         declared = {
             o.field: o.value_norm

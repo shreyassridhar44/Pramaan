@@ -617,7 +617,7 @@ export interface paths {
         };
         /**
          * Specimen
-         * @description Synthetic specimen receipts for trying the submission flow. Demo mode only.
+         * @description Synthetic specimen documents for trying the submission and release flows. Demo mode only.
          */
         get: operations["specimen_api_v1_documents_specimens__name__get"];
         put?: never;
@@ -656,6 +656,269 @@ export interface paths {
         put?: never;
         /** Submit */
         post: operations["submit_api_v1_portal_submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Releases */
+        get: operations["list_releases_api_v1_releases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Release Detail */
+        get: operations["release_detail_api_v1_releases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases/{case_id}/clearances/{cell}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_api_v1_releases__case_id__clearances__cell__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/complaints/{complaint_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve Complaint */
+        post: operations["resolve_complaint_api_v1_complaints__complaint_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases/{case_id}/authorise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Authorise */
+        post: operations["authorise_api_v1_releases__case_id__authorise_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases/{case_id}/discharge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Discharge
+         * @description Asks the bank to discharge the lien on any instrument of an authorised case that has no
+         *     discharge request waiting or answered.
+         */
+        post: operations["request_discharge_api_v1_releases__case_id__discharge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clearances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cell Queue */
+        get: operations["cell_queue_api_v1_clearances_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/releases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Portal Releases */
+        get: operations["portal_releases_api_v1_portal_releases_get"];
+        put?: never;
+        /** Apply */
+        post: operations["apply_api_v1_portal_releases_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/releases/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview
+         * @description Live eligibility hints for the application form, before anything is submitted.
+         */
+        post: operations["preview_api_v1_portal_releases_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/releases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Portal Release Detail */
+        get: operations["portal_release_detail_api_v1_portal_releases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/letters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Letters */
+        get: operations["list_letters_api_v1_letters_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/letters/{letter_id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Letter Pdf */
+        get: operations["letter_pdf_api_v1_letters__letter_id__pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/letters/{letter_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke */
+        post: operations["revoke_api_v1_letters__letter_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/verify/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verify */
+        get: operations["verify_api_v1_public_verify__token__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/letter-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Letter Keys */
+        get: operations["letter_keys_api_v1_public_letter_keys_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -763,6 +1026,22 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** ApplyBody */
+        ApplyBody: {
+            /** Instrument Ids */
+            instrument_ids: number[];
+            /** Document Ids */
+            document_ids?: number[];
+            /** Declaration Accepted */
+            declaration_accepted: boolean;
+        };
+        /** ApplyResult */
+        ApplyResult: {
+            /** Case Id */
+            case_id: number;
+            /** Reference */
+            reference: string;
+        };
         /** AssuranceSplit */
         AssuranceSplit: {
             /** A0 */
@@ -803,6 +1082,20 @@ export interface components {
             prev_hash: string;
             /** Hash */
             hash: string;
+        };
+        /** AuthoriseBody */
+        AuthoriseBody: {
+            /** Note */
+            note?: string | null;
+        };
+        /** AuthoriseResult */
+        AuthoriseResult: {
+            detail: components["schemas"]["ReleaseDetail"];
+            letter: components["schemas"]["LetterRef"];
+            /** Discharged */
+            discharged: number;
+            /** Awaiting Bank */
+            awaiting_bank: number;
         };
         /** BankKey */
         BankKey: {
@@ -868,20 +1161,43 @@ export interface components {
             /** Reason */
             reason: string | null;
         };
-        /** ComplaintOut */
-        ComplaintOut: {
-            /** Reference */
-            reference: string;
+        /** CheckOut */
+        CheckOut: {
+            /** Code */
+            code: string;
+            /** Label */
+            label: string;
+            /** State */
+            state: string;
+            /** Detail */
+            detail: string;
+            /** Aph Ref */
+            aph_ref: string;
+        };
+        /** ClearanceBody */
+        ClearanceBody: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "clear" | "block";
+            /** Reason */
+            reason: string;
+        };
+        /** ClearanceOut */
+        ClearanceOut: {
             /** Cell */
             cell: string;
-            /** Category */
-            category: string;
+            /** Label */
+            label: string;
             /** Status */
             status: string;
-            /** Opened On */
-            opened_on: string;
-            /** Closed On */
-            closed_on: string | null;
+            /** Officer */
+            officer: string | null;
+            /** Reason */
+            reason: string | null;
+            /** Decided On */
+            decided_on: string | null;
         };
         /** Declared */
         Declared: {
@@ -1070,6 +1386,30 @@ export interface components {
             /** Analysed */
             analysed: boolean;
         };
+        /** DocumentLine */
+        DocumentLine: {
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string;
+            /** Submitted */
+            submitted: boolean;
+            /** Document Id */
+            document_id: number | null;
+            /** Filename */
+            filename: string | null;
+        };
+        /** EventOut */
+        EventOut: {
+            /** Type */
+            type: string;
+            /** Occurred On */
+            occurred_on: string;
+            /** Actor */
+            actor: string | null;
+            /** Detail */
+            detail: string | null;
+        };
         /** EvidenceOut */
         EvidenceOut: {
             /** Document Checked On */
@@ -1167,7 +1507,7 @@ export interface components {
             programmes: components["schemas"]["ProgrammeOut"][];
             demand_preview: components["schemas"]["DemandPreview"];
             /** Complaints */
-            complaints: components["schemas"]["ComplaintOut"][];
+            complaints: components["schemas"]["app__api__v1__institutions__ComplaintOut"][];
             /** Release Cases */
             release_cases: components["schemas"]["ReleaseCaseBrief"][];
             /** Held Paise */
@@ -1302,6 +1642,31 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["DocumentBrief"][];
         };
+        /** InstrumentLine */
+        InstrumentLine: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Kind */
+            kind: string;
+            /** Bank */
+            bank: string;
+            /** Branch */
+            branch: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Status */
+            status: string;
+            /** Released On */
+            released_on: string | null;
+            /** Discharge Status */
+            discharge_status: string | null;
+            /** Discharge Adapter */
+            discharge_adapter: string | null;
+        };
         /** InstrumentPage */
         InstrumentPage: {
             /** As Of */
@@ -1353,6 +1718,63 @@ export interface components {
             open_signals: number;
             /** Owner */
             owner: string | null;
+        };
+        /** LetterKey */
+        LetterKey: {
+            /** Key Id */
+            key_id: string;
+            /** Algorithm */
+            algorithm: string;
+            /** Public Key */
+            public_key: string;
+            /** Token Format */
+            token_format: string;
+        };
+        /** LetterOut */
+        LetterOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Reference */
+            reference: string;
+            /** Institution Id */
+            institution_id: number | null;
+            /** Institution */
+            institution: string | null;
+            /** Recipient */
+            recipient: string;
+            /** Amount Paise */
+            amount_paise: string | null;
+            /** Case Id */
+            case_id: number | null;
+            /** Issued On */
+            issued_on: string;
+            /** Issued By */
+            issued_by: string | null;
+            /** Status */
+            status: string;
+            /** Status Note */
+            status_note: string | null;
+            /** Verify Url */
+            verify_url: string;
+        };
+        /** LetterRef */
+        LetterRef: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Reference */
+            reference: string;
+            /** Status */
+            status: string;
+            /** Issued On */
+            issued_on: string;
+            /** Verify Url */
+            verify_url: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -1509,6 +1931,22 @@ export interface components {
             /** Can Renew */
             can_renew: boolean;
         };
+        /** PortalReleases */
+        PortalReleases: {
+            /** Cases */
+            cases: components["schemas"]["ReleaseRow"][];
+            /** Instruments */
+            instruments: components["schemas"]["Releasable"][];
+            /** Required Documents */
+            required_documents: components["schemas"]["DocumentLine"][];
+        };
+        /** Preview */
+        Preview: {
+            /** Checks */
+            checks: components["schemas"]["CheckOut"][];
+            /** Authority */
+            authority: string;
+        };
         /** ProgrammeOut */
         ProgrammeOut: {
             /** Discipline */
@@ -1551,6 +1989,14 @@ export interface components {
             /** Demo Mode */
             demo_mode: boolean;
         };
+        /** QueueItem */
+        QueueItem: {
+            row: components["schemas"]["ReleaseRow"];
+            /** My Status */
+            my_status: string;
+            /** Open Complaints */
+            open_complaints: number;
+        };
         /** Readiness */
         Readiness: {
             /** Status */
@@ -1585,6 +2031,27 @@ export interface components {
             /** Discrepancy */
             discrepancy: number;
         };
+        /** Releasable */
+        Releasable: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: string;
+            /** Kind */
+            kind: string;
+            /** Bank */
+            bank: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Maturity Date */
+            maturity_date: string;
+            /** Status */
+            status: string;
+            /** Can Apply */
+            can_apply: boolean;
+            /** Reason */
+            reason: string | null;
+        };
         /** ReleaseCaseBrief */
         ReleaseCaseBrief: {
             /** Id */
@@ -1595,6 +2062,75 @@ export interface components {
             status: string;
             /** Applied On */
             applied_on: string;
+        };
+        /** ReleaseDetail */
+        ReleaseDetail: {
+            row: components["schemas"]["ReleaseRow"];
+            /** Trust */
+            trust: string;
+            /** Aicte Id */
+            aicte_id: string;
+            /** City */
+            city: string;
+            /** Authority */
+            authority: string;
+            /** Checks */
+            checks: components["schemas"]["CheckOut"][];
+            /** Clearance Lanes */
+            clearance_lanes: components["schemas"]["ClearanceOut"][];
+            /** Instruments Detail */
+            instruments_detail: components["schemas"]["InstrumentLine"][];
+            /** Documents */
+            documents: components["schemas"]["DocumentLine"][];
+            /** Complaints */
+            complaints: components["schemas"]["app__api__v1__releases__ComplaintOut"][];
+            /** Penalty Due Paise */
+            penalty_due_paise: string;
+            /** Letters */
+            letters: components["schemas"]["LetterRef"][];
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+            /** Can Authorise */
+            can_authorise: boolean;
+            /** My Cell */
+            my_cell: string | null;
+        };
+        /** ReleaseRow */
+        ReleaseRow: {
+            /** Id */
+            id: number;
+            /** Reference */
+            reference: string;
+            /** Institution Id */
+            institution_id: number;
+            /** Institution */
+            institution: string;
+            /** Region */
+            region: string;
+            /** Kind */
+            kind: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Instruments */
+            instruments: number;
+            /** Applied On */
+            applied_on: string;
+            /** Days Open */
+            days_open: number;
+            /** Status */
+            status: string;
+            /** Clearances */
+            clearances: {
+                [key: string]: string;
+            };
+            /** Checks Passed */
+            checks_passed: number;
+            /** Checks Total */
+            checks_total: number;
+            /** Blocked */
+            blocked: boolean;
+            /** Ready */
+            ready: boolean;
         };
         /** ReminderOut */
         ReminderOut: {
@@ -1645,16 +2181,6 @@ export interface components {
                 [key: string]: number;
             };
         };
-        /** ResolveBody */
-        ResolveBody: {
-            /**
-             * Outcome
-             * @enum {string}
-             */
-            outcome: "confirmed" | "dismissed" | "resolved";
-            /** Note */
-            note: string;
-        };
         /** ResolveResult */
         ResolveResult: {
             /** Signal Id */
@@ -1663,6 +2189,11 @@ export interface components {
             status: string;
             /** Open High Remaining */
             open_high_remaining: number;
+        };
+        /** RevokeBody */
+        RevokeBody: {
+            /** Reason */
+            reason: string;
         };
         /** RiverWeek */
         RiverWeek: {
@@ -1880,6 +2411,83 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** Verification */
+        Verification: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "genuine" | "superseded" | "revoked" | "not_recognised";
+            letter: components["schemas"]["VerifiedLetter"] | null;
+            /** Key Id */
+            key_id: string;
+            /** Checked At */
+            checked_at: string;
+        };
+        /** VerifiedLetter */
+        VerifiedLetter: {
+            /** Title */
+            title: string;
+            /** Title Hi */
+            title_hi: string;
+            /** Reference */
+            reference: string;
+            /** Institution */
+            institution: string | null;
+            /** Issued On */
+            issued_on: string;
+            /** Amount Paise */
+            amount_paise: string | null;
+            /** Instruments */
+            instruments: string[];
+            /** Issuing Office */
+            issuing_office: string;
+            /** Status Note */
+            status_note: string | null;
+        };
+        /** ResolveBody */
+        app__api__v1__actions__ResolveBody: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "confirmed" | "dismissed" | "resolved";
+            /** Note */
+            note: string;
+        };
+        /** ComplaintOut */
+        app__api__v1__institutions__ComplaintOut: {
+            /** Reference */
+            reference: string;
+            /** Cell */
+            cell: string;
+            /** Category */
+            category: string;
+            /** Status */
+            status: string;
+            /** Opened On */
+            opened_on: string;
+            /** Closed On */
+            closed_on: string | null;
+        };
+        /** ComplaintOut */
+        app__api__v1__releases__ComplaintOut: {
+            /** Id */
+            id: number;
+            /** Reference */
+            reference: string;
+            /** Category */
+            category: string;
+            /** Opened On */
+            opened_on: string;
+            /** Status */
+            status: string;
+        };
+        /** ResolveBody */
+        app__api__v1__releases__ResolveBody: {
+            /** Note */
+            note: string;
         };
     };
     responses: never;
@@ -2653,7 +3261,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ResolveBody"];
+                "application/json": components["schemas"]["app__api__v1__actions__ResolveBody"];
             };
         };
         responses: {
@@ -2955,6 +3563,499 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_releases_api_v1_releases_get: {
+        parameters: {
+            query?: {
+                state?: "open" | "closed" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseRow"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_detail_api_v1_releases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_api_v1_releases__case_id__clearances__cell__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+                cell: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClearanceBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_complaint_api_v1_complaints__complaint_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                complaint_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["app__api__v1__releases__ResolveBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    authorise_api_v1_releases__case_id__authorise_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthoriseBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoriseResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_discharge_api_v1_releases__case_id__discharge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cell_queue_api_v1_clearances_get: {
+        parameters: {
+            query?: {
+                state?: "pending" | "decided";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portal_releases_api_v1_portal_releases_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalReleases"];
+                };
+            };
+        };
+    };
+    apply_api_v1_portal_releases_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplyResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_portal_releases_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portal_release_detail_api_v1_portal_releases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_letters_api_v1_letters_get: {
+        parameters: {
+            query?: {
+                status?: ("issued" | "superseded" | "revoked") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LetterOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    letter_pdf_api_v1_letters__letter_id__pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                letter_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_api_v1_letters__letter_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                letter_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevokeBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LetterOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_api_v1_public_verify__token__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verification"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    letter_keys_api_v1_public_letter_keys_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LetterKey"][];
                 };
             };
         };

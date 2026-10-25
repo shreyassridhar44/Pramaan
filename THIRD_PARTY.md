@@ -36,8 +36,8 @@ Licences below are as published by each project and are re-verified when the dep
 | scikit-learn | Anomaly model | BSD-3-Clause | Notice |
 | OpenCV (headless) | Image processing | Apache 2.0 | Notice |
 | pypdfium2 and PDFium | PDF rendering | Apache 2.0 or BSD-3 (pypdfium2), BSD-3 (PDFium) | Notice |
-| ReportLab | PDF generation | BSD | Notice |
-| segno | QR codes | BSD-3-Clause | Notice |
+| ReportLab | PDF generation and letter QR codes | BSD | Notice |
+| uharfbuzz and HarfBuzz | Devanagari text shaping in letters | Apache 2.0 (uharfbuzz), MIT (HarfBuzz) | Notice |
 | cryptography | Ed25519, hashing | Apache 2.0 or BSD | Notice |
 | argon2-cffi | Password hashing | MIT | Notice |
 | tzdata | IANA time zone data (Windows and slim images) | Apache 2.0 | Notice |
@@ -77,6 +77,8 @@ Web application fonts:
 | Noto Sans Devanagari | SIL Open Font License 1.1 | Google Fonts |
 
 Fonts are self-hosted from the build, not loaded from a CDN at runtime.
+
+Letter PDFs embed Noto Sans, Noto Sans Devanagari and Instrument Serif (all SIL Open Font License 1.1). The font files and their licence texts are in `services/api/app/assets/fonts/`.
 
 ## 5. Data and maps
 

@@ -5,6 +5,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Step 8 release workflow: release applications from the portal with live Clause 6.46 hints and specimen documents, a releases list and case page with clearance lanes, a clearance queue for PGRC, Vigilance and Grants (PGRC resolves open complaints before clearing), authorisation by the competent authority only when every condition passes, bilingual NOC and sanction-order PDFs with a signed QR code, bank discharge through the bank network or the bank desk, a letters page with preview and revocation, and a public verify page for phones.
 - Step 7 bank network and monitoring: Ed25519-signed bank confirmations verified before any value is used, automatic answers from network banks, a simulated bank desk for banks that answer manually, field-by-field conflicts with the bank's record, rejection of responses whose signature does not verify, published bank keys, a bank tab with the request handshake and statement-style messages, a daily monitoring run with reminders, escalations, in-app notifications and email, a notifications bell, and renewal submissions prefilled from the deposit being renewed.
 - Step 6 intake: document upload and analysis with checks (document against declaration, amount in figures against words, field-relative forensic outliers, duplicate instruments and images), institution portal with demand card, deadline and penalty slabs, a four-step submission wizard that reads the receipt before submission, specimen receipts in demo mode, officer actions (start scrutiny, verify, return), signal resolution, the verification queue and a document viewer with field boxes and heatmap layers.
 - Step 5 officer workspace: instrument registry (virtualised, URL-driven filters, sort, CSV export), instrument detail with field-level provenance grid and character-level diffs on a normalised display form, signals, reminder ladder, renewal chain, linked demand, timeline and audit tabs, institutions list and profile with the Table 1.4 demand explained, audit trail page with animated chain verification, reference-data endpoint, and action-queue titles that name the conflicting field.
@@ -15,6 +16,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - Research, specification and implementation plan: `PROBLEM_STATEMENT.md`, `RESEARCH.md`, `PROJECT.md`, `ARCHITECTURE.md`, supporting documents and the `claude-code/` directory (24 October 2026).
 
 ### Fixed
+- Seeded institutions no longer collide with the release story by name prefix, and seeded letters are numbered in order of issue.
+- Empty successful responses (204) no longer show as failed requests in the web app.
 - The submission confirmation no longer disappears when the portal refreshes after a demand is met.
 - Late-furnishing penalty slabs use the next 31 May and 31 July on or after the due date.
 - OCR output without spaces is handled for labels, dates and amounts in words.

@@ -20,13 +20,17 @@ import { Route as AppForecastRouteImport } from './routes/_app/forecast'
 import { Route as AppLettersRouteImport } from './routes/_app/letters'
 import { Route as AppQueueRouteImport } from './routes/_app/queue'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
+import { Route as PortalLettersRouteImport } from './routes/portal/letters'
+import { Route as PortalReleaseRouteImport } from './routes/portal/release'
 import { Route as PortalSubmitRouteImport } from './routes/portal/submit'
+import { Route as VerifyTokenRouteImport } from './routes/verify.$token'
 import { Route as AppAdminRulesRouteImport } from './routes/_app/admin/rules'
 import { Route as AppInstitutionsIndexRouteImport } from './routes/_app/institutions/index'
 import { Route as AppInstitutionsInstitutionIdRouteImport } from './routes/_app/institutions/$institutionId'
 import { Route as AppInstrumentsIndexRouteImport } from './routes/_app/instruments/index'
 import { Route as AppInstrumentsInstrumentIdRouteImport } from './routes/_app/instruments/$instrumentId'
 import { Route as AppReleasesIndexRouteImport } from './routes/_app/releases/index'
+import { Route as AppReleasesCaseIdRouteImport } from './routes/_app/releases/$caseId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -82,10 +86,25 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalLettersRoute = PortalLettersRouteImport.update({
+  id: '/letters',
+  path: '/letters',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalReleaseRoute = PortalReleaseRouteImport.update({
+  id: '/release',
+  path: '/release',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalSubmitRoute = PortalSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
   getParentRoute: () => PortalRoute,
+} as any)
+const VerifyTokenRoute = VerifyTokenRouteImport.update({
+  id: '/verify/$token',
+  path: '/verify/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppAdminRulesRoute = AppAdminRulesRouteImport.update({
   id: '/admin/rules',
@@ -119,6 +138,11 @@ const AppReleasesIndexRoute = AppReleasesIndexRouteImport.update({
   path: '/releases/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReleasesCaseIdRoute = AppReleasesCaseIdRouteImport.update({
+  id: '/releases/$caseId',
+  path: '/releases/$caseId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -130,11 +154,15 @@ export interface FileRoutesByFullPath {
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/portal/letters': typeof PortalLettersRoute
+  '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
+  '/verify/$token': typeof VerifyTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/releases/$caseId': typeof AppReleasesCaseIdRoute
   '/institutions/': typeof AppInstitutionsIndexRoute
   '/instruments/': typeof AppInstrumentsIndexRoute
   '/releases/': typeof AppReleasesIndexRoute
@@ -147,12 +175,16 @@ export interface FileRoutesByTo {
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/portal/letters': typeof PortalLettersRoute
+  '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
+  '/verify/$token': typeof VerifyTokenRoute
   '/': typeof AppIndexRoute
   '/portal': typeof PortalIndexRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/releases/$caseId': typeof AppReleasesCaseIdRoute
   '/institutions': typeof AppInstitutionsIndexRoute
   '/instruments': typeof AppInstrumentsIndexRoute
   '/releases': typeof AppReleasesIndexRoute
@@ -168,12 +200,16 @@ export interface FileRoutesById {
   '/_app/forecast': typeof AppForecastRoute
   '/_app/letters': typeof AppLettersRoute
   '/_app/queue': typeof AppQueueRoute
+  '/portal/letters': typeof PortalLettersRoute
+  '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
+  '/verify/$token': typeof VerifyTokenRoute
   '/_app/': typeof AppIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/_app/admin/rules': typeof AppAdminRulesRoute
   '/_app/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/_app/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
+  '/_app/releases/$caseId': typeof AppReleasesCaseIdRoute
   '/_app/institutions/': typeof AppInstitutionsIndexRoute
   '/_app/instruments/': typeof AppInstrumentsIndexRoute
   '/_app/releases/': typeof AppReleasesIndexRoute
@@ -190,11 +226,15 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/portal/letters'
+    | '/portal/release'
     | '/portal/submit'
+    | '/verify/$token'
     | '/portal/'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
+    | '/releases/$caseId'
     | '/institutions/'
     | '/instruments/'
     | '/releases/'
@@ -207,12 +247,16 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/portal/letters'
+    | '/portal/release'
     | '/portal/submit'
+    | '/verify/$token'
     | '/'
     | '/portal'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
+    | '/releases/$caseId'
     | '/institutions'
     | '/instruments'
     | '/releases'
@@ -227,12 +271,16 @@ export interface FileRouteTypes {
     | '/_app/forecast'
     | '/_app/letters'
     | '/_app/queue'
+    | '/portal/letters'
+    | '/portal/release'
     | '/portal/submit'
+    | '/verify/$token'
     | '/_app/'
     | '/portal/'
     | '/_app/admin/rules'
     | '/_app/institutions/$institutionId'
     | '/_app/instruments/$instrumentId'
+    | '/_app/releases/$caseId'
     | '/_app/institutions/'
     | '/_app/instruments/'
     | '/_app/releases/'
@@ -244,6 +292,7 @@ export interface RootRouteChildren {
   ClearancesRoute: typeof ClearancesRoute
   PortalRoute: typeof PortalRouteWithChildren
   SigninRoute: typeof SigninRoute
+  VerifyTokenRoute: typeof VerifyTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -325,12 +374,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalIndexRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/letters': {
+      id: '/portal/letters'
+      path: '/letters'
+      fullPath: '/portal/letters'
+      preLoaderRoute: typeof PortalLettersRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/release': {
+      id: '/portal/release'
+      path: '/release'
+      fullPath: '/portal/release'
+      preLoaderRoute: typeof PortalReleaseRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/submit': {
       id: '/portal/submit'
       path: '/submit'
       fullPath: '/portal/submit'
       preLoaderRoute: typeof PortalSubmitRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/verify/$token': {
+      id: '/verify/$token'
+      path: '/verify/$token'
+      fullPath: '/verify/$token'
+      preLoaderRoute: typeof VerifyTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/admin/rules': {
       id: '/_app/admin/rules'
@@ -374,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReleasesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/releases/$caseId': {
+      id: '/_app/releases/$caseId'
+      path: '/releases/$caseId'
+      fullPath: '/releases/$caseId'
+      preLoaderRoute: typeof AppReleasesCaseIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -386,6 +463,7 @@ interface AppRouteChildren {
   AppAdminRulesRoute: typeof AppAdminRulesRoute
   AppInstitutionsInstitutionIdRoute: typeof AppInstitutionsInstitutionIdRoute
   AppInstrumentsInstrumentIdRoute: typeof AppInstrumentsInstrumentIdRoute
+  AppReleasesCaseIdRoute: typeof AppReleasesCaseIdRoute
   AppInstitutionsIndexRoute: typeof AppInstitutionsIndexRoute
   AppInstrumentsIndexRoute: typeof AppInstrumentsIndexRoute
   AppReleasesIndexRoute: typeof AppReleasesIndexRoute
@@ -400,6 +478,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRulesRoute: AppAdminRulesRoute,
   AppInstitutionsInstitutionIdRoute: AppInstitutionsInstitutionIdRoute,
   AppInstrumentsInstrumentIdRoute: AppInstrumentsInstrumentIdRoute,
+  AppReleasesCaseIdRoute: AppReleasesCaseIdRoute,
   AppInstitutionsIndexRoute: AppInstitutionsIndexRoute,
   AppInstrumentsIndexRoute: AppInstrumentsIndexRoute,
   AppReleasesIndexRoute: AppReleasesIndexRoute,
@@ -408,11 +487,15 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface PortalRouteChildren {
+  PortalLettersRoute: typeof PortalLettersRoute
+  PortalReleaseRoute: typeof PortalReleaseRoute
   PortalSubmitRoute: typeof PortalSubmitRoute
   PortalIndexRoute: typeof PortalIndexRoute
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
+  PortalLettersRoute: PortalLettersRoute,
+  PortalReleaseRoute: PortalReleaseRoute,
   PortalSubmitRoute: PortalSubmitRoute,
   PortalIndexRoute: PortalIndexRoute,
 }
@@ -426,6 +509,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClearancesRoute: ClearancesRoute,
   PortalRoute: PortalRouteWithChildren,
   SigninRoute: SigninRoute,
+  VerifyTokenRoute: VerifyTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

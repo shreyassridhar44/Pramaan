@@ -59,13 +59,13 @@ class Eligibility:
         return all(c.state == CheckState.PASS for c in self.checks)
 
 
-_DOC_LABELS = {
+DOC_LABELS = {
     "application_letter": "Application or request letter",
     "affidavit_6": "Affidavit 6",
     "instrument_copy": "Copy of the FDR or payment proof",
     "latest_loa_eoa": "Latest LoA or EoA",
 }
-_CELL_LABELS = {"pgrc": "PGRC", "vigilance": "Vigilance Cell", "grants": "Grants bureaus"}
+CELL_LABELS = {"pgrc": "PGRC", "vigilance": "Vigilance Cell", "grants": "Grants bureaus"}
 
 
 def evaluate_release(ctx: ReleaseContext, rules: ReleaseRules) -> Eligibility:
@@ -90,7 +90,7 @@ def evaluate_release(ctx: ReleaseContext, rules: ReleaseRules) -> Eligibility:
             CheckState.PASS if not missing else CheckState.PENDING,
             "All submitted"
             if not missing
-            else "Missing: " + ", ".join(_DOC_LABELS[d] for d in missing),
+            else "Missing: " + ", ".join(DOC_LABELS[d] for d in missing),
             "APH 2024-27 Clause 6.46 a",
         )
     )
@@ -105,11 +105,12 @@ def evaluate_release(ctx: ReleaseContext, rules: ReleaseRules) -> Eligibility:
         }
         if cell == "pgrc" and ctx.open_complaints and state != "cleared":
             state = "blocked" if state == "blocked" else "pending"
-            detail["pending"] = f"{ctx.open_complaints} open complaint(s) to resolve"
+            n = ctx.open_complaints
+            detail["pending"] = f"{n} open complaint{'s' if n > 1 else ''} to resolve"
         checks.append(
             Check(
                 f"clearance_{cell}",
-                f"{_CELL_LABELS[cell]} clearance",
+                f"{CELL_LABELS[cell]} clearance",
                 {"cleared": CheckState.PASS, "blocked": CheckState.FAIL}.get(
                     state, CheckState.PENDING
                 ),

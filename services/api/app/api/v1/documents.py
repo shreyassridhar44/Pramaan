@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app.api.deps import CurrentPrincipal, DbSession
 from app.config import get_settings
 from app.domain.types import Role
-from app.models import Analysis, Document, Instrument
+from app.models import Analysis, Document, Instrument, ReleaseCase
 from app.services import audit
 from app.services.documents.pipeline import MAX_BYTES, UnsupportedDocument
 from app.services.documents.service import analysis_payload, upload_and_analyse
@@ -17,7 +17,15 @@ from app.services.storage import storage
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 DEMO_ASSETS = Path(__file__).resolve().parents[2] / "demo_assets"
-KINDS = {"fdr_scan", "affidavit_3", "affidavit_6", "application_letter", "latest_loa_eoa", "other"}
+KINDS = {
+    "fdr_scan",
+    "affidavit_3",
+    "affidavit_6",
+    "application_letter",
+    "instrument_copy",
+    "latest_loa_eoa",
+    "other",
+}
 
 
 async def _visible(db: DbSession, principal: CurrentPrincipal, doc: Document) -> None:
@@ -30,6 +38,9 @@ async def _visible(db: DbSession, principal: CurrentPrincipal, doc: Document) ->
         if doc.entity_type == "instrument":
             inst = await db.get(Instrument, doc.entity_id)
             own = inst is not None and inst.institution_id == principal.user.institution_id
+        if doc.entity_type == "release_case":
+            case = await db.get(ReleaseCase, doc.entity_id)
+            own = case is not None and case.institution_id == principal.user.institution_id
         if not own:
             raise HTTPException(404, "Document not found.")
 
@@ -139,14 +150,23 @@ async def heatmap(document_id: int, principal: CurrentPrincipal, db: DbSession) 
     return await _image(db, principal, document_id, "heatmap")
 
 
+SPECIMENS = {
+    "genuine": ("specimen_fdr_genuine.jpg", "image/jpeg"),
+    "altered": ("specimen_fdr_altered.jpg", "image/jpeg"),
+    "application_letter": ("specimen_release_application.pdf", "application/pdf"),
+    "affidavit_6": ("specimen_affidavit_6.pdf", "application/pdf"),
+    "latest_loa_eoa": ("specimen_latest_loa.pdf", "application/pdf"),
+}
+
+
 @router.get("/specimens/{name}")
 async def specimen(name: str, principal: CurrentPrincipal) -> Response:
-    """Synthetic specimen receipts for trying the submission flow. Demo mode only."""
-    if not get_settings().demo_mode or name not in ("genuine", "altered"):
+    """Synthetic specimen documents for trying the submission and release flows. Demo mode only."""
+    if not get_settings().demo_mode or name not in SPECIMENS:
         raise HTTPException(404, "Not found")
-    data = (DEMO_ASSETS / f"specimen_fdr_{name}.jpg").read_bytes()
+    filename, mime = SPECIMENS[name]
     return Response(
-        data,
-        media_type="image/jpeg",
-        headers={"Content-Disposition": f'attachment; filename="specimen-fdr-{name}.jpg"'},
+        (DEMO_ASSETS / filename).read_bytes(),
+        media_type=mime,
+        headers={"Content-Disposition": f'attachment; filename="{filename.replace("_", "-")}"'},
     )

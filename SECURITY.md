@@ -16,7 +16,7 @@ This is a hackathon prototype with synthetic data. To report a vulnerability, op
 | Account takeover | Password guessing | Argon2id hashing; rate limiting; lockout after repeated failures; session timeout |
 | Web attacks | XSS, CSRF, injection | React escaping and a strict Content Security Policy; CSRF token header; SQLAlchemy parameterised queries; Pydantic validation |
 | Malicious uploads | Oversized or disguised files | MIME sniffing, extension allowlist (PDF, PNG, JPEG), size limit, rendering in a worker with resource limits, no execution |
-| Letter forgery | Fake NOC | Signed QR token verified on the public page; revocation list |
+| Letter forgery | Fake NOC | Ed25519-signed QR token checked on the public verify page against the published key; the page reads the letter's live state, so revoked and superseded letters show as such; the private key lives only in `LETTER_SIGNING_KEY_B64` (required in production) |
 | Secret leakage | Keys in git | Secrets only in environment or SSM Parameter Store; `.env` ignored; secret scanning in CI |
 | LLM misuse | Prompt injection through the search box | Model output must validate against a fixed filter schema; model has no data access or write ability |
 

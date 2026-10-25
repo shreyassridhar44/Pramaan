@@ -1,8 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PendingPage } from '@/components/shell/pending-page'
+import { ReleaseList } from '@/features/releases/release-list'
 
 export const Route = createFileRoute('/_app/releases/')({
   staticData: { title: 'Releases' },
-  component: () => <PendingPage title="Releases" step={8} />,
+  validateSearch: (s: Record<string, unknown>): { state?: 'open' | 'closed' } => ({
+    state: s.state === 'closed' ? 'closed' : undefined,
+  }),
+  component: Page,
 })
+
+function Page() {
+  const { state } = Route.useSearch()
+  return <ReleaseList state={state ?? 'open'} />
+}

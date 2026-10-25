@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { ErrorState, Input, Label, Panel } from '@/components/ui/primitives'
 import { useMeta } from '@/features/instruments/queries'
 import { ApiError, api, unwrap } from '@/lib/api/client'
+import { uploadDocument } from '@/lib/api/upload'
 import { cn } from '@/lib/cn'
 import { formatDate, formatINR } from '@/lib/format'
 import { useMe } from '@/lib/session'
@@ -549,30 +550,7 @@ function Uploader({
   const input = useRef<HTMLInputElement>(null)
   const [drag, setDrag] = useState(false)
   const upload = useMutation({
-    mutationFn: async (file: File) => {
-      const fd = new FormData()
-      fd.append('file', file)
-      fd.append('kind', kind)
-      if (declared) fd.append('declared', JSON.stringify(declared))
-      const token =
-        document.cookie
-          .split('; ')
-          .find((c) => c.startsWith('pramaan_csrf='))
-          ?.split('=')[1] ?? ''
-      const res = await fetch('/api/v1/documents', {
-        method: 'POST',
-        body: fd,
-        credentials: 'include',
-        headers: { 'x-csrf-token': token },
-      })
-      const body = await res.json()
-      if (!res.ok)
-        throw new ApiError(
-          body?.error?.code ?? 'upload_failed',
-          body?.error?.message ?? 'Upload failed.',
-        )
-      return body as Analysis
-    },
+    mutationFn: (file: File) => uploadDocument<Analysis>(file, kind, declared),
     onSuccess: onDone,
   })
   const pick = (f: File | undefined) => f && upload.mutate(f)

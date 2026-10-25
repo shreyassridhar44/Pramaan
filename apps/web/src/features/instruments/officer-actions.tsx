@@ -96,7 +96,7 @@ export function ActionBar({ d }: { d: Detail }) {
   )
 }
 
-function ReasonDialog({
+export function ReasonDialog({
   open,
   onOpenChange,
   title,

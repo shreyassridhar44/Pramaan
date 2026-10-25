@@ -26,7 +26,10 @@ class Settings(BaseSettings):
     storage_bucket: str = "pramaan-docs"
     aws_region: str = "ap-south-1"
 
+    # Ed25519 private key for letter tokens. Local runs generate one under .data/keys if unset.
     letter_signing_key_b64: str | None = None
+    # Origin of the public verify page encoded in letter QR codes.
+    public_base_url: str = "http://localhost:5173"
 
     email_backend: Literal["smtp", "ses"] = "smtp"
     smtp_host: str = "localhost"
@@ -54,6 +57,8 @@ class Settings(BaseSettings):
         if self.environment == "production":
             if self.session_secret.startswith("dev-only"):
                 raise ValueError("SESSION_SECRET must be set in production")
+            if not self.letter_signing_key_b64:
+                raise ValueError("LETTER_SIGNING_KEY_B64 must be set in production")
             if self.demo_mode and not self.allow_demo_in_production:
                 raise ValueError("DEMO_MODE in production needs ALLOW_DEMO_IN_PRODUCTION=true")
         return self

@@ -14,7 +14,7 @@ Update this file at the end of every working session and every completed step.
 | 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
 | 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
-| 8 | Release, letters, verification | Not started | |
+| 8 | Release, letters, verification | Done: portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
 | 9 | Command view, forecast, search, reports | Not started | |
 | 10 | Hardening, evaluation, deployment, demo | Not started | |
 
@@ -45,7 +45,13 @@ Update this file at the end of every working session and every completed step.
 
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 8: release workflow (Clause 6.46 eligibility from `domain/rules/release.py`, PGRC, Vigilance and Grants clearance queues, authority NOC or sanction, bank discharge through a desk `discharge` request), bilingual letters with a signed QR token, and the public `/verify/:token` page.
+2. Step 9: command view additions (MaturityRiver, region map, impact panel), the full-screen forecast page on `/portfolio/timeline`, plain-language search through Bedrock with a fallback parser, reports, and admin rules.
+
+Notes from Step 8:
+- Release demo: sign in as PGRC, open "Sahyadri College of Engineering, Nashik" (REL/2026/000003), mark the open complaint resolved, then Clear; sign in as the authority, open the case and Issue NOC; open the verification page from the success dialog or scan the QR in the PDF. Revoke from Letters to show the Revoked state.
+- Portal: the Demo Institute's oldest FDR matured 12 days before the anchor, so the institution can apply for release with the specimen documents. Its bank is a desk bank, so discharge waits for the bank persona.
+- QR codes point at `PUBLIC_BASE_URL` (default `http://localhost:5173`). For a phone scan on the local network, set it to the machine's LAN address and open Vite with `--host`.
+- Letter PDFs render on first download and are cached in storage; seeded letters for older cases are generated the same way.
 
 Notes from Step 7:
 - Bank flow demo: sign in as the institution, submit the altered specimen (declare Rs 35,00,000); as the bureau officer open the instrument, Bank tab, Request confirmation; as the bank persona (Bharat National Bank, a desk bank) sign the response; the officer sees the amount conflict with the bank's signed Rs 15,00,000.

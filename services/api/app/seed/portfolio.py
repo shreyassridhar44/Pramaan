@@ -33,6 +33,7 @@ from app.services.audit import GENESIS, canonical, chain_hash
 
 DEMO_PASSWORD = "Pramaan@2026"  # noqa: S105 (published demo credential, demo mode only)
 RULES = RuleSet()
+RELEASE_STORY = "Sahyadri College of Engineering, Nashik"
 
 
 def inr_grouped(rupees: int) -> str:
@@ -369,7 +370,7 @@ class Generator:
     def _release_story_institution(self) -> _Inst:
         inst = _Inst(
             0,
-            "Sahyadri College of Engineering, Nashik",
+            RELEASE_STORY,
             "Sahyadri Education Society",
             "western",
             self.region_ids["western"],
@@ -383,6 +384,101 @@ class Generator:
         )
         inst.complaint_open = True
         return inst
+
+    def _case_events(
+        self,
+        case_id: int,
+        req: date,
+        released: date | None,
+    ) -> None:
+        def add(kind: str, on: date | None, actor: str, **payload: Any) -> None:
+            if on is not None and on <= self.anchor:
+                self.events.append(
+                    {
+                        "entity_type": "release_case",
+                        "entity_id": case_id,
+                        "type": kind,
+                        "payload": payload,
+                        "occurred_on": on,
+                        "actor": actor,
+                    }
+                )
+
+        add("release.applied", req, "institution")
+        # The case's three clearances are the most recent rows.
+        for c in self.ds.rows["clearances"][-3:]:
+            if c["release_case_id"] == case_id and c["decided_on"]:
+                add(
+                    f"clearance.{c['status']}",
+                    c["decided_on"],
+                    c["cell"],
+                    cell=c["cell"],
+                    reason=c["reason"] or "No objection",
+                )
+        add("release.discharged", released, "bank")
+
+    def _seed_letter(
+        self,
+        case_id: int,
+        inst: dict[str, Any],
+        row: dict[str, Any],
+        bank: str,
+        issued: date,
+        reference: str,
+    ) -> None:
+        rtgs = row["kind"] == "rtgs"
+        kind = "release_sanction" if rtgs else "release_noc"
+        recipient = (
+            "The Accounts Officer\nAccounts Section, AICTE\nNew Delhi"
+            if rtgs
+            else f"The Branch Manager\n{bank}, {row['branch']} (IFSC {row['ifsc']})"
+        )
+        self.ds.add(
+            "letters",
+            {
+                "kind": kind,
+                "reference": reference,
+                "entity_type": "release_case",
+                "entity_id": case_id,
+                "institution_id": inst["id"],
+                "recipient": recipient,
+                "fields": {
+                    "case_reference": f"REL/{row['release_requested_on']:%Y}/{row['id']:06d}",
+                    "institution": inst["name"],
+                    "trust": inst["trust_name"],
+                    "aicte_id": inst["aicte_id"],
+                    "address": f"{inst['city']}, {inst['state']}",
+                    "amount_paise": str(row["amount_paise"]),
+                    "instruments": [
+                        {
+                            "number": row["number"],
+                            "kind_label": {"joint_fdr": "Joint FDR", "rpgf": "RPGF"}.get(
+                                row["kind"], "RTGS"
+                            ),
+                            "bank": bank,
+                            "branch": row["branch"],
+                            "issue_date": row["issue_date"].isoformat(),
+                            "maturity_date": row["maturity_date"].isoformat(),
+                            "amount_paise": str(row["amount_paise"]),
+                        }
+                    ],
+                    "checks": [
+                        {"label": "Term completed", "aph_ref": "APH 2024-27 Clause 6.46 h"},
+                        {"label": "Required documents", "aph_ref": "APH 2024-27 Clause 6.46 a"},
+                        {"label": "Clearances", "aph_ref": "APH 2024-27 Clause 6.46 b"},
+                    ],
+                    "authority": {
+                        "name": "Dr. Sunita Rao",
+                        "designation": "Director, Approval Bureau",
+                    },
+                },
+                "storage_key": None,
+                "token_id": f"{self.rng.getrandbits(96):024x}",
+                "status": "issued",
+                "issued_by": self.persona_ids["authority"],
+                "issued_on": issued,
+            },
+        )
 
     # ---------------------------------------------------------------- instruments
     def deposits(self, insts: list[_Inst]) -> None:
@@ -552,11 +648,11 @@ class Generator:
                 outcome = "released"
             if inst.dispute:
                 outcome = "lien"
-            if inst.name.startswith("Sahyadri College of Engineering, Nashik"):
+            if inst.name == RELEASE_STORY:
                 outcome = "pending_release"
             if outcome in ("released", "pending_release", "cleared"):
                 req = maturity + timedelta(days=rng.randint(5, 140))
-                if req > anchor:
+                if req > anchor or inst.name == RELEASE_STORY:
                     req = anchor - timedelta(days=rng.randint(1, 10))
                 f["release_requested_on"] = req
                 if outcome in ("released", "cleared"):
@@ -626,7 +722,8 @@ class Generator:
             held_now
             and ev["bank_confirmed_on"]
             and rng.random() < 0.03
-            and not inst.name.startswith(("Demo", "Sahyadri College of Engineering, Nashik"))
+            and not inst.name.startswith("Demo")
+            and inst.name != RELEASE_STORY
         ):
             conflict_field = rng.choice(["amount", "maturity_date", "lien", "holders"])
             if conflict_field == "amount":
@@ -938,11 +1035,16 @@ class Generator:
             "vigilance": self.persona_ids["vigilance"],
             "grants": self.persona_ids["grants"],
         }
+        inst_rows = {r["id"]: r for r in self.ds.rows["institutions"]}
+        bank_names = {r["id"]: r["name"] for r in self.ds.rows["banks"]}
+        letter_seq: dict[tuple[str, int], int] = defaultdict(int)
+        authorised: list[tuple[date, int, dict[str, Any], int]] = []
         for inst_row in self.ds.rows["instruments"]:
             req = inst_row["release_requested_on"]
             if not req:
                 continue
             inst = by_id[inst_row["institution_id"]]
+            story = inst.name == RELEASE_STORY
             cleared = inst_row["release_cleared_on"]
             released = inst_row["released_on"]
             status = "closed" if released else "authorised" if cleared else "in_clearance"
@@ -959,7 +1061,7 @@ class Generator:
                         "instrument_copy",
                         "latest_loa_eoa",
                     ]
-                    if rng.random() < 0.85 or cleared
+                    if rng.random() < 0.85 or cleared or story
                     else ["application_letter", "instrument_copy"],
                     "penalty": {},
                     "applied_on": req,
@@ -976,6 +1078,9 @@ class Generator:
                     st, decided = "cleared", req + timedelta(days=rng.randint(5, 40))
                 elif cell == "pgrc" and inst.complaint_open:
                     st, decided = "pending", None
+                elif story:
+                    # The release story: only PGRC stands between this case and its NOC.
+                    st, decided = "cleared", req + timedelta(days=2)
                 else:
                     st = rng.choices(["cleared", "pending", "blocked"], [55, 40, 5])[0]
                     decided = req + timedelta(days=rng.randint(3, 30)) if st != "pending" else None
@@ -994,10 +1099,32 @@ class Generator:
                         "decided_on": decided,
                     },
                 )
+            self._case_events(case_id, req, released)
+            if cleared:
+                authorised.append((cleared, case_id, inst_row, inst.id))
             if status == "in_clearance":
                 rows = [c for c in self.ds.rows["clearances"] if c["release_case_id"] == case_id]
                 if any(c["status"] == "blocked" for c in rows):
                     self.ds.rows["release_cases"][-1]["status"] = "blocked"
+        # Letters are numbered in order of issue, separately for each type and year.
+        for cleared, case_id, inst_row, inst_id in sorted(authorised, key=lambda a: (a[0], a[1])):
+            code = "SO" if inst_row["kind"] == "rtgs" else "NOC"
+            letter_seq[(code, cleared.year)] += 1
+            ref = f"AICTE/RB/SD/{code}/{cleared:%Y}/{letter_seq[(code, cleared.year)]:06d}"
+            self._seed_letter(
+                case_id, inst_rows[inst_id], inst_row, bank_names[inst_row["bank_id"]], cleared, ref
+            )
+            if cleared <= self.anchor:
+                self.events.append(
+                    {
+                        "entity_type": "release_case",
+                        "entity_id": case_id,
+                        "type": "release.authorised",
+                        "payload": {"letter": ref},
+                        "occurred_on": cleared,
+                        "actor": "authority",
+                    }
+                )
         _ = sec_head
 
         for inst_row in self.ds.rows["instruments"]:
@@ -1127,6 +1254,9 @@ class Generator:
             "bank": None,
             "system": None,
             "institution": None,
+            "pgrc": self.persona_ids["pgrc"],
+            "vigilance": self.persona_ids["vigilance"],
+            "grants": self.persona_ids["grants"],
         }
         labels = {
             "officer": "Ananya Iyer (bureau_officer)",
@@ -1135,6 +1265,9 @@ class Generator:
             "bank": "Simulated bank network",
             "system": "Pramaan system",
             "institution": "Institution user",
+            "pgrc": "PGRC officer (cell_officer)",
+            "vigilance": "Vigilance officer (cell_officer)",
+            "grants": "Grants officer (cell_officer)",
         }
         prev = GENESIS
         self.events.sort(key=lambda e: (e["occurred_on"], e["entity_id"], e["type"]))
@@ -1145,7 +1278,7 @@ class Generator:
             actor_id = actor_ids[ev["actor"]]
             data = {"type": ev["type"], **ev["payload"]}
             h = chain_hash(
-                prev, canonical(at, actor_id, ev["type"], "instrument", ev["entity_id"], data)
+                prev, canonical(at, actor_id, ev["type"], ev["entity_type"], ev["entity_id"], data)
             )
             self.ds.add(
                 "audit_log",
@@ -1154,7 +1287,7 @@ class Generator:
                     "actor_id": actor_id,
                     "actor_label": labels[ev["actor"]],
                     "action": ev["type"],
-                    "entity_type": "instrument",
+                    "entity_type": ev["entity_type"],
                     "entity_id": ev["entity_id"],
                     "data": data,
                     "prev_hash": prev,
@@ -1278,31 +1411,37 @@ class Generator:
 
     def _shape_demo_story(self, demo: _Inst) -> None:
         """The demo institution's FDRs mature about 85 days from the anchor: the T-90 reminder has
-        gone out and renewal is open, so the story is visible on day one."""
-        target = self.anchor + timedelta(days=85)
-        for row in self.ds.rows["instruments"]:
-            if row["institution_id"] == demo.id:
-                row["maturity_date"] = target
-                row["status"] = (
-                    Status.ACTIVE.value
-                    if (target - self.anchor).days > RULES.maturity.maturing_window_days
-                    else Status.MATURING.value
-                )
-                row["next_action"], row["next_action_due"] = (
-                    "Confirm renewal or release plan",
-                    target,
-                )
+        gone out and renewal is open, so the story is visible on day one. Its oldest FDR matured
+        12 days ago, so the portal can show a release application."""
+        rows = sorted(
+            (r for r in self.ds.rows["instruments"] if r["institution_id"] == demo.id),
+            key=lambda r: r["id"],
+        )
+        targets: dict[int, date] = {}
+        for n, row in enumerate(rows):
+            matured = n == 0 and len(rows) > 1
+            target = (
+                self.anchor - timedelta(days=12) if matured else self.anchor + timedelta(days=85)
+            )
+            targets[row["id"]] = target
+            row["maturity_date"] = target
+            if matured:
+                row["status"] = Status.MATURED.value
+                row["next_action"], row["next_action_due"] = "Renew or apply for release", None
+                continue
+            row["status"] = (
+                Status.ACTIVE.value
+                if (target - self.anchor).days > RULES.maturity.maturing_window_days
+                else Status.MATURING.value
+            )
+            row["next_action"], row["next_action_due"] = "Confirm renewal or release plan", target
+        by_number = {r["number"]: targets[r["id"]] for r in rows}
         for sim in self.ds.rows["sim_bank_deposits"]:
-            inst_ids = {
-                r["number"]: r["institution_id"]
-                for r in self.ds.rows["instruments"]
-                if r["institution_id"] == demo.id
-            }
-            if sim["number"] in inst_ids:
-                sim["maturity_date"] = target
-        demo_ids = {r["id"] for r in self.ds.rows["instruments"] if r["institution_id"] == demo.id}
+            if sim["number"] in by_number:
+                sim["maturity_date"] = by_number[sim["number"]]
         for obs in self.ds.rows["field_observations"]:
-            if obs["instrument_id"] in demo_ids and obs["field"] == "maturity_date":
+            if obs["instrument_id"] in targets and obs["field"] == "maturity_date":
+                target = targets[obs["instrument_id"]]
                 raw = {
                     "declared": f"{target:%d/%m/%Y}",
                     "extracted": f"{target:%d-%m-%Y}",

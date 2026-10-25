@@ -37,9 +37,10 @@ export class ApiError extends Error {
 
 type ErrorBody = { error?: { code?: string; message?: string; request_id?: string } }
 
-/** Unwraps an openapi-fetch result, throwing an ApiError with the server's message. */
-export function unwrap<T>(result: { data?: T; error?: unknown }): T {
-  if (result.error !== undefined || result.data === undefined) {
+/** Unwraps an openapi-fetch result, throwing an ApiError with the server's message. A successful
+ * empty response (204) unwraps to undefined. */
+export function unwrap<T>(result: { data?: T; error?: unknown; response?: Response }): T {
+  if (result.error !== undefined || (result.data === undefined && !result.response?.ok)) {
     const body = (result.error ?? {}) as ErrorBody
     throw new ApiError(
       body.error?.code ?? 'unknown',
@@ -47,5 +48,5 @@ export function unwrap<T>(result: { data?: T; error?: unknown }): T {
       body.error?.request_id,
     )
   }
-  return result.data
+  return result.data as T
 }

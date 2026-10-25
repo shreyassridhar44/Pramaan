@@ -34,6 +34,7 @@ ORDER = (
     "release_cases",
     "release_case_instruments",
     "clearances",
+    "letters",
     "escalations",
     "reminders",
     "audit_log",

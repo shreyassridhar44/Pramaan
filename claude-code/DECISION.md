@@ -160,3 +160,24 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Context.** TypeScript 7.0.2 is the latest, but compatibility of the native compiler with typescript-eslint and the TanStack Router plugin was not confirmed.
 - **Choice.** Pin 5.9.3.
 - **Revisit if.** After the submission.
+
+## D23. Letter tokens: compact Ed25519 signature, state looked up live
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** A letter's QR code must verify offline-forgeable paper (R8), must reflect revocation and supersession after printing, and must scan easily from a phone.
+- **Alternatives.** A JWT or JSON payload with the letter fields (long, dense QR, cannot show revocation without a lookup anyway); an unsigned random id (guessable ids would not be forgeable, but a signature lets anyone check authenticity against the published key).
+- **Choice.** Token = `<key fingerprint>.<random letter id>.<base64url Ed25519 signature>`, about 120 characters. The verify page checks the signature, then reads the letter's current state. Public key at `/api/v1/public/letter-keys`. The private key comes from `LETTER_SIGNING_KEY_B64` (SSM in production); local runs generate one under `.data/keys`.
+- **Trade-offs.** Verification needs the service online; the paper alone proves nothing without it.
+- **Revisit if.** Offline verification is required (then embed signed key fields in the token).
+
+## D24. Devanagari shaping in letters through ReportLab and HarfBuzz
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** ReportLab alone renders Devanagari conjuncts incorrectly. Letters must be bilingual.
+- **Alternatives.** WeasyPrint (needs Pango and system libraries on the instance); pre-rendered images of the Hindi lines.
+- **Choice.** ReportLab 5.1 with `uharfbuzz` and `shaping=1` on Hindi paragraph styles; Noto Sans Devanagari embedded. Checked visually on क्ष, त्ति and प्र.
+- **Revisit if.** Shaping regressions appear in a ReportLab upgrade.
+
+## D25. Release cases: one application per deposit type, discharge through the bank adapter
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** Clause 6.46 needs three clearances and an authority decision; the bank must discharge its lien.
+- **Choice.** A case groups deposits of one type. PGRC cannot clear while complaints against the institution are open; it resolves them first. Authorisation is refused unless every condition passes, issues the NOC (or the sanction order for RTGS) and sends a discharge request through the same adapter as confirmations: network banks answer at once, desk banks answer from the bank desk. RTGS deposits are released by the sanction order itself.
+- **Revisit if.** AICTE wants partial releases or penalties deducted from proceeds.

@@ -21,6 +21,11 @@ Chronological log of research actions. Findings are summarised in `RESEARCH.md`.
 | 15:15 | AICTE regional offices search | 8 regional offices plus camp offices (Guwahati, Thiruvananthapuram, Vadodara) |
 | 15:20 | `npm view` and `pip index versions` for planned dependencies | `VERSIONS.md` |
 
+## 25 October 2026
+- ReportLab 5.1 shapes complex scripts when `uharfbuzz` is installed and a paragraph style sets `shaping=1` (source: `reportlab/pdfbase/ttfonts.py` and `platypus/paragraph.py` in the installed package). Without it, Devanagari conjuncts render as separate glyphs. Verified by rendering क्ष, त्ति and प्र to PNG.
+- The hinted Noto Sans Devanagari TTF from notofonts has no Latin glyphs, so letters pair it with Noto Sans for English (source: rendering test).
+- uharfbuzz 0.57.0 publishes manylinux aarch64 wheels, so it installs on the t4g instance without a compiler (source: PyPI file list).
+
 ## Open research items
 - Survey of India compliant boundary dataset and licence (D13).
 - Licence of PP-OCR model files used by RapidOCR.

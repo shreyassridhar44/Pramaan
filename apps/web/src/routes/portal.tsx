@@ -17,6 +17,8 @@ export const Route = createFileRoute('/portal')({
 const NAV = [
   { to: '/portal', label: 'Home', hi: 'मुखपृष्ठ' },
   { to: '/portal/submit', label: 'Submit a deposit', hi: 'जमा प्रस्तुत करें' },
+  { to: '/portal/release', label: 'Release', hi: 'वापसी' },
+  { to: '/portal/letters', label: 'Letters', hi: 'पत्र' },
 ] as const
 
 function PortalLayout() {

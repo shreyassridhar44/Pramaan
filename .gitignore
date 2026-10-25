@@ -46,3 +46,4 @@ ml/models/*smoke*
 
 # Local logs
 *.log
+.tanstack/
