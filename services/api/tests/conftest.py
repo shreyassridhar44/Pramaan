@@ -19,7 +19,10 @@ ANCHOR = date(2026, 10, 24)
 
 
 async def _ensure_database() -> None:
-    url = os.environ["DATABASE_URL"].replace("postgresql+asyncpg", "postgresql")
+    from app.config import get_settings
+
+    # Settings normalise any driver prefix (CI passes postgresql+psycopg) to asyncpg.
+    url = get_settings().database_url.replace("postgresql+asyncpg", "postgresql")
     base, name = url.rsplit("/", 1)
     conn = await asyncpg.connect(f"{base}/postgres")
     try:
