@@ -43,6 +43,10 @@ ml/assets/fonts/
 ml/models/*.txt
 ml/eval/results/*smoke*
 ml/models/*smoke*
+ml/logs/
+# The trained models are small enough for git (GitHub refuses files over 100 MB).
+!ml/models/localiser.onnx
+!ml/models/field_extractor.txt
 
 # Local logs
 *.log

@@ -2,6 +2,8 @@
 
 Everything needed to generate the synthetic FDR data, train the two models, evaluate them and hand the exported files to the API. All data is synthetic (see `DATA_SOURCES.md`). Run this on the GPU machine.
 
+For a complete run on a training machine, from setup to pushing the results, follow `TRAINING_GUIDE.md`. `scripts/train_all.sh` runs Sections 2 to 5 below in one go.
+
 ## What you will produce
 
 | File | What it is | Used by |
@@ -62,7 +64,7 @@ This reports per-field exact match on the two unseen layouts for both the traine
 
 ## 6. Hand over
 
-Copy these files into the repository's `ml/models/` and `ml/eval/results/` folders on the development machine (or send them to the team):
+Commit and push these files (`TRAINING_GUIDE.md` Section 9 has the exact steps):
 
 ```
 models/localiser.onnx
@@ -72,7 +74,7 @@ eval/results/localiser.json
 eval/results/field_extractor.json
 ```
 
-ONNX and model files are not committed to git (they are large); the JSON results and model cards are committed. The API loads models from `MODELS_DIR` (default `ml/models`) and falls back to the classical forensics and the rule-based extractor if a file is missing, and it records which method produced every result.
+Both model files are small enough for git, and `.gitignore` allows exactly these two names; datasets, checkpoints and smoke outputs stay ignored. The API loads models from `MODELS_DIR` (default `ml/models`). If a file is missing, it falls back to the classical forensics and the rule-based extractor, and it records which method produced every result.
 
 ## Smoke test (CPU, a few minutes)
 
