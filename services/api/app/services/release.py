@@ -26,6 +26,7 @@ from app.models import (
 )
 from app.services import audit, letters
 from app.services import bank as bank_svc
+from app.services import portfolio as psvc
 from app.services.facts import load_rules
 
 CELLS = ("pgrc", "vigilance", "grants")
@@ -181,6 +182,7 @@ async def apply(
     for cell in CELLS:
         db.add(Clearance(release_case_id=case.id, cell=cell, status="pending"))
     db.add(_event(case, "release.applied", actor.id, on, instruments=[i.id for i in instruments]))
+    await psvc.bump_data_version(db)
     await audit.append(
         db,
         actor_id=actor.id,
@@ -295,6 +297,7 @@ async def authorise(
         actor_label=actor_label,
         on=on,
     )
+    await psvc.bump_data_version(db)
     db.add(_event(case, "release.authorised", actor.id, on, letter=letter.reference, note=note))
     await audit.append(
         db,

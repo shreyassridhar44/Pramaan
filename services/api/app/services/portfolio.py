@@ -38,12 +38,31 @@ from app.models import (
 from app.services.facts import load_facts, load_rules
 
 
+@dataclass(frozen=True, slots=True)
+class IndexRow:
+    """The registry columns used to filter, search and sort without a database query."""
+
+    id: int
+    institution_id: int
+    amount_paise: int
+    maturity_date: date
+    institution: str
+    region: str
+    bank: str
+    kind: str
+    number: str
+    aicte_id: str
+
+
 @dataclass
 class _Cache:
     version: int = -1
     facts: list[InstrumentFacts] | None = None
     rules: RuleSet | None = None
     timelines: dict[tuple[str, date, int], list[TimelineStep]] | None = None
+    states: dict[tuple[str, date], dict[int, InstrumentState]] | None = None
+    index: list[IndexRow] | None = None
+    signal_counts: dict[int, int] | None = None
 
 
 _cache = _Cache()
@@ -65,6 +84,9 @@ async def _load(session: AsyncSession) -> tuple[list[InstrumentFacts], RuleSet]:
         _cache.facts = await load_facts(session)
         _cache.rules = await load_rules(session)
         _cache.timelines = {}
+        _cache.states = {}
+        _cache.index = None
+        _cache.signal_counts = None
         _cache.version = version
     return _cache.facts, _cache.rules
 
@@ -120,13 +142,72 @@ async def summary(session: AsyncSession, scope: Scope, as_of: date) -> Portfolio
 
 
 async def states(session: AsyncSession, scope: Scope, as_of: date) -> dict[int, InstrumentState]:
+    """State of every instrument in scope on `as_of`, cached for the current data version."""
     facts, rules = await scoped_facts(session, scope)
+    assert _cache.states is not None
+    key = (scope.key, as_of)
+    cached = _cache.states.get(key)
+    if cached is not None:
+        return cached
     out: dict[int, InstrumentState] = {}
     for f in facts:
         st = state_on(f, as_of, rules)
         if st is not None:
             out[f.id] = st
+    if len(_cache.states) > 256:
+        _cache.states.clear()
+    _cache.states[key] = out
     return out
+
+
+async def registry_index(session: AsyncSession) -> list[IndexRow]:
+    await _load(session)
+    if _cache.index is None:
+        rows = await session.execute(
+            select(
+                Instrument.id,
+                Instrument.institution_id,
+                Instrument.amount_paise,
+                Instrument.maturity_date,
+                Institution.name,
+                Region.code,
+                Bank.code,
+                Instrument.kind,
+                Instrument.number,
+                Institution.aicte_id,
+            )
+            .join(Institution, Institution.id == Instrument.institution_id)
+            .join(Region, Region.id == Institution.region_id)
+            .join(Bank, Bank.id == Instrument.bank_id)
+        )
+        _cache.index = [
+            IndexRow(
+                id=r[0],
+                institution_id=r[1],
+                amount_paise=r[2],
+                maturity_date=r[3],
+                institution=r[4],
+                region=r[5],
+                bank=r[6],
+                kind=r[7],
+                number=r[8],
+                aicte_id=r[9],
+            )
+            for r in rows
+        ]
+    return _cache.index
+
+
+async def open_signal_counts(session: AsyncSession) -> dict[int, int]:
+    await _load(session)
+    if _cache.signal_counts is None:
+        rows = await session.execute(
+            select(Signal.entity_id, func.count())
+            .where(Signal.entity_type == "instrument", Signal.status == "open")
+            .group_by(Signal.entity_id)
+        )
+        _cache.signal_counts = {int(i): int(n) for i, n in rows}
+    return _cache.signal_counts
 
 
 async def river(

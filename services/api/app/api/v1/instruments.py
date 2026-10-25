@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import func, or_, select
+from sqlalchemy import select
 
 from app.api.deps import CurrentPrincipal, DbSession, instrument_scope
 from app.domain.asof import state_on
@@ -12,7 +12,6 @@ from app.domain.rules.maturity import reminder_schedule
 from app.domain.types import FieldName, MatchState, Role, Source
 from app.models import (
     Analysis,
-    Bank,
     Demand,
     Document,
     Event,
@@ -94,84 +93,57 @@ async def list_instruments(
     scope = await psvc.scope_for(db, principal.user)
     states = await psvc.states(db, scope, d)
 
-    query = (
-        select(
-            Instrument.id,
-            Instrument.institution_id,
-            Instrument.amount_paise,
-            Instrument.maturity_date,
-            Institution.name,
-            Region.code,
-            Bank.code,
-            Instrument.kind,
+    # Filtering, search and sorting run on the cached index; the scope is applied by `states`,
+    # which only holds instruments the principal may see.
+    index = await psvc.registry_index(db)
+    signal_counts = await psvc.open_signal_counts(db)
+    needle = q.strip().lower() if q else None
+    regions, banks, kinds = set(region or ()), set(bank or ()), set(kind or ())
+    rows = [
+        r
+        for r in index
+        if r.id in states
+        and (
+            not needle
+            or needle in r.number.lower()
+            or needle in r.institution.lower()
+            or needle in r.aicte_id.lower()
         )
-        .join(Institution, Institution.id == Instrument.institution_id)
-        .join(Region, Region.id == Institution.region_id)
-        .join(Bank, Bank.id == Instrument.bank_id)
-        .where(instrument_scope(principal))
-    )
-    if q:
-        like = f"%{q.strip()}%"
-        query = query.where(
-            or_(
-                Instrument.number.ilike(like),
-                Institution.name.ilike(like),
-                Institution.aicte_id.ilike(like),
-            )
-        )
-    if region:
-        query = query.where(Region.code.in_(region))
-    if bank:
-        query = query.where(Bank.code.in_(bank))
-    if kind:
-        query = query.where(Instrument.kind.in_(kind))
-    if maturity_from:
-        query = query.where(Instrument.maturity_date >= maturity_from)
-    if maturity_to:
-        query = query.where(Instrument.maturity_date <= maturity_to)
-    if institution_id:
-        query = query.where(Instrument.institution_id == institution_id)
-    rows = (await db.execute(query)).all()
-
-    signal_counts = dict(
-        (
-            await db.execute(
-                select(Signal.entity_id, func.count())
-                .where(Signal.entity_type == "instrument", Signal.status == "open")
-                .group_by(Signal.entity_id)
-            )
-        ).all()
-    )
+        and (not regions or r.region in regions)
+        and (not banks or r.bank in banks)
+        and (not kinds or r.kind in kinds)
+        and (maturity_from is None or r.maturity_date >= maturity_from)
+        and (maturity_to is None or r.maturity_date <= maturity_to)
+        and (institution_id is None or r.institution_id == institution_id)
+    ]
 
     closed = {"released", "renewed", "encashed_prematurely", "forfeited"}
     matches = []
     for r in rows:
-        st = states.get(r[0])
-        if st is None:
-            continue
+        st = states[r.id]
         if not include_closed and not status and st.status in closed:
             continue
         if status and st.status not in status:
             continue
         if assurance is not None and st.assurance.value not in assurance:
             continue
-        if has_signals is not None and bool(signal_counts.get(r[0])) != has_signals:
+        if has_signals is not None and bool(signal_counts.get(r.id)) != has_signals:
             continue
         matches.append((r, st))
 
     keyfuncs = {
-        "maturity": lambda m: m[0][3],
-        "-maturity": lambda m: m[0][3],
-        "amount": lambda m: m[0][2],
-        "-amount": lambda m: m[0][2],
-        "institution": lambda m: m[0][4],
+        "maturity": lambda m: m[0].maturity_date,
+        "-maturity": lambda m: m[0].maturity_date,
+        "amount": lambda m: m[0].amount_paise,
+        "-amount": lambda m: m[0].amount_paise,
+        "institution": lambda m: m[0].institution,
         "status": lambda m: m[1].status,
         "assurance": lambda m: m[1].assurance,
     }
     matches.sort(key=keyfuncs[sort], reverse=sort.startswith("-"))
-    total_paise = sum(m[0][2] for m in matches)
+    total_paise = sum(m[0].amount_paise for m in matches)
     page = matches[offset : offset + limit]
-    ids = [m[0][0] for m in page]
+    ids = [m[0].id for m in page]
     details = {
         i.id: i
         for i in (await db.scalars(select(Instrument).where(Instrument.id.in_(ids)))).unique().all()
@@ -183,16 +155,16 @@ async def list_instruments(
 
     items = []
     for r, st in page:
-        inst = details[r[0]]
+        inst = details[r.id]
         items.append(
             InstrumentRow(
                 id=inst.id,
                 number=inst.number,
                 kind=inst.kind,
                 institution_id=inst.institution_id,
-                institution=r[4],
-                region=r[5],
-                bank_code=r[6],
+                institution=r.institution,
+                region=r.region,
+                bank_code=r.bank,
                 bank=inst.bank.name,
                 amount_paise=str(inst.amount_paise),
                 issue_date=inst.issue_date.isoformat(),
