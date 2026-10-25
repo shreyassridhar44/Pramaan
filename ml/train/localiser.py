@@ -1,9 +1,11 @@
-"""Train the edit-localisation model.
+r"""Train the edit-localisation model.
 
 Usage (RTX 4090):
-  uv run python -m train.localiser --data data/loc --out runs/loc --epochs 24 --batch 24 --workers 12
+  uv run python -m train.localiser --data data/loc --out runs/loc --epochs 24 --batch 24 \
+    --workers 12
 Smoke test on CPU:
-  uv run python -m train.localiser --data data/loc_smoke --out runs/smoke --epochs 1 --batch 2 --workers 0 --crop 256
+  uv run python -m train.localiser --data data/loc_smoke --out runs/smoke --epochs 1 --batch 2 \
+    --workers 0 --crop 256
 """
 
 import argparse
@@ -40,7 +42,7 @@ class CropDataset(Dataset):
         rng = random.Random(None if self.train else i)
         if self.train and rng.random() < 0.3:
             q = rng.randint(55, 95)
-            ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, q])
+            _ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, q])
             img = cv2.imdecode(buf, cv2.IMREAD_UNCHANGED)
         if self.train and rng.random() < 0.3:
             s = rng.uniform(0.7, 1.0)

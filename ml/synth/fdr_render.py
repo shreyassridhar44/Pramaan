@@ -363,12 +363,17 @@ class FdrData:
                 "Prerana",
             ]
         )
-        trust = f"{trust_prefix} {rng.choice(['Education Society', 'Educational Trust', 'Shikshan Sanstha'])}"
+        trust = f"{trust_prefix} " + rng.choice(
+            ["Education Society", "Educational Trust", "Shikshan Sanstha"]
+        )
         lakh = rng.choice([5, 10, 15, 15, 30, 35, 35, 50, 70, 100])
         return cls(
             bank=bank,
             number=f"{rng.randint(100, 999)}{issue:%y}{rng.randint(10**7, 10**8 - 1)}",
-            branch=f"{city} {rng.choice(['Main', 'Camp', 'Station Road', 'Civil Lines', 'MG Road'])}",
+            branch=(
+                f"{city} "
+                + rng.choice(["Main", "Camp", "Station Road", "Civil Lines", "MG Road"])
+            ),
             ifsc=f"{bank.code}0{rng.randint(100000, 999999)}",
             amount_rupees=lakh * 100_000,
             issue=issue,
@@ -641,7 +646,8 @@ def render(data: FdrData, rng: random.Random) -> Rendered:
         c.draw.rounded_rectangle([60, 175, W - 60, H - 60], radius=16, outline=b.accent, width=3)
         c.text(
             (100, y),
-            "Received from the depositor(s) named below the sum stated, as a fixed deposit on the terms printed overleaf.",
+            "Received from the depositor(s) named below the sum stated, as a fixed deposit on "
+            "the terms printed overleaf.",
             f_body,
             ink,
         )

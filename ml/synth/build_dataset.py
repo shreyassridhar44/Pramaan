@@ -1,10 +1,11 @@
-"""Builds the edit-localisation dataset.
+r"""Builds the edit-localisation dataset.
 
 Splits are by bank layout so the test set uses layouts the model never saw, and the `splice_field`
 edit type is held out of training and validation entirely (DATA_SOURCES.md 2.4).
 
 Usage:
-  uv run python -m synth.build_dataset --out data/loc --train 24000 --val 2000 --test 3000 --workers 12
+  uv run python -m synth.build_dataset --out data/loc --train 24000 --val 2000 --test 3000 \
+    --workers 12
 """
 
 import argparse

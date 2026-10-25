@@ -1,10 +1,11 @@
-"""Train and evaluate the FDR field extractor (LightGBM token classifier on OCR tokens).
+r"""Train and evaluate the FDR field extractor (LightGBM token classifier on OCR tokens).
 
 OCR runs on clean degraded scans from the training layouts; evaluation uses the two unseen test
 layouts and reports per-field exact match for the trained model and the rule-based baseline.
 
 Usage:
-  uv run python -m train.field_extractor --train 1600 --test 300 --workers 12 --out models/field_extractor.txt
+  uv run python -m train.field_extractor --train 1600 --test 300 --workers 12 \
+    --out models/field_extractor.txt
 """
 
 import argparse

@@ -67,7 +67,7 @@ def _draw_text(
 ) -> tuple[np.ndarray, list[int]]:
     """Draws `text` with its left edge at the box's left and its baseline on the box's bottom.
     Returns the new image and the box actually covered by the drawing."""
-    x0, y0, x1, y1 = box
+    x0, y0, _x1, y1 = box
     target_h = max(6, y1 - y0)
     size = max(8, int(_fit_size(text, font_key, target_h) * rng.uniform(0.94, 1.08)))
     f = font(font_key, size)
