@@ -6,7 +6,7 @@ Pramaan is a security deposit and Fixed Deposit Receipt (FDR) management system 
 
 It keeps one record of every deposit AICTE holds against a technical institution, shows for each value whether it was declared by the institution, read from the document, or confirmed by the issuing bank, watches every maturity and compliance deadline, and runs release cases through the clearances in the Approval Process Handbook to the competent authority, with a tamper-evident audit trail.
 
-> **Status (24 October 2026):** research and specification complete; implementation starts after owner approval. See `HANDOFF.md`.
+> **Status (25 October 2026):** Steps 1 to 8 of the plan are built and tested: intake with document checks, bank confirmation, monitoring, renewals, corrections, release with signed letters and public verification. See `claude-code/HANDOFF.md`.
 
 ## What it does
 
@@ -39,16 +39,33 @@ It keeps one record of every deposit AICTE holds against a technical institution
 
 ## Quick start (local)
 
-Available after Step 1 of the implementation plan. The commands will be:
+Prerequisites: Docker Desktop, [uv](https://docs.astral.sh/uv/) (Python 3.12 is installed by uv), Node.js 22, and Google Chrome for the end-to-end tests.
 
 ```bash
 cp .env.example .env
-docker compose -f infra/compose.dev.yml up -d
-# API
-cd services/api && uv sync && uv run alembic upgrade head && uv run python -m scripts.seed && uv run uvicorn app.main:app --reload
-# Web
-cd apps/web && npm install && npm run dev
+docker compose -f infra/compose.dev.yml up -d          # Postgres, Valkey, Mailpit
+
+cd services/api
+uv sync
+uv run alembic upgrade head
+uv run python -m scripts.seed                          # 2,600 synthetic institutions, about 20 s
+uv run uvicorn app.main:app --port 8000                # on Windows, run without --reload
+
+cd apps/web                                            # in a second terminal
+npm ci
+npm run dev                                            # http://localhost:5173
 ```
+
+Sign in with any demo persona on the sign-in page (password for all: `Pramaan@2026`). Emails sent by the monitoring run appear in Mailpit at http://localhost:8025.
+
+Checks:
+
+```bash
+cd services/api && uv run ruff check . && uv run mypy app && uv run pytest -q
+cd apps/web && npm run lint && npm run typecheck && npm test && npm run e2e
+```
+
+`npm run e2e` runs the R16 scenarios and an accessibility sweep in Chrome against the local stack; it resets the demo data first. Performance figures come from `uv run python -m scripts.perf_check` (see `TESTING.md`).
 
 ## Team
 

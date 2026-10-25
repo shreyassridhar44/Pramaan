@@ -47,3 +47,5 @@ ml/models/*smoke*
 # Local logs
 *.log
 .tanstack/
+e2e-report/
+test-results/
