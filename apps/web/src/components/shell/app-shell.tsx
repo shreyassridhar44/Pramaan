@@ -1,6 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Link, useRouterState } from '@tanstack/react-router'
 import {
+  BellRing,
   ClipboardCheck,
   FileBarChart,
   FileText,
@@ -39,6 +40,7 @@ const NAV: NavItem[] = [
   { to: '/instruments', label: 'Instruments', icon: TableProperties },
   { to: '/institutions', label: 'Institutions', icon: Landmark },
   { to: '/releases', label: 'Releases', icon: Unlock },
+  { to: '/alerts', label: 'Alerts', icon: BellRing },
   { to: '/forecast', label: 'Forecast', icon: Orbit },
   { to: '/reports', label: 'Reports', icon: FileBarChart },
   { to: '/letters', label: 'Letters', icon: FileText },

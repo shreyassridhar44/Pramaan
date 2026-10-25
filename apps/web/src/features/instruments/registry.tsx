@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { ArrowDownUp, Download, Rows3, Rows4, Search, SearchX, X } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
@@ -15,10 +15,13 @@ import type { components } from '@/lib/api/schema'
 import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate, formatINRCompact, formatRelativeDays } from '@/lib/format'
+import { useLocal } from '@/lib/local'
+import { useMe } from '@/lib/session'
 
 import { AskBar } from './ask-bar'
 import { FilterMenu } from './filter-menu'
 import { useMeta } from './queries'
+import { BulkBar, ColumnMenu, SavedViews, type Column, type SavedView } from './registry-tools'
 
 type Row = components['schemas']['InstrumentRow']
 export type RegistrySearch = {
@@ -49,6 +52,20 @@ const HELD_STATUSES = [
   'release_cleared',
   'lien_hold',
 ]
+const COLUMNS: Column[] = [
+  { key: 'number', label: 'Instrument', width: '1.25fr', fixed: true },
+  { key: 'institution', label: 'Institution', width: '2.2fr' },
+  { key: 'region', label: 'Region', width: '0.9fr' },
+  { key: 'bank', label: 'Bank', width: '1.1fr' },
+  { key: 'amount', label: 'Amount', width: '1fr' },
+  { key: 'maturity', label: 'Maturity', width: '1.1fr' },
+  { key: 'status', label: 'Status', width: '1.15fr' },
+  { key: 'proof', label: 'Proof', width: '0.7fr' },
+  { key: 'owner', label: 'Owner', width: '1fr' },
+]
+const BULK_ROLES = new Set(['bureau_officer', 'regional_officer', 'section_head'])
+const MAX_SELECTION = 200
+
 const SORTS: { value: string; label: string }[] = [
   { value: 'maturity', label: 'Maturity, soonest first' },
   { value: '-maturity', label: 'Maturity, latest first' },
@@ -70,7 +87,19 @@ export function Registry({
   const { asOf, isToday } = useAsOf()
   const meta = useMeta()
   const navigate = useNavigate()
+  const me = useMe().data
   const [dense, setDense] = useState(false)
+  const [hidden, setHidden] = useLocal<string[]>('pramaan.registry.hidden-columns', [])
+  const [views, setViews] = useLocal<SavedView<RegistrySearch>[]>(
+    `pramaan.registry.views.${me?.id ?? 'anon'}`,
+    [],
+  )
+  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const selectable = !institutionId && !!me && BULK_ROLES.has(me.role)
+  const visible = COLUMNS.filter((c) => c.fixed || !hidden.includes(c.key))
+  const gridTemplateColumns = [selectable ? '24px' : null, ...visible.map((c) => c.width)]
+    .filter(Boolean)
+    .join(' ')
   const [text, setText] = useState(search.q ?? '')
   // Keep the box in step when the search changes from outside (the Ask bar, a link).
   useEffect(() => setText(search.q ?? ''), [search.q])
@@ -111,6 +140,17 @@ export function Registry({
     placeholderData: (prev) => prev,
   })
   const rows = useMemo(() => list.data?.pages.flatMap((p) => p.items) ?? [], [list.data])
+  // A new result set clears the selection, so an action never reaches rows no longer shown.
+  const queryKey = JSON.stringify(query)
+  useEffect(() => setSelected(new Set()), [queryKey])
+  const toggle = (id: number) =>
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else if (next.size < MAX_SELECTION) next.add(id)
+      return next
+    })
+  const headSelected = rows.length > 0 && selected.size >= Math.min(rows.length, MAX_SELECTION)
   const first = list.data?.pages[0]
 
   const parentRef = useRef<HTMLDivElement>(null)
@@ -316,6 +356,16 @@ export function Registry({
               ))}
             </select>
           </label>
+          <SavedViews
+            views={views}
+            onChange={setViews}
+            current={search}
+            onApply={(s) => {
+              setText(s.q ?? '')
+              setSearch(s)
+            }}
+          />
+          <ColumnMenu columns={COLUMNS} hidden={hidden} onChange={setHidden} />
           <Button
             size="icon-sm"
             variant="ghost"
@@ -353,21 +403,47 @@ export function Registry({
             <div
               role="row"
               aria-rowindex={1}
-              className="grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line bg-sunken/60 px-5 py-2 text-[0.6875rem] font-medium tracking-[0.04em] text-ink-3 uppercase"
+              style={{ gridTemplateColumns }}
+              className="grid items-center gap-3 border-b border-line bg-sunken/60 px-5 py-2 text-[0.6875rem] font-medium tracking-[0.04em] text-ink-3 uppercase"
             >
-              <span role="columnheader">Instrument</span>
-              <span role="columnheader">Institution</span>
-              <span role="columnheader">Region</span>
-              <span role="columnheader">Bank</span>
-              <span role="columnheader" className="text-right">
-                Amount
-              </span>
-              <span role="columnheader">Maturity</span>
-              <span role="columnheader">Status</span>
-              <span role="columnheader">Proof</span>
-              <span role="columnheader">Owner</span>
+              {selectable ? (
+                <span role="columnheader" className="flex">
+                  <input
+                    type="checkbox"
+                    aria-label={
+                      rows.length > MAX_SELECTION
+                        ? `Select the first ${MAX_SELECTION} instruments`
+                        : 'Select all loaded instruments'
+                    }
+                    checked={headSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = selected.size > 0 && !headSelected
+                    }}
+                    onChange={() =>
+                      setSelected(
+                        headSelected
+                          ? new Set()
+                          : new Set(rows.slice(0, MAX_SELECTION).map((r) => r.id)),
+                      )
+                    }
+                    className="size-4 accent-[var(--accent)]"
+                  />
+                </span>
+              ) : null}
+              {visible.map((c) => (
+                <span
+                  key={c.key}
+                  role="columnheader"
+                  className={c.key === 'amount' ? 'text-right' : undefined}
+                >
+                  {c.label}
+                </span>
+              ))}
             </div>
           </div>
+          {selectable && selected.size ? (
+            <BulkBar ids={[...selected]} onDone={() => setSelected(new Set())} />
+          ) : null}
           {rows.length > 0 && !list.isError ? (
             <div
               ref={parentRef}
@@ -383,52 +459,43 @@ export function Registry({
               >
                 {items.map((vi) => {
                   const r = rows[vi.index]!
-                  return (
-                    <Link
-                      key={r.id}
-                      to="/instruments/$instrumentId"
-                      params={{ instrumentId: String(r.id) }}
-                      search={isToday ? {} : { asOf }}
-                      role="row"
-                      aria-rowindex={vi.index + 2}
-                      onKeyDown={(e) =>
-                        e.key === ' ' &&
-                        void navigate({
-                          to: '/instruments/$instrumentId',
-                          params: { instrumentId: String(r.id) },
-                        })
-                      }
-                      className={cn(
-                        'absolute inset-x-0 grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line px-5 text-[0.8125rem] hover:bg-sunken/60 focus-visible:bg-accent-soft focus-visible:outline-none',
-                      )}
-                      style={{ top: vi.start, height: rowHeight }}
-                    >
-                      <span role="cell" className="truncate font-mono text-ink">
-                        {r.number}
+                  const cells: Record<string, ReactNode> = {
+                    number: (
+                      <span className="flex min-w-0 items-center">
+                        <Link
+                          to="/instruments/$instrumentId"
+                          params={{ instrumentId: String(r.id) }}
+                          search={isToday ? {} : { asOf }}
+                          className="truncate font-mono text-ink hover:text-brand focus-visible:outline-none"
+                        >
+                          {r.number}
+                        </Link>
                         {r.open_signals ? (
                           <span
-                            className="ml-2 inline-grid size-5 place-items-center rounded-full bg-overdue-soft font-sans text-[0.6875rem] font-semibold text-overdue"
+                            className="ml-2 inline-grid size-5 shrink-0 place-items-center rounded-full bg-overdue-soft font-sans text-[0.6875rem] font-semibold text-overdue"
                             aria-label={`${r.open_signals} open signals`}
                           >
                             {r.open_signals}
                           </span>
                         ) : null}
                       </span>
-                      <span role="cell" className="truncate text-ink">
-                        {r.institution}
-                      </span>
-                      <span role="cell" className="truncate text-ink-2">
+                    ),
+                    institution: <span className="block truncate text-ink">{r.institution}</span>,
+                    region: (
+                      <span className="block truncate text-ink-2">
                         {meta.data?.regions
                           .find((x) => x.code === r.region)
                           ?.name.replace(/ Region| \(camp office\)/, '') ?? r.region}
                       </span>
-                      <span role="cell" className="truncate text-ink-2">
-                        {r.bank}
-                      </span>
-                      <span role="cell" className="text-right">
+                    ),
+                    bank: <span className="block truncate text-ink-2">{r.bank}</span>,
+                    amount: (
+                      <span className="block text-right">
                         <Amount paise={r.amount_paise} />
                       </span>
-                      <span role="cell" className="leading-tight">
+                    ),
+                    maturity: (
+                      <span className="block leading-tight">
                         <span className="block font-mono text-ink">
                           {formatDate(r.maturity_date)}
                         </span>
@@ -447,16 +514,50 @@ export function Registry({
                           </span>
                         ) : null}
                       </span>
-                      <span role="cell">
-                        <StatusChip status={r.status} />
-                      </span>
-                      <span role="cell">
-                        <AssuranceRing level={r.assurance as AssuranceLevel} size={22} />
-                      </span>
-                      <span role="cell" className="truncate text-ink-2">
-                        {r.owner ?? 'Unassigned'}
-                      </span>
-                    </Link>
+                    ),
+                    status: <StatusChip status={r.status} />,
+                    proof: <AssuranceRing level={r.assurance as AssuranceLevel} size={22} />,
+                    owner: (
+                      <span className="block truncate text-ink-2">{r.owner ?? 'Unassigned'}</span>
+                    ),
+                  }
+                  return (
+                    <div
+                      key={r.id}
+                      role="row"
+                      aria-rowindex={vi.index + 2}
+                      aria-selected={selectable ? selected.has(r.id) : undefined}
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('a,input,button')) return
+                        void navigate({
+                          to: '/instruments/$instrumentId',
+                          params: { instrumentId: String(r.id) },
+                          search: isToday ? {} : { asOf },
+                        })
+                      }}
+                      style={{ top: vi.start, height: rowHeight, gridTemplateColumns }}
+                      className={cn(
+                        'absolute inset-x-0 grid cursor-pointer items-center gap-3 border-b border-line px-5 text-[0.8125rem] focus-within:bg-accent-soft hover:bg-sunken/60',
+                        selected.has(r.id) && 'bg-accent-soft/60',
+                      )}
+                    >
+                      {selectable ? (
+                        <span role="cell" className="flex">
+                          <input
+                            type="checkbox"
+                            checked={selected.has(r.id)}
+                            onChange={() => toggle(r.id)}
+                            aria-label={`Select ${r.number}`}
+                            className="size-4 accent-[var(--accent)]"
+                          />
+                        </span>
+                      ) : null}
+                      {visible.map((c) => (
+                        <span key={c.key} role="cell" data-col={c.key} className="min-w-0">
+                          {cells[c.key]}
+                        </span>
+                      ))}
+                    </div>
                   )
                 })}
               </div>

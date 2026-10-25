@@ -11,6 +11,7 @@ import {
   FileText,
   FileX2,
   Gavel,
+  IndianRupee,
   Landmark,
   Send,
   ShieldX,
@@ -172,6 +173,7 @@ function CaseBody({ d, mode }: { d: ReleaseDetail; mode: Mode }) {
           <InstrumentsPanel d={d} mode={mode} discharging={discharging} />
         </div>
         <div className="grid content-start gap-5 xl:col-span-4">
+          <PenaltyPanel d={d} />
           <LettersPanel d={d} />
           <DocumentsPanel d={d} />
           {mode !== 'portal' ? <ComplaintsPanel d={d} mode={mode} /> : null}
@@ -620,6 +622,95 @@ function DocumentsPanel({ d }: { d: ReleaseDetail }) {
           </li>
         ))}
       </ul>
+    </Panel>
+  )
+}
+
+type PenaltyItem = {
+  code: string
+  amount_paise: number
+  reason: string
+  aph_ref: string
+}
+
+/** Penalties the rules found when the case was applied for, and whether they have been paid. */
+function PenaltyPanel({ d }: { d: ReleaseDetail }) {
+  const [open, setOpen] = useState(false)
+  const settle = useCaseMutation(
+    d.row.id,
+    async (reference: string) =>
+      unwrap(
+        await api.POST('/api/v1/releases/{case_id}/penalty/settle', {
+          params: { path: { case_id: d.row.id } },
+          body: { reference },
+        }),
+      ),
+    'Penalty recorded as paid. The condition is now met.',
+  )
+  const p = d.penalty as {
+    due_paise?: number
+    items?: PenaltyItem[]
+    settled_on?: string
+    reference?: string
+    settled_by?: string
+  }
+  if (!p.due_paise) return null
+  return (
+    <Panel>
+      <PanelHeader
+        title="Penalty"
+        caption="Computed by the rules engine from the institution's record"
+        actions={
+          p.settled_on ? (
+            <Chip tone="neutral" dot>
+              Paid
+            </Chip>
+          ) : (
+            <Chip tone="due" dot>
+              Due
+            </Chip>
+          )
+        }
+      />
+      <ul className="px-5">
+        {(p.items ?? []).map((i) => (
+          <li key={i.code} className="border-t border-line py-3 first:border-0">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[0.8125rem] text-ink">{i.reason}</span>
+              <Amount paise={String(i.amount_paise)} />
+            </div>
+            <p className="mt-0.5 font-mono text-[0.6875rem] text-ink-3">{i.aph_ref}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mx-5 mb-4 border-t border-line pt-3">
+        {p.settled_on ? (
+          <p className="text-[0.8125rem] text-ink-2">
+            Paid, reference <span className="font-mono text-ink">{p.reference}</span>. Recorded by{' '}
+            {p.settled_by} on {formatDate(p.settled_on)}.
+          </p>
+        ) : (
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[0.8125rem] text-ink-2">
+              Total <span className="font-mono text-ink">{formatINR(String(p.due_paise))}</span>{' '}
+              must be paid before release.
+            </p>
+            {d.can_settle_penalty ? (
+              <Button size="sm" onClick={() => setOpen(true)}>
+                <IndianRupee /> Record payment
+              </Button>
+            ) : null}
+          </div>
+        )}
+      </div>
+      <ReasonDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Record the penalty payment"
+        body="Enter the payment reference (UTR or challan number). The penalty condition is then treated as met, and the entry is kept in the audit trail."
+        confirm="Record payment"
+        onConfirm={(reference) => settle.mutate(reference, { onSuccess: () => setOpen(false) })}
+      />
     </Panel>
   )
 }

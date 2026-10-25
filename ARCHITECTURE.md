@@ -136,21 +136,21 @@ All endpoints except `/auth/login`, `/public/*` and `/verify/*` require a sessio
 |---|---|
 | Auth | `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `GET /auth/personas` (demo mode), `POST /auth/persona/{key}` (demo mode) |
 | Portfolio | `GET /portfolio/summary?as_of`, `/portfolio/river?as_of&months`, `/portfolio/regions?as_of`, `/portfolio/action-queue?as_of`, `/portfolio/impact`, `/portfolio/timeline?from&to&step` |
-| Instruments | `GET /instruments` (filters, sort, cursor), `GET /instruments/{id}`, `/instruments/{id}/observations`, `/documents`, `/bank`, `/timeline`, `/audit`; `POST /instruments/{id}/actions/{action}` for request-confirmation, return, verify, assign, correct-field, observe |
+| Instruments | `GET /instruments` (filters, sort, cursor), `GET /instruments/{id}`, `/instruments/{id}/observations`, `/documents`, `/bank`, `/timeline`, `/audit`; `POST /instruments/{id}/actions/{action}` for request-confirmation, return, verify, assign, correct-field, observe; `POST /instruments/bulk` (request confirmation, remind or assign up to 200, with skip reasons) |
 | Institutions | `GET /institutions`, `GET /institutions/{id}`, `GET /institutions/{id}/demand` |
 | Portal | `GET /portal/home`, `POST /portal/instruments` (draft), `PATCH /portal/instruments/{id}`, `POST /portal/instruments/{id}/submit`, `POST /portal/releases` |
 | Documents | `POST /documents` (multipart upload), `GET /documents/{id}/pages/{n}`, `GET /documents/{id}/analysis`, `GET /documents/{id}/heatmap` |
 | Signals | `GET /signals`, `POST /signals/{id}/resolve` |
 | Bank desk | `GET /bank/requests`, `GET /bank/requests/{id}`, `POST /bank/requests/{id}/confirm`, `/mismatch`, `/discharge` |
-| Releases | `GET /releases`, `GET /releases/{id}`, `POST /releases/{id}/clearances/{cell}`, `POST /releases/{id}/authorise` |
-| Alerts | `GET /alerts/reminders`, `GET /alerts/escalations` |
+| Releases | `GET /releases`, `GET /releases/{id}`, `POST /releases/{id}/clearances/{cell}`, `POST /releases/{id}/authorise`, `POST /releases/{id}/penalty/settle` |
+| Alerts | `GET /alerts/reminders?rule&channel&region`, `GET /alerts/escalations?region`, `POST /monitoring/run` |
 | Letters | `GET /letters`, `GET /letters/{id}/pdf`, `POST /letters/{id}/revoke` |
 | Verify | `GET /verify/{token}` (public) |
 | Search | `POST /search/interpret` (Bedrock, returns filter object), `GET /search/suggest` |
 | Reports | `GET /reports/{code}?params&format=csv|pdf` |
 | Audit | `GET /audit`, `POST /audit/verify` |
 | Admin | `GET/POST /admin/rules`, `GET/POST /admin/users` |
-| Events | `GET /events/stream` (SSE: bank responses, analysis complete, notifications) |
+| Events | Not built: analysis is synchronous and notifications poll (DECISION D31) |
 | Demo | `POST /demo/reset`, `POST /demo/scenario/{code}` (demo mode only) |
 | Health | `GET /healthz` (liveness), `GET /readyz` (database, Redis, storage, models loaded) |
 

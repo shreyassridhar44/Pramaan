@@ -217,6 +217,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/alerts/reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alert Reminders */
+        get: operations["alert_reminders_api_v1_alerts_reminders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/escalations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Alert Escalations
+         * @description Open escalations computed for today by the same rules as the command view.
+         */
+        get: operations["alert_escalations_api_v1_alerts_escalations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/summary": {
         parameters: {
             query?: never;
@@ -564,6 +601,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/instruments/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bulk
+         * @description One action over a selection from the registry. Each instrument is checked on its own and
+         *     skipped with a reason when the action does not apply to it.
+         */
+        post: operations["bulk_api_v1_instruments_bulk_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/institutions": {
         parameters: {
             query?: never;
@@ -844,6 +902,27 @@ export interface paths {
          *     discharge request waiting or answered.
          */
         post: operations["request_discharge_api_v1_releases__case_id__discharge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/releases/{case_id}/penalty/settle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Settle Penalty
+         * @description Records that the penalty was paid, with the payment reference. The rules engine then
+         *     treats the penalty condition as met.
+         */
+        post: operations["settle_penalty_api_v1_releases__case_id__penalty_settle_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1210,6 +1289,29 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** AlertReminderOut */
+        AlertReminderOut: {
+            /** Id */
+            id: number;
+            /** Instrument Id */
+            instrument_id: number;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Region */
+            region: string;
+            /** Rule */
+            rule: string;
+            /** Offset Days */
+            offset_days: number;
+            /** Channel */
+            channel: string;
+            /** Due On */
+            due_on: string;
+            /** Sent On */
+            sent_on: string | null;
+        };
         /** ApplyBody */
         ApplyBody: {
             /** Instrument Ids */
@@ -1318,6 +1420,31 @@ export interface components {
             kind: string;
             /** Declared */
             declared?: string | null;
+        };
+        /** BulkBody */
+        BulkBody: {
+            /** Ids */
+            ids: number[];
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "request_confirmation" | "remind" | "assign";
+            /** Owner Id */
+            owner_id?: number | null;
+        };
+        /** BulkResult */
+        BulkResult: {
+            /** Done */
+            done: number;
+            /** Skipped */
+            skipped: number;
+            /** Reasons */
+            reasons: {
+                [key: string]: number;
+            };
+            /** Message */
+            message: string;
         };
         /** ChainLink */
         ChainLink: {
@@ -1624,6 +1751,29 @@ export interface components {
             document_id: number | null;
             /** Filename */
             filename: string | null;
+        };
+        /** EscalationOut */
+        EscalationOut: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Region */
+            region: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Level */
+            level: string;
+            /** Raised On */
+            raised_on: string;
+            /** Days Overdue */
+            days_overdue: number;
+            /** Next Level */
+            next_level: string | null;
+            /** Next Level On */
+            next_level_on: string | null;
         };
         /** EventOut */
         EventOut: {
@@ -2123,6 +2273,8 @@ export interface components {
             regions: components["schemas"]["Option"][];
             /** Banks */
             banks: components["schemas"]["BankOption"][];
+            /** Officers */
+            officers: components["schemas"]["OfficerOption"][];
         };
         /** NewRequest */
         NewRequest: {
@@ -2161,6 +2313,17 @@ export interface components {
             created_at: string;
             /** Read */
             read: boolean;
+        };
+        /** OfficerOption */
+        OfficerOption: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Region */
+            region: string | null;
         };
         /** Option */
         Option: {
@@ -2411,6 +2574,12 @@ export interface components {
             complaints: components["schemas"]["app__api__v1__releases__ComplaintOut"][];
             /** Penalty Due Paise */
             penalty_due_paise: string;
+            /** Penalty */
+            penalty: {
+                [key: string]: unknown;
+            };
+            /** Can Settle Penalty */
+            can_settle_penalty: boolean;
             /** Letters */
             letters: components["schemas"]["LetterRef"][];
             /** Events */
@@ -2614,6 +2783,17 @@ export interface components {
             emails_sent: number;
             /** Simulated Messages */
             simulated_messages: number;
+            /** Reconfirmations */
+            reconfirmations: number;
+            /** Auto Renewals */
+            auto_renewals: number;
+            /** Penalty Notices */
+            penalty_notices: number;
+        };
+        /** SettleBody */
+        SettleBody: {
+            /** Reference */
+            reference: string;
         };
         /** SignalOut */
         SignalOut: {
@@ -3181,6 +3361,71 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    alert_reminders_api_v1_alerts_reminders_get: {
+        parameters: {
+            query?: {
+                rule?: string | null;
+                channel?: string | null;
+                region?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertReminderOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alert_escalations_api_v1_alerts_escalations_get: {
+        parameters: {
+            query?: {
+                region?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EscalationOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -3810,6 +4055,39 @@ export interface operations {
             };
         };
     };
+    bulk_api_v1_instruments_bulk_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_institutions_api_v1_institutions_get: {
         parameters: {
             query?: {
@@ -4303,6 +4581,41 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReleaseDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    settle_penalty_api_v1_releases__case_id__penalty_settle_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettleBody"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

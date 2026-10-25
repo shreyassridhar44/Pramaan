@@ -5,6 +5,10 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Monitoring alerts beyond maturity: re-confirmation reminders, automatic renewal notices and penalty-window notices on overdue demands, sent by email with simulated SMS and WhatsApp; an Alerts page with the reminders sent and the open escalations with their next level.
+- Registry bulk actions (request confirmation, send reminder, assign) that report what was done and why anything was skipped, saved views and a column chooser kept per viewer in the browser.
+- Release penalties computed by the rules engine when a case is applied for, shown with their APH clause on the case page, and recorded as paid by a section head or the competent authority with a payment reference.
+- A component gallery at `/dev/components` in development builds.
 - Step 9 management layer: a command view with a monthly maturity river by proof level (with a table view and click-through to the registry), a tile cartogram of AICTE regions, largest unproven exposures, recent signals, an impact panel with a turnaround trend, 30-day deltas and a side sheet for action items; a forecast that plays the next 52 weeks with speed control, regional recolouring, rolling figures, a playhead and an event stream; plain-language search in the registry with reviewable chips (Bedrock path behind a flag, rule parser by default); eight reports with CSV and PDF export; and versioned rule administration with validation and effective dates.
 - Officer corrections of declared values with reasons, resubmission of returned deposits from the portal, deficiency letters on return, an observation composer, and event reasons in the timeline.
 - End-to-end tests for the R16 scenarios, an accessibility sweep of every route in both themes, and a performance script with recorded results.

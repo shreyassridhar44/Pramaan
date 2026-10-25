@@ -23,7 +23,7 @@ test.describe('Management layer (Step 9)', () => {
     const rows = page.getByRole('row').filter({ hasText: /₹/ })
     await expect(rows.first()).toBeVisible()
     const regions = await rows.evaluateAll((els) =>
-      els.slice(0, 10).map((e) => e.children[2]?.textContent?.trim()),
+      els.slice(0, 10).map((e) => e.querySelector('[data-col="region"]')?.textContent?.trim()),
     )
     expect(new Set(regions)).toEqual(new Set(['Western']))
   })

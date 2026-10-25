@@ -11,6 +11,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.rules.penalty import Penalty, applicable_penalties
 from app.domain.rules.release import Eligibility, ReleaseContext, evaluate_release
 from app.domain.types import InstrumentKind, Status
 from app.models import (
@@ -83,6 +84,25 @@ async def open_complaints(db: AsyncSession, institution_id: int) -> list[Complai
     )
 
 
+def penalty_record(found: list[Penalty]) -> dict[str, Any]:
+    """What the rules say is due; settling it is recorded by an officer."""
+    if not found:
+        return {}
+    return {
+        "due_paise": sum(p.amount_paise for p in found),
+        "items": [
+            {
+                "code": p.code,
+                "amount_paise": p.amount_paise,
+                "fraction": p.fraction,
+                "reason": p.reason,
+                "aph_ref": p.aph_ref,
+            }
+            for p in found
+        ],
+    }
+
+
 def context(
     b: CaseBundle,
     as_of: date,
@@ -152,6 +172,15 @@ async def apply(
     kinds = {i.kind for i in instruments}
     if len(kinds) != 1:
         raise ValueError("Apply separately for each type of deposit.")
+    rules = await load_rules(db)
+    flags = institution.flags or {}
+    found = applicable_penalties(
+        sum(i.amount_paise for i in instruments),
+        any(i.encashed_on for i in instruments),
+        bool(flags.get("closure_incomplete")),
+        bool(flags.get("no_eoa_application_six_years")),
+        rules.penalty,
+    )
     # One application per instrument, so the first instrument's id makes the reference unique.
     case = ReleaseCase(
         reference=f"REL/{on:%Y}/{instruments[0].id:06d}",
@@ -159,7 +188,7 @@ async def apply(
         kind=kinds.pop(),
         status="in_clearance",
         documents=sorted(set(documents)),
-        penalty={},
+        penalty=penalty_record(found),
         applied_on=on,
     )
     db.add(case)

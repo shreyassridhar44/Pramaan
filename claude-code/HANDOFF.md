@@ -16,7 +16,7 @@ Update this file at the end of every working session and every completed step.
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
 | 8 | Release, letters, verification | Done (audited 25 Oct 2026, see below): portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
 | 9 | Command view, forecast, search, reports | Done: command view with monthly maturity river (table view, click-through), region tile cartogram, largest unproven exposures, recent signals, impact panel with turnaround trend, 30-day deltas and an action side sheet; forecast with play, speed, map recolouring, rolling figures, playhead and event stream; plain-language Ask bar (Bedrock path built, rule parser active; 100% on 60 queries and 15/15 held out); eight reports with CSV and PDF reconciling with the summary; versioned rule administration; forecast timeline 1.6 s cold for 52 weeks | see git log |
-| 10 | Hardening, evaluation, deployment, demo | Not started | |
+| 10 | Hardening, evaluation, deployment, demo | Not started (Steps 1 to 9 re-audited 25 Oct 2026; 154 API tests plus 4 slow, 23 web tests, 64 Playwright tests) | |
 
 ## Session log
 
@@ -53,6 +53,14 @@ Notes from Step 9:
 - Demo shots: command view (figures roll, river, cartogram); Ask bar with "SBI and unconfirmed deposits in the Western region maturing before March 2027" (shows chips, flags SBI as not in the portfolio); forecast at 4x; reports; rules.
 - The forecast switches to the Command theme while open and restores the previous theme on leaving, without saving it.
 - Rule versions are dated: a version scheduled for later has no effect until its date (`load_rules` defaults to today).
+
+Audit of Steps 1 to 9 against the STEPS.md task lists (25 October 2026), gaps found and closed:
+- Step 4: no component gallery. Added `/dev/components` (development builds only; production answers not found).
+- Step 5: registry saved views, column chooser and bulk selection were missing. Added (DECISION D32); bulk actions are request confirmation, send reminder and assign, up to 200 at a time, each instrument checked and skipped with a reason.
+- Step 6: server-sent events for analysis were not built; recorded as not needed (DECISION D31).
+- Step 7: monitoring only sent maturity reminders. It now also sends re-confirmation reminders (bank confirmation older than the rule's window), automatic renewal notices (30 days before maturity) and penalty-window notices on overdue demands (one per slab; after the last slab the section head is told a decision is needed, the system never withdraws approval). Institution messages go by email plus simulated SMS and WhatsApp. New Alerts page with Reminders and Escalations tabs.
+- Step 8: release penalties were never computed. Applications now record the penalties found by `domain/rules/penalty`; the case page shows them with their APH clause, and a section head or the competent authority records the payment reference before the penalty condition passes.
+- `infra/compose.yml` (deployment set) is built in Step 10.
 
 Audit of Steps 1 to 8 (25 October 2026), gaps found and closed:
 - CI had failed on every push since Step 2: the test setup passed CI's psycopg URL to asyncpg. Fixed; CI green from `1480f46`.

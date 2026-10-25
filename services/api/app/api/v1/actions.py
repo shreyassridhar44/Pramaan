@@ -11,8 +11,19 @@ from sqlalchemy import func, select
 from app.api.deps import DbSession, Principal, instrument_scope, require_roles
 from app.domain.state_machine import TransitionRefused, check_transition
 from app.domain.types import FieldName, Role, Status
-from app.models import Event, Institution, Instrument, Letter, Signal, User
+from app.models import (
+    BankRequest,
+    Event,
+    Institution,
+    Instrument,
+    Letter,
+    Notification,
+    Outbox,
+    Signal,
+    User,
+)
 from app.services import audit, corrections, letters
+from app.services import bank as bank_svc
 from app.services import portfolio as psvc
 
 router = APIRouter(tags=["actions"])
@@ -342,4 +353,140 @@ async def correct(
         conflict_remaining=remaining,
         message="Corrected. The original value stays in the history."
         + (" Another source still disagrees." if remaining else ""),
+    )
+
+
+class BulkBody(BaseModel):
+    ids: list[int] = Field(min_length=1, max_length=200)
+    action: Literal["request_confirmation", "remind", "assign"]
+    owner_id: int | None = None
+
+
+class BulkResult(BaseModel):
+    done: int
+    skipped: int
+    reasons: dict[str, int]
+    message: str
+
+
+CLOSED = {"released", "renewed", "forfeited", "encashed_prematurely"}
+
+
+@router.post("/instruments/bulk", response_model=BulkResult)
+async def bulk(body: BulkBody, principal: Officer, db: DbSession) -> BulkResult:
+    """One action over a selection from the registry. Each instrument is checked on its own and
+    skipped with a reason when the action does not apply to it."""
+    today = date.today()
+    owner = None
+    if body.action == "assign":
+        owner = await db.get(User, body.owner_id) if body.owner_id else None
+        if owner is None or owner.role not in (
+            Role.BUREAU_OFFICER,
+            Role.REGIONAL_OFFICER,
+            Role.SECTION_HEAD,
+        ):
+            raise HTTPException(422, "Choose an officer to assign.")
+    rows = (
+        (
+            await db.scalars(
+                select(Instrument)
+                .join(Institution, Institution.id == Instrument.institution_id)
+                .where(Instrument.id.in_(body.ids), instrument_scope(principal))
+            )
+        )
+        .unique()
+        .all()
+    )
+    reasons: dict[str, int] = {}
+
+    def skip(why: str) -> None:
+        reasons[why] = reasons.get(why, 0) + 1
+
+    pending = set(
+        (
+            await db.scalars(
+                select(BankRequest.instrument_id).where(
+                    BankRequest.instrument_id.in_([i.id for i in rows]),
+                    BankRequest.status == "sent",
+                )
+            )
+        ).all()
+    )
+    users = {
+        u.institution_id: u
+        for u in (
+            await db.scalars(
+                select(User).where(
+                    User.role == Role.INSTITUTION_USER,
+                    User.institution_id.in_({i.institution_id for i in rows}),
+                )
+            )
+        ).all()
+    }
+    done = 0
+    for inst in rows:
+        if inst.status in CLOSED:
+            skip("closed")
+            continue
+        if body.action == "request_confirmation":
+            if inst.id in pending:
+                skip("already waiting for the bank")
+                continue
+            kind = "reconfirm" if inst.bank_confirmed_on else "confirm"
+            await bank_svc.create_request(db, inst, kind, principal.user.id, principal.label)
+        elif body.action == "remind":
+            user = users.get(inst.institution_id)
+            recipient = user.email if user else f"accounts+{inst.institution_id}@institution.demo"
+            subject = f"AICTE: action needed on security deposit {inst.number}"
+            text = inst.next_action or "Review the deposit on the Pramaan portal."
+            db.add(Outbox(channel="email", recipient=recipient, subject=subject, body=text))
+            if user:
+                db.add(Notification(user_id=user.id, title=subject, body=text, link="/portal"))
+        else:
+            assert owner is not None
+            if inst.owner_id == owner.id:
+                skip("already assigned to this officer")
+                continue
+            inst.owner_id = owner.id
+        db.add(
+            Event(
+                entity_type="instrument",
+                entity_id=inst.id,
+                type=f"officer.bulk_{body.action}",
+                payload={"owner": owner.name} if owner else {},
+                actor_id=principal.user.id,
+                occurred_on=today,
+            )
+        )
+        done += 1
+    missing = len(set(body.ids)) - len(rows)
+    if missing:
+        reasons["not found or outside your scope"] = missing
+    await audit.append(
+        db,
+        actor_id=principal.user.id,
+        actor_label=principal.label,
+        action=f"instrument.bulk_{body.action}",
+        entity_type="instrument",
+        entity_id=None,
+        data={"ids": body.ids, "done": done, "skipped": reasons},
+    )
+    await psvc.bump_data_version(db)
+    await db.commit()
+    skipped = sum(reasons.values())
+    verb = {
+        "request_confirmation": "Confirmation requested for",
+        "remind": "Reminder sent for",
+        "assign": "Assigned",
+    }[body.action]
+    return BulkResult(
+        done=done,
+        skipped=skipped,
+        reasons=reasons,
+        message=f"{verb} {done} deposit{'s' if done != 1 else ''}"
+        + (
+            "; skipped " + ", ".join(f"{n} {why}" for why, n in reasons.items()) + "."
+            if skipped
+            else "."
+        ),
     )

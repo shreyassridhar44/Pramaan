@@ -3,7 +3,7 @@ Vigilance and Grants, authorisation by the competent authority and discharge by 
 
 from collections import defaultdict
 from datetime import date
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -150,6 +150,8 @@ class ReleaseDetail(BaseModel):
     documents: list[DocumentLine]
     complaints: list[ComplaintOut]
     penalty_due_paise: str
+    penalty: dict[str, Any]
+    can_settle_penalty: bool
     letters: list[LetterRef]
     events: list[EventOut]
     can_authorise: bool
@@ -400,6 +402,10 @@ async def _detail(db: DbSession, principal: Principal, b: svc.CaseBundle) -> Rel
             for c in complaints
         ],
         penalty_due_paise=str(0 if penalty.get("settled_on") else penalty.get("due_paise", 0)),
+        penalty=penalty,
+        can_settle_penalty=principal.role in (Role.SECTION_HEAD, Role.APPROVING_AUTHORITY)
+        and bool(penalty.get("due_paise"))
+        and not penalty.get("settled_on"),
         letters=[_letter_ref(lt) for lt in letters_rows],
         events=[
             EventOut(
@@ -579,6 +585,55 @@ async def request_discharge(
         raise HTTPException(409, "Every instrument already has a discharge request.")
     for i in todo:
         await bank_svc.create_request(db, i, "discharge", principal.user.id, principal.label)
+    await db.commit()
+    return await _detail(db, principal, await _visible_case(db, principal, case_id))
+
+
+class SettleBody(BaseModel):
+    reference: str = Field(min_length=3, max_length=120)
+
+
+Settler = Annotated[Principal, Depends(require_roles(Role.SECTION_HEAD, Role.APPROVING_AUTHORITY))]
+
+
+@router.post("/releases/{case_id}/penalty/settle", response_model=ReleaseDetail)
+async def settle_penalty(
+    case_id: int, body: SettleBody, principal: Settler, db: DbSession
+) -> ReleaseDetail:
+    """Records that the penalty was paid, with the payment reference. The rules engine then
+    treats the penalty condition as met."""
+    b = await _visible_case(db, principal, case_id)
+    penalty = dict(b.case.penalty or {})
+    if not penalty.get("due_paise"):
+        raise HTTPException(409, "No penalty is due on this case.")
+    if penalty.get("settled_on"):
+        raise HTTPException(409, "The penalty is already recorded as settled.")
+    today = date.today()
+    penalty.update(
+        settled_on=today.isoformat(),
+        reference=body.reference.strip(),
+        settled_by=principal.user.name,
+    )
+    b.case.penalty = penalty
+    db.add(
+        Event(
+            entity_type="release_case",
+            entity_id=b.case.id,
+            type="release.penalty_settled",
+            payload={"reference": body.reference.strip()},
+            actor_id=principal.user.id,
+            occurred_on=today,
+        )
+    )
+    await audit.append(
+        db,
+        actor_id=principal.user.id,
+        actor_label=principal.label,
+        action="release.penalty_settled",
+        entity_type="release_case",
+        entity_id=b.case.id,
+        data={"due_paise": penalty["due_paise"], "reference": body.reference.strip()},
+    )
     await db.commit()
     return await _detail(db, principal, await _visible_case(db, principal, case_id))
 

@@ -27,6 +27,7 @@ from app.domain.assurance import EvidenceDates
 from app.domain.provenance import normalise
 from app.domain.rules.demand import ProgrammeLevel, compute_demand
 from app.domain.rules.params import RuleSet
+from app.domain.rules.penalty import applicable_penalties
 from app.domain.types import FieldName, InstrumentKind, Ownership, Premises, Source, Status
 from app.seed import reference as ref
 from app.services.audit import GENESIS, canonical, chain_hash
@@ -1107,6 +1108,38 @@ class Generator:
                 rows = [c for c in self.ds.rows["clearances"] if c["release_case_id"] == case_id]
                 if any(c["status"] == "blocked" for c in rows):
                     self.ds.rows["release_cases"][-1]["status"] = "blocked"
+        # One open case carries a closure penalty, so the penalty condition is visible in the demo.
+        inst_amounts = {r["id"]: r["amount_paise"] for r in self.ds.rows["instruments"]}
+        case_inst = {
+            r["release_case_id"]: r["instrument_id"]
+            for r in self.ds.rows["release_case_instruments"]
+        }
+        for case in self.ds.rows["release_cases"]:
+            owner = inst_rows[case["institution_id"]]
+            if (
+                case["status"] != "in_clearance"
+                or owner["name"] in (RELEASE_STORY,)
+                or owner["name"].startswith("Demo")
+            ):
+                continue
+            owner["flags"] = {**owner["flags"], "closure_incomplete": True}
+            found = applicable_penalties(
+                inst_amounts[case_inst[case["id"]]], False, True, False, RULES.penalty
+            )
+            case["penalty"] = {
+                "due_paise": sum(x.amount_paise for x in found),
+                "items": [
+                    {
+                        "code": x.code,
+                        "amount_paise": x.amount_paise,
+                        "fraction": x.fraction,
+                        "reason": x.reason,
+                        "aph_ref": x.aph_ref,
+                    }
+                    for x in found
+                ],
+            }
+            break
         # Letters are numbered in order of issue, separately for each type and year.
         for cleared, case_id, inst_row, inst_id in sorted(authorised, key=lambda a: (a[0], a[1])):
             code = "SO" if inst_row["kind"] == "rtgs" else "NOC"
@@ -1167,6 +1200,42 @@ class Generator:
                                 "status": "sent",
                             },
                         )
+            # The other monitoring alerts over the same 120 days, as the nightly run would send.
+            if status not in ("active", "maturing"):
+                continue
+            last = inst_row["last_confirmed_on"] or inst_row["bank_confirmed_on"]
+            if last:
+                due = last + timedelta(days=RULES.maturity.reconfirm_window_days)
+                if anchor - timedelta(days=120) <= due <= anchor:
+                    self.ds.add(
+                        "reminders",
+                        {
+                            "instrument_id": inst_row["id"],
+                            "rule_code": "monitoring.reconfirm",
+                            "offset_days": (due - last).days,
+                            "channel": "in_app",
+                            "recipient": "officer",
+                            "due_on": due,
+                            "sent_on": due,
+                            "status": "sent",
+                        },
+                    )
+            if inst_row["auto_renew"]:
+                due = maturity - timedelta(days=30)
+                if anchor - timedelta(days=120) <= due <= anchor:
+                    self.ds.add(
+                        "reminders",
+                        {
+                            "instrument_id": inst_row["id"],
+                            "rule_code": "monitoring.auto_renew",
+                            "offset_days": 30,
+                            "channel": "email",
+                            "recipient": "accounts@institution.demo",
+                            "due_on": due,
+                            "sent_on": due,
+                            "status": "sent",
+                        },
+                    )
 
     def bank_history(self) -> None:
         """Signed bank messages behind every seeded confirmation, so each one can be verified."""

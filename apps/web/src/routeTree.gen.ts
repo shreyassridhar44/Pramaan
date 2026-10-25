@@ -15,11 +15,13 @@ import { Route as ClearancesRouteImport } from './routes/clearances'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppAlertsRouteImport } from './routes/_app/alerts'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppForecastRouteImport } from './routes/_app/forecast'
 import { Route as AppLettersRouteImport } from './routes/_app/letters'
 import { Route as AppQueueRouteImport } from './routes/_app/queue'
 import { Route as AppReportsRouteImport } from './routes/_app/reports'
+import { Route as DevComponentsRouteImport } from './routes/dev.components'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as PortalLettersRouteImport } from './routes/portal/letters'
 import { Route as PortalReleaseRouteImport } from './routes/portal/release'
@@ -62,6 +64,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAlertsRoute = AppAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAuditRoute = AppAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -86,6 +93,11 @@ const AppReportsRoute = AppReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
   getParentRoute: () => AppRoute,
+} as any)
+const DevComponentsRoute = DevComponentsRouteImport.update({
+  id: '/dev/components',
+  path: '/dev/components',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/',
@@ -156,11 +168,13 @@ export interface FileRoutesByFullPath {
   '/clearances': typeof ClearancesRoute
   '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
+  '/alerts': typeof AppAlertsRoute
   '/audit': typeof AppAuditRoute
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
   '/reports': typeof AppReportsRoute
+  '/dev/components': typeof DevComponentsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -178,11 +192,13 @@ export interface FileRoutesByTo {
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
   '/signin': typeof SigninRoute
+  '/alerts': typeof AppAlertsRoute
   '/audit': typeof AppAuditRoute
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
   '/reports': typeof AppReportsRoute
+  '/dev/components': typeof DevComponentsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -204,11 +220,13 @@ export interface FileRoutesById {
   '/clearances': typeof ClearancesRoute
   '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
+  '/_app/alerts': typeof AppAlertsRoute
   '/_app/audit': typeof AppAuditRoute
   '/_app/forecast': typeof AppForecastRoute
   '/_app/letters': typeof AppLettersRoute
   '/_app/queue': typeof AppQueueRoute
   '/_app/reports': typeof AppReportsRoute
+  '/dev/components': typeof DevComponentsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -231,11 +249,13 @@ export interface FileRouteTypes {
     | '/clearances'
     | '/portal'
     | '/signin'
+    | '/alerts'
     | '/audit'
     | '/forecast'
     | '/letters'
     | '/queue'
     | '/reports'
+    | '/dev/components'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -253,11 +273,13 @@ export interface FileRouteTypes {
     | '/bank'
     | '/clearances'
     | '/signin'
+    | '/alerts'
     | '/audit'
     | '/forecast'
     | '/letters'
     | '/queue'
     | '/reports'
+    | '/dev/components'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -278,11 +300,13 @@ export interface FileRouteTypes {
     | '/clearances'
     | '/portal'
     | '/signin'
+    | '/_app/alerts'
     | '/_app/audit'
     | '/_app/forecast'
     | '/_app/letters'
     | '/_app/queue'
     | '/_app/reports'
+    | '/dev/components'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -304,6 +328,7 @@ export interface RootRouteChildren {
   ClearancesRoute: typeof ClearancesRoute
   PortalRoute: typeof PortalRouteWithChildren
   SigninRoute: typeof SigninRoute
+  DevComponentsRoute: typeof DevComponentsRoute
   VerifyTokenRoute: typeof VerifyTokenRoute
 }
 
@@ -351,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/alerts': {
+      id: '/_app/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AppAlertsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/audit': {
       id: '/_app/audit'
       path: '/audit'
@@ -385,6 +417,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/reports'
       preLoaderRoute: typeof AppReportsRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/dev/components': {
+      id: '/dev/components'
+      path: '/dev/components'
+      fullPath: '/dev/components'
+      preLoaderRoute: typeof DevComponentsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/portal/': {
       id: '/portal/'
@@ -474,6 +513,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppAlertsRoute: typeof AppAlertsRoute
   AppAuditRoute: typeof AppAuditRoute
   AppForecastRoute: typeof AppForecastRoute
   AppLettersRoute: typeof AppLettersRoute
@@ -490,6 +530,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAlertsRoute: AppAlertsRoute,
   AppAuditRoute: AppAuditRoute,
   AppForecastRoute: AppForecastRoute,
   AppLettersRoute: AppLettersRoute,
@@ -530,6 +571,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClearancesRoute: ClearancesRoute,
   PortalRoute: PortalRouteWithChildren,
   SigninRoute: SigninRoute,
+  DevComponentsRoute: DevComponentsRoute,
   VerifyTokenRoute: VerifyTokenRoute,
 }
 export const routeTree = rootRouteImport

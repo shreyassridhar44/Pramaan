@@ -212,3 +212,13 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Date.** 25 Oct 2026. **Status.** Accepted.
 - **Context.** The four assurance colours fail a categorical palette check (A2 and A3 are close greens; A0 is deliberately grey), and weekly maturities make a jagged river.
 - **Choice.** The river stacks three bands (declared, document-checked, bank-confirmed) with dedicated `--chart-a*` tokens validated for both themes (the grey "nothing proven" band is a deliberate chroma exception), a 2 px surface gap between bands, a legend, a hover readout and a table view. The command view and forecast aggregate weeks into months; a click lists that month in the registry.
+
+## D31. Synchronous analysis instead of server-sent events
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** `STEPS.md` Step 6 planned server-sent events to report when document analysis finishes. Measured analysis takes about 3.2 s per image and 2.7 s for a two-page PDF (`docs/perf-results.json`).
+- **Choice.** Analysis stays synchronous inside the upload request, with a staged progress display in the wizard. SSE would add a long-lived connection per upload, proxy configuration in CloudFront and a reconnect path, for a wait that already ends in under 4 s. Revisit if the learned models make analysis slower than about 10 s.
+
+## D32. Saved views and column choices stay in the browser
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** Step 5 asked for saved registry views and a column chooser. Both are personal conveniences, not records.
+- **Choice.** They are kept in the browser's local storage, keyed by the signed-in user for views. Every read and write is guarded, so a blocked or cleared store only loses the convenience. Nothing about them reaches the server or the audit trail. Bulk actions, by contrast, are server actions: each instrument is checked on its own, skipped with a reason when the action does not apply, and the run writes one audit entry plus an event per instrument.
