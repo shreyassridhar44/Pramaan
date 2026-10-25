@@ -332,7 +332,7 @@ export function Registry({
 
       <Panel className="overflow-hidden">
         <div className="flex items-baseline justify-between border-b border-line px-5 py-3">
-          <p className="text-[0.8125rem] text-ink-2">
+          <div className="text-[0.8125rem] text-ink-2">
             {first ? (
               <>
                 <span className="font-semibold text-ink">{formatCount(first.total)}</span>{' '}
@@ -343,7 +343,7 @@ export function Registry({
             ) : (
               <Skeleton className="h-4 w-48" />
             )}
-          </p>
+          </div>
           <p className="text-[0.75rem] text-ink-3">
             Statuses and assurance computed for the selected date
           </p>

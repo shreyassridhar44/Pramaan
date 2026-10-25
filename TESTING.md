@@ -25,7 +25,9 @@ Detailed cases and the traceability matrix are in `claude-code/TEST_PLAN.md`. Th
 | S5 | Discrepancy identification | `apps/web/e2e/s1-s5-intake.spec.ts` (altered specimen, figures against words signal, bank disagrees on amount, A0, return with deficiency letter) |
 | S6 | Authorised release processing | `apps/web/e2e/s6-release.spec.ts` (PGRC resolves and clears, only the authority issues the NOC, phone-sized context verifies Genuine, revoke shows Revoked, altered token shows Not recognised) |
 
-Also end to end: observations and corrections (R10), region scope for a regional officer (R13), axe on every route in both themes (`a11y.spec.ts`), and the registry interactive within 1.5 s (`perf.spec.ts`).
+Also end to end: observations and corrections (R10), region scope for a regional officer (R13), axe on every route in both themes (`a11y.spec.ts`), the registry interactive within 1.5 s (`perf.spec.ts`), and the Step 9 management layer (`step9.spec.ts`: plain-language search with chips and unrecognised terms, report totals equal to the command view's headline, a river click listing that month, forecast playback, a dated rule version).
+
+Plain-language search is scored by `services/api/scripts/search_eval.py` against 60 team-written queries and a 15-query held-out set (`docs/search-eval.json`); `tests/test_search.py` keeps both above 95% exact match and covers the model path with a stubbed Bedrock client (validation, dropped values, fallback on errors).
 
 ## 3. Running tests
 
@@ -67,5 +69,6 @@ Performance, measured on the development laptop (single API worker, Postgres in 
 | Document analysis (Step 6) | 3.2 s per receipt image, 2.7 s for a two-page PDF | under 15 s |
 | 20 officers browsing, 1 to 3 s between clicks (TEST_PLAN 4) | p95 245 ms over 586 requests | under 300 ms |
 | 20 clients with no pause (saturation, for information) | p95 1.25 s, about 24 requests per second on one worker | none set |
+| Forecast timeline, 52 weekly steps (Step 9) | 1.6 s cold, 5 ms cached | under 2 s cold, cached afterwards |
 
 Fresh clone to a running API and a production web build took about 4 minutes on this machine with package caches warm (Step 1 target: under 10 minutes following the README).

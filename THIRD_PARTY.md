@@ -12,8 +12,7 @@ Licences below are as published by each project and are re-verified when the dep
 | Tailwind CSS | Styling | MIT | Licence notice |
 | Radix UI primitives | Accessible components | MIT | Licence notice |
 | Motion | Animation | MIT | Licence notice |
-| Apache ECharts | Charts | Apache 2.0 | Notice file |
-| MapLibre GL JS | Map rendering | BSD-3-Clause | Notice |
+| Apache ECharts | Charts (maturity river, SVG renderer) | Apache 2.0 | Notice file |
 | cmdk | Command palette | MIT | Notice |
 | Lucide icons | Icons | ISC | Notice |
 | Sonner | Toasts | MIT | Notice |
@@ -92,8 +91,8 @@ Letter PDFs embed Noto Sans, Noto Sans Devanagari and Instrument Serif (all SIL 
 
 | Asset | Licence | Notes |
 |---|---|---|
-| India boundary data | to verify | Must follow Survey of India boundaries (see `claude-code/DECISION.md` D13) |
-| Base map tiles | to verify | Prefer a self-hosted minimal style without third-party tiles |
+| India boundary data | Not used | The region view is a tile cartogram without boundaries (`claude-code/DECISION.md` D13) |
+| Base map tiles | Not used | No geographic map is drawn |
 
 ## 6. AI services
 

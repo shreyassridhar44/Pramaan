@@ -32,6 +32,18 @@ These are demonstrations of the measurement, not claims about AICTE's current pe
 
 System performance targets are measured and recorded in `TESTING.md` Section 5 (raw figures in `docs/perf-results.json`). Model metrics (localiser, field extractor) and product measures are added after the GPU training run and the Step 10 evaluation scripts.
 
+### Plain-language search (25 October 2026)
+
+Produced by `services/api/scripts/search_eval.py`; raw output in `docs/search-eval.json`. A query counts only if every filter matches exactly.
+
+| Interpreter | Set | Queries | Exact match |
+|---|---|---|---|
+| Rule parser | Main set (the parser was tuned on three misses it exposed) | 60 | 100% |
+| Rule parser | Held-out set, written after tuning and scored once | 15 | 100% |
+| Claude Haiku 4.5 on Bedrock | Not measured: inference is blocked for the project's AWS account (DECISION D29) | | |
+
+Every interpretation is shown to the officer as removable chips before it is applied, so a wrong reading costs a click, not a wrong result.
+
 ## 4. Threats to validity
 
 - Synthetic documents may be easier or harder than real scans.

@@ -15,7 +15,7 @@ Update this file at the end of every working session and every completed step.
 | 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
 | 8 | Release, letters, verification | Done (audited 25 Oct 2026, see below): portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
-| 9 | Command view, forecast, search, reports | Not started | |
+| 9 | Command view, forecast, search, reports | Done: command view with monthly maturity river (table view, click-through), region tile cartogram, largest unproven exposures, recent signals, impact panel with turnaround trend, 30-day deltas and an action side sheet; forecast with play, speed, map recolouring, rolling figures, playhead and event stream; plain-language Ask bar (Bedrock path built, rule parser active; 100% on 60 queries and 15/15 held out); eight reports with CSV and PDF reconciling with the summary; versioned rule administration; forecast timeline 1.6 s cold for 52 weeks | see git log |
 | 10 | Hardening, evaluation, deployment, demo | Not started | |
 
 ## Session log
@@ -45,8 +45,14 @@ Update this file at the end of every working session and every completed step.
 
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 9: command view additions (MaturityRiver, region map, impact panel), the full-screen forecast page on `/portfolio/timeline`, plain-language search through Bedrock with a fallback parser, reports, and admin rules.
+2. Step 10: hardening, evaluation results into the docs, AWS deployment (t4g.medium, CloudFront, S3, SES), demo script and recording, release tag `v1.0.0-sih`.
 3. Owner (optional): add an end-to-end job to `.github/workflows/ci.yml` (needs a token with the `workflow` scope).
+4. Owner: Bedrock inference is blocked for account 067257065056 ("Operation not allowed" for every model and region tried). Ask AWS to enable model access (model access page or a support case); then set `BEDROCK_ENABLED=true` and run `uv run python -m scripts.search_eval --model`.
+
+Notes from Step 9:
+- Demo shots: command view (figures roll, river, cartogram); Ask bar with "SBI and unconfirmed deposits in the Western region maturing before March 2027" (shows chips, flags SBI as not in the portfolio); forecast at 4x; reports; rules.
+- The forecast switches to the Command theme while open and restores the previous theme on leaving, without saving it.
+- Rule versions are dated: a version scheduled for later has no effect until its date (`load_rules` defaults to today).
 
 Audit of Steps 1 to 8 (25 October 2026), gaps found and closed:
 - CI had failed on every push since Step 2: the test setup passed CI's psycopg URL to asyncpg. Fixed; CI green from `1480f46`.

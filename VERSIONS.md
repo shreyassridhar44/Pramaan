@@ -22,7 +22,6 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | @tanstack/react-table | 9.3.1 |
 | @tanstack/react-virtual | 3.14.22 |
 | echarts | 6.1.0 |
-| maplibre-gl | 6.15.0 |
 | cmdk | 1.1.1 |
 | zod | 4.6.7 |
 | react-hook-form | 7.91.0 |

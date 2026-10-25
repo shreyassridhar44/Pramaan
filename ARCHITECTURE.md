@@ -67,7 +67,7 @@ claude-code/              implementation instructions and logs
 
 | Component | Technology | Responsibility |
 |---|---|---|
-| Web | React 19, TypeScript (strict), Vite, TanStack Router and Query, Tailwind v4, Radix, Motion, ECharts, MapLibre, cmdk | All user interfaces; no business rules beyond formatting and UX validation |
+| Web | React 19, TypeScript (strict), Vite, TanStack Router and Query, Tailwind v4, Radix, Motion, ECharts, cmdk (regions shown as a tile cartogram, D13) | All user interfaces; no business rules beyond formatting and UX validation |
 | API | FastAPI, Pydantic v2, SQLAlchemy 2 (async, psycopg 3), Alembic | AuthN/Z, domain operations, queries, as-of computation, SSE events |
 | Workers | arq on Redis | Document analysis, bank request dispatch and simulated responses, rule runs, reminders, letters, exports |
 | Scheduler | arq cron | Daily rule run 06:00 IST, re-confirmation sweep, backups trigger |

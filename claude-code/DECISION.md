@@ -45,8 +45,9 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Alternatives.** Recharts, visx, Nivo, Highcharts (commercial licence), deck.gl, Leaflet, Mapbox GL (licence and token).
 - **Evidence.** ECharts handles large animated series smoothly (canvas) and supports stream-style stacked areas and accessible data views; Apache 2.0. MapLibre is open source (BSD-3), vector-rendered, no token needed.
 - **Choice.** ECharts for the river and analytics; MapLibre for the region map.
-- **Trade-offs.** ECharts bundle size (mitigated with modular imports).
+- **Trade-offs.** ECharts bundle size (mitigated with modular imports and the SVG renderer).
 - **Revisit if.** No Survey of India compliant boundary data can be confirmed; then use a tile cartogram (see D13).
+- **Update (25 Oct 2026).** ECharts is used for the maturity river. MapLibre was not needed: the region view is a tile cartogram (D13), so the dependency was removed.
 
 ## D6. Backend: FastAPI (Python) monolith with workers
 - **Date.** 24 Oct 2026. **Status.** Proposed.
@@ -105,11 +106,11 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Revisit if.** Schema-valid rate on the 60-query set is below 95%.
 
 ## D13. India map data
-- **Date.** 24 Oct 2026. **Status.** Proposed, needs verification in Step 9.
+- **Date.** 24 Oct 2026; resolved 25 Oct 2026. **Status.** Accepted: tile cartogram.
 - **Context.** Maps of India shown by a government-facing product must depict boundaries as per Survey of India.
 - **Alternatives.** Geographic map with a compliant boundary dataset; tile cartogram of regions; no map.
-- **Choice.** Use a dataset whose source states Survey of India compliance and whose licence allows use; otherwise a tile cartogram.
-- **Revisit if.** Licence or compliance cannot be confirmed.
+- **Choice.** A tile cartogram of the 11 AICTE regional and camp offices, placed roughly geographically and labelled "Tile cartogram of AICTE regions, not a map". No openly licensed boundary dataset with a stated Survey of India compliance could be confirmed in time, and the question being answered (value held, proof and overdue items by region) does not need boundaries.
+- **Revisit if.** AICTE supplies an approved boundary dataset.
 
 ## D14. Amounts as integer paise; dates in IST display
 - **Date.** 24 Oct 2026. **Status.** Proposed.
@@ -199,3 +200,15 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Date.** 25 Oct 2026. **Status.** Accepted.
 - **Context.** The accent (#b6531c) was used for small text such as as-of hints and chips but measured 4.46:1 on the canvas and 4.08:1 on its soft background.
 - **Choice.** #a84c1a, the smallest change that meets 4.5:1 on surface, canvas and accent-soft. The contrast check now enforces the text ratio for accent.
+
+## D29. Plain-language search: schema-constrained model with a rule fallback
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** Officers should be able to ask in plain English (F12); judges will ask how AI is used responsibly. Bedrock inference is blocked for the project's AWS account at the time of writing ("Operation not allowed" for every model, Anthropic and Amazon, in every region tried), pending action on the AWS side.
+- **Choice.** Claude Haiku 4.5 through the India-resident `in.` inference profile, called with a forced tool whose input schema allows only the registry's real values; output is validated and invalid values are dropped. A deterministic parser handles the same job when the model is off or fails, and is the default (`BEDROCK_ENABLED=false`). The officer always sees the interpretation as removable chips, with any unrecognised terms listed, and applies it; only the typed sentence is sent to the model.
+- **Evidence.** Rule parser: 100% exact match on the 60-query set (after fixing three misses it exposed) and 15 of 15 on a held-out set written afterwards and scored once (`docs/search-eval.json`). Both sets were written by the team.
+- **Revisit if.** Bedrock access is granted; then run `scripts/search_eval.py --model` and compare.
+
+## D30. Chart colours and a monthly river
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** The four assurance colours fail a categorical palette check (A2 and A3 are close greens; A0 is deliberately grey), and weekly maturities make a jagged river.
+- **Choice.** The river stacks three bands (declared, document-checked, bank-confirmed) with dedicated `--chart-a*` tokens validated for both themes (the grey "nothing proven" band is a deliberate chroma exception), a 2 px surface gap between bands, a legend, a hover readout and a table view. The command view and forecast aggregate weeks into months; a click lists that month in the registry.

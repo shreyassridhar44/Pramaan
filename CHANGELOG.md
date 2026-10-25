@@ -5,6 +5,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Step 9 management layer: a command view with a monthly maturity river by proof level (with a table view and click-through to the registry), a tile cartogram of AICTE regions, largest unproven exposures, recent signals, an impact panel with a turnaround trend, 30-day deltas and a side sheet for action items; a forecast that plays the next 52 weeks with speed control, regional recolouring, rolling figures, a playhead and an event stream; plain-language search in the registry with reviewable chips (Bedrock path behind a flag, rule parser by default); eight reports with CSV and PDF export; and versioned rule administration with validation and effective dates.
 - Officer corrections of declared values with reasons, resubmission of returned deposits from the portal, deficiency letters on return, an observation composer, and event reasons in the timeline.
 - End-to-end tests for the R16 scenarios, an accessibility sweep of every route in both themes, and a performance script with recorded results.
 - Step 8 release workflow: release applications from the portal with live Clause 6.46 hints and specimen documents, a releases list and case page with clearance lanes, a clearance queue for PGRC, Vigilance and Grants (PGRC resolves open complaints before clearing), authorisation by the competent authority only when every condition passes, bilingual NOC and sanction-order PDFs with a signed QR code, bank discharge through the bank network or the bank desk, a letters page with preview and revocation, and a public verify page for phones.
@@ -18,6 +19,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - Research, specification and implementation plan: `PROBLEM_STATEMENT.md`, `RESEARCH.md`, `PROJECT.md`, `ARCHITECTURE.md`, supporting documents and the `claude-code/` directory (24 October 2026).
 
 ### Fixed
+- The forecast timeline computes 52 weeks in 1.6 s instead of 8.6 s, with identical output (reminders are computed directly instead of regenerating each deposit's full schedule every week).
+- A rule version scheduled for a later date no longer applies before that date.
 - CI: the test setup now normalises the database URL, which had made every API job fail since the domain step.
 - The institution letters page, registry links with an all-digit search, release changes not refreshing cached statuses, and several accessibility issues (registry table semantics, listbox structure, a keyboard-scrollable table, accent contrast).
 - Seeded institutions no longer collide with the release story by name prefix, and seeded letters are numbered in order of issue.

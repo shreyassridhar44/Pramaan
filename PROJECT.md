@@ -296,7 +296,7 @@ Summary only; full detail and diagrams are in `ARCHITECTURE.md`, and the reasoni
 
 | Layer | Choice |
 |---|---|
-| Web | React 19, TypeScript, Vite, TanStack Router and Query, Tailwind CSS v4, Radix primitives with our own component layer, Motion, Apache ECharts, MapLibre GL, cmdk |
+| Web | React 19, TypeScript, Vite, TanStack Router and Query, Tailwind CSS v4, Radix primitives with our own component layer, Motion, Apache ECharts, cmdk (regions as a tile cartogram, see DECISION D13) |
 | API | Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2, Alembic |
 | Data | PostgreSQL 16, Valkey 8 (Redis-compatible) |
 | Jobs | arq workers for document analysis, rule runs, notifications, letter generation |

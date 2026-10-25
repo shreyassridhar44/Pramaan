@@ -110,7 +110,7 @@ export function RegionCartogram({
                   {formatINRCompact(held)}
                 </span>
                 {overdue ? (
-                  <span className="absolute -top-2 -right-1.5 inline-flex items-center gap-0.5 rounded-full bg-overdue px-1.5 py-px text-[0.625rem] font-semibold text-white shadow-sm">
+                  <span className="absolute -top-2 -right-1.5 inline-flex items-center gap-0.5 rounded-full border border-overdue/50 bg-overdue-soft px-1.5 py-px text-[0.625rem] font-semibold text-overdue shadow-sm">
                     <AlertTriangle className="size-2.5" aria-hidden />
                     {overdue}
                   </span>

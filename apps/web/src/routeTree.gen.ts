@@ -19,6 +19,7 @@ import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppForecastRouteImport } from './routes/_app/forecast'
 import { Route as AppLettersRouteImport } from './routes/_app/letters'
 import { Route as AppQueueRouteImport } from './routes/_app/queue'
+import { Route as AppReportsRouteImport } from './routes/_app/reports'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as PortalLettersRouteImport } from './routes/portal/letters'
 import { Route as PortalReleaseRouteImport } from './routes/portal/release'
@@ -79,6 +80,11 @@ const AppLettersRoute = AppLettersRouteImport.update({
 const AppQueueRoute = AppQueueRouteImport.update({
   id: '/queue',
   path: '/queue',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AppRoute,
 } as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/reports': typeof AppReportsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/forecast': typeof AppForecastRoute
   '/letters': typeof AppLettersRoute
   '/queue': typeof AppQueueRoute
+  '/reports': typeof AppReportsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/_app/forecast': typeof AppForecastRoute
   '/_app/letters': typeof AppLettersRoute
   '/_app/queue': typeof AppQueueRoute
+  '/_app/reports': typeof AppReportsRoute
   '/portal/letters': typeof PortalLettersRoute
   '/portal/release': typeof PortalReleaseRoute
   '/portal/submit': typeof PortalSubmitRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/reports'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/letters'
     | '/queue'
+    | '/reports'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_app/forecast'
     | '/_app/letters'
     | '/_app/queue'
+    | '/_app/reports'
     | '/portal/letters'
     | '/portal/release'
     | '/portal/submit'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppQueueRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/portal/': {
       id: '/portal/'
       path: '/'
@@ -459,6 +478,7 @@ interface AppRouteChildren {
   AppForecastRoute: typeof AppForecastRoute
   AppLettersRoute: typeof AppLettersRoute
   AppQueueRoute: typeof AppQueueRoute
+  AppReportsRoute: typeof AppReportsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminRulesRoute: typeof AppAdminRulesRoute
   AppInstitutionsInstitutionIdRoute: typeof AppInstitutionsInstitutionIdRoute
@@ -474,6 +494,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppForecastRoute: AppForecastRoute,
   AppLettersRoute: AppLettersRoute,
   AppQueueRoute: AppQueueRoute,
+  AppReportsRoute: AppReportsRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminRulesRoute: AppAdminRulesRoute,
   AppInstitutionsInstitutionIdRoute: AppInstitutionsInstitutionIdRoute,

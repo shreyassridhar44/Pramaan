@@ -25,9 +25,12 @@ Chronological log of research actions. Findings are summarised in `RESEARCH.md`.
 - ReportLab 5.1 shapes complex scripts when `uharfbuzz` is installed and a paragraph style sets `shaping=1` (source: `reportlab/pdfbase/ttfonts.py` and `platypus/paragraph.py` in the installed package). Without it, Devanagari conjuncts render as separate glyphs. Verified by rendering क्ष, त्ति and प्र to PNG.
 - The hinted Noto Sans Devanagari TTF from notofonts has no Latin glyphs, so letters pair it with Noto Sans for English (source: rendering test).
 - uharfbuzz 0.57.0 publishes manylinux aarch64 wheels, so it installs on the t4g instance without a compiler (source: PyPI file list).
+- Bedrock `ListInferenceProfiles` in ap-south-1: `in.anthropic.claude-haiku-4-5-20251001-v1:0` is ACTIVE; Haiku 5.5 is available only as a `global.` profile, which routes outside India. Converse calls from account 067257065056 fail with `ValidationException: Operation not allowed` for Anthropic and Amazon Nova models in ap-south-1 and us-east-1, so inference is blocked at the account level (DECISION D29).
+- Region map: no openly licensed India boundary dataset with a stated Survey of India compliance was confirmed, so the region view uses a tile cartogram (DECISION D13, resolved).
+- Playwright 1.64.1 and `@axe-core/playwright` 4.14.0 were under two weeks old on 25 October; 1.63.0 and 4.13.0 were pinned instead (`npm view ... time`).
 
 ## Open research items
-- Survey of India compliant boundary dataset and licence (D13).
+- Bedrock model access for the project account (owner action with AWS).
 - Licence of PP-OCR model files used by RapidOCR.
 - Licence of ImageNet-pretrained EfficientNet-B0 weights used for encoder initialisation.
 - TypeScript 7 compatibility with Vite, ESLint and TanStack Router.
