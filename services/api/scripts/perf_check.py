@@ -136,7 +136,9 @@ async def main(seed: bool) -> None:
         **await latency(officer, "/api/v1/instruments?limit=100"),
         "matching_instruments": total,
     }
-    results["registry_page_500_rows"] = await latency(officer, "/api/v1/instruments?limit=500", n=20)
+    results["registry_page_500_rows"] = await latency(
+        officer, "/api/v1/instruments?limit=500", n=20
+    )
     await officer.aclose()
     institution = await signed_in("institution")
     results["document_analysis_seconds"] = await analysis(institution)
