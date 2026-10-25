@@ -119,7 +119,7 @@ function ClearancesLayout() {
           ) : (
             <ul role="listbox" aria-label="Clearance queue">
               {items.map(({ row: r, my_status, open_complaints }) => (
-                <li key={r.id}>
+                <li key={r.id} role="none">
                   <button
                     type="button"
                     role="option"

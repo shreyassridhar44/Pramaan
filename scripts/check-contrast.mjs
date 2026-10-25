@@ -36,7 +36,9 @@ function ratio(a, b) {
 const pairs = [
   ['ink', 'canvas', 4.5], ['ink', 'surface', 4.5], ['ink-2', 'surface', 4.5], ['ink-2', 'canvas', 4.5],
   ['ink-3', 'surface', 4.5], ['ink-3', 'canvas', 4.5], ['ink-3', 'surface-sunken', 4.5],
-  ['brand-contrast', 'brand', 4.5], ['brand', 'surface', 4.5], ['accent', 'surface', 3],
+  ['brand-contrast', 'brand', 4.5], ['brand', 'surface', 4.5],
+  // Accent is used for small text (as-of hints, chips), so it must meet the text ratio.
+  ['accent', 'surface', 4.5], ['accent', 'canvas', 4.5], ['accent', 'accent-soft', 4.5],
   ['a0', 'surface', 3], ['a1', 'surface', 4.5], ['a2', 'surface', 4.5], ['a3', 'surface', 4.5],
   ['a1', 'a1-soft', 4.5], ['a2', 'a2-soft', 4.5], ['a0', 'a0-soft', 3],
   ['due', 'surface', 4.5], ['due', 'due-soft', 4.5], ['overdue', 'surface', 4.5],

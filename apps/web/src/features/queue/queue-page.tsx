@@ -86,7 +86,7 @@ export function QueuePage() {
         ) : (
           <ul role="listbox" aria-label="Queue">
             {items.map((i) => (
-              <li key={i.id}>
+              <li key={i.id} role="none">
                 <button
                   type="button"
                   role="option"

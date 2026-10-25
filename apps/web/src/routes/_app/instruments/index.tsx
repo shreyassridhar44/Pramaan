@@ -9,7 +9,8 @@ export const Route = createFileRoute('/_app/instruments/')({
   staticData: { title: 'Instruments' },
   validateSearch: (s: Record<string, unknown>): RegistrySearch & { asOf?: string } => ({
     asOf: typeof s.asOf === 'string' ? s.asOf : undefined,
-    q: typeof s.q === 'string' && s.q ? s.q : undefined,
+    // The router parses values as JSON, so an all-digit instrument number arrives as a number.
+    q: (typeof s.q === 'string' || typeof s.q === 'number') && s.q !== '' ? String(s.q) : undefined,
     region: list(s.region),
     bank: list(s.bank),
     status: list(s.status),

@@ -118,7 +118,12 @@ export function LettersPage() {
             body="Letters appear here when the competent authority authorises a release."
           />
         ) : (
-          <div className="max-h-[calc(100dvh-280px)] overflow-auto">
+          <div
+            className="max-h-[calc(100dvh-280px)] overflow-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Letters table"
+          >
             <table className="w-full text-[0.8125rem]">
               <thead className="sticky top-0 bg-surface">
                 <tr className="border-y border-line text-left text-[0.6875rem] tracking-[0.04em] text-ink-3 uppercase">

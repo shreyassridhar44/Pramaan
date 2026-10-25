@@ -284,21 +284,123 @@ export function Registry({
             Statuses and assurance computed for the selected date
           </p>
         </div>
-        <div
-          role="row"
-          className="grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line bg-sunken/60 px-5 py-2 text-[0.6875rem] font-medium tracking-[0.04em] text-ink-3 uppercase"
-        >
-          <span role="columnheader">Instrument</span>
-          <span role="columnheader">Institution</span>
-          <span role="columnheader">Region</span>
-          <span role="columnheader">Bank</span>
-          <span role="columnheader" className="text-right">
-            Amount
-          </span>
-          <span role="columnheader">Maturity</span>
-          <span role="columnheader">Status</span>
-          <span role="columnheader">Proof</span>
-          <span role="columnheader">Owner</span>
+        <div role="table" aria-label="Instruments" aria-rowcount={(first?.total ?? 0) + 1}>
+          <div role="rowgroup">
+            <div
+              role="row"
+              aria-rowindex={1}
+              className="grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line bg-sunken/60 px-5 py-2 text-[0.6875rem] font-medium tracking-[0.04em] text-ink-3 uppercase"
+            >
+              <span role="columnheader">Instrument</span>
+              <span role="columnheader">Institution</span>
+              <span role="columnheader">Region</span>
+              <span role="columnheader">Bank</span>
+              <span role="columnheader" className="text-right">
+                Amount
+              </span>
+              <span role="columnheader">Maturity</span>
+              <span role="columnheader">Status</span>
+              <span role="columnheader">Proof</span>
+              <span role="columnheader">Owner</span>
+            </div>
+          </div>
+          {rows.length > 0 && !list.isError ? (
+            <div
+              ref={parentRef}
+              role="rowgroup"
+              className={cn(
+                'overflow-y-auto',
+                institutionId ? 'max-h-[420px]' : 'h-[calc(100dvh-280px)] min-h-[420px]',
+              )}
+            >
+              <div
+                role="presentation"
+                style={{ height: virtualizer.getTotalSize(), position: 'relative' }}
+              >
+                {items.map((vi) => {
+                  const r = rows[vi.index]!
+                  return (
+                    <Link
+                      key={r.id}
+                      to="/instruments/$instrumentId"
+                      params={{ instrumentId: String(r.id) }}
+                      search={isToday ? {} : { asOf }}
+                      role="row"
+                      aria-rowindex={vi.index + 2}
+                      onKeyDown={(e) =>
+                        e.key === ' ' &&
+                        void navigate({
+                          to: '/instruments/$instrumentId',
+                          params: { instrumentId: String(r.id) },
+                        })
+                      }
+                      className={cn(
+                        'absolute inset-x-0 grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line px-5 text-[0.8125rem] hover:bg-sunken/60 focus-visible:bg-accent-soft focus-visible:outline-none',
+                      )}
+                      style={{ top: vi.start, height: rowHeight }}
+                    >
+                      <span role="cell" className="truncate font-mono text-ink">
+                        {r.number}
+                        {r.open_signals ? (
+                          <span
+                            className="ml-2 inline-grid size-5 place-items-center rounded-full bg-overdue-soft font-sans text-[0.6875rem] font-semibold text-overdue"
+                            aria-label={`${r.open_signals} open signals`}
+                          >
+                            {r.open_signals}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span role="cell" className="truncate text-ink">
+                        {r.institution}
+                      </span>
+                      <span role="cell" className="truncate text-ink-2">
+                        {meta.data?.regions
+                          .find((x) => x.code === r.region)
+                          ?.name.replace(/ Region| \(camp office\)/, '') ?? r.region}
+                      </span>
+                      <span role="cell" className="truncate text-ink-2">
+                        {r.bank}
+                      </span>
+                      <span role="cell" className="text-right">
+                        <Amount paise={r.amount_paise} />
+                      </span>
+                      <span role="cell" className="leading-tight">
+                        <span className="block font-mono text-ink">
+                          {formatDate(r.maturity_date)}
+                        </span>
+                        {!dense ? (
+                          <span
+                            className={cn(
+                              'block text-[0.6875rem]',
+                              r.days_to_maturity < 0
+                                ? 'text-overdue'
+                                : r.days_to_maturity <= 90
+                                  ? 'text-due'
+                                  : 'text-ink-3',
+                            )}
+                          >
+                            {formatRelativeDays(r.maturity_date, asOf)}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span role="cell">
+                        <StatusChip status={r.status} />
+                      </span>
+                      <span role="cell">
+                        <AssuranceRing level={r.assurance as AssuranceLevel} size={22} />
+                      </span>
+                      <span role="cell" className="truncate text-ink-2">
+                        {r.owner ?? 'Unassigned'}
+                      </span>
+                    </Link>
+                  )
+                })}
+              </div>
+              {list.isFetchingNextPage ? (
+                <p className="py-3 text-center text-[0.75rem] text-ink-3">Loading more</p>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         {list.isError ? (
           <ErrorState error={list.error} onRetry={() => void list.refetch()} />
@@ -314,93 +416,7 @@ export function Registry({
             title="No instruments match these filters"
             body="Try removing a filter or searching by the instrument number."
           />
-        ) : (
-          <div
-            ref={parentRef}
-            role="rowgroup"
-            className={cn(
-              'overflow-y-auto',
-              institutionId ? 'max-h-[420px]' : 'h-[calc(100dvh-280px)] min-h-[420px]',
-            )}
-          >
-            <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-              {items.map((vi) => {
-                const r = rows[vi.index]!
-                return (
-                  <Link
-                    key={r.id}
-                    to="/instruments/$instrumentId"
-                    params={{ instrumentId: String(r.id) }}
-                    search={isToday ? {} : { asOf }}
-                    role="row"
-                    onKeyDown={(e) =>
-                      e.key === ' ' &&
-                      void navigate({
-                        to: '/instruments/$instrumentId',
-                        params: { instrumentId: String(r.id) },
-                      })
-                    }
-                    className={cn(
-                      'absolute inset-x-0 grid grid-cols-[1.25fr_2.2fr_0.9fr_1.1fr_1fr_1.1fr_1.15fr_0.7fr_1fr] items-center gap-3 border-b border-line px-5 text-[0.8125rem] hover:bg-sunken/60 focus-visible:bg-accent-soft focus-visible:outline-none',
-                    )}
-                    style={{ top: vi.start, height: rowHeight }}
-                  >
-                    <span className="truncate font-mono text-ink">
-                      {r.number}
-                      {r.open_signals ? (
-                        <span
-                          className="ml-2 inline-grid size-5 place-items-center rounded-full bg-overdue-soft font-sans text-[0.6875rem] font-semibold text-overdue"
-                          aria-label={`${r.open_signals} open signals`}
-                        >
-                          {r.open_signals}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="truncate text-ink">{r.institution}</span>
-                    <span className="truncate text-ink-2">
-                      {meta.data?.regions
-                        .find((x) => x.code === r.region)
-                        ?.name.replace(/ Region| \(camp office\)/, '') ?? r.region}
-                    </span>
-                    <span className="truncate text-ink-2">{r.bank}</span>
-                    <span className="text-right">
-                      <Amount paise={r.amount_paise} />
-                    </span>
-                    <span className="leading-tight">
-                      <span className="block font-mono text-ink">
-                        {formatDate(r.maturity_date)}
-                      </span>
-                      {!dense ? (
-                        <span
-                          className={cn(
-                            'block text-[0.6875rem]',
-                            r.days_to_maturity < 0
-                              ? 'text-overdue'
-                              : r.days_to_maturity <= 90
-                                ? 'text-due'
-                                : 'text-ink-3',
-                          )}
-                        >
-                          {formatRelativeDays(r.maturity_date, asOf)}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span>
-                      <StatusChip status={r.status} />
-                    </span>
-                    <span>
-                      <AssuranceRing level={r.assurance as AssuranceLevel} size={22} />
-                    </span>
-                    <span className="truncate text-ink-2">{r.owner ?? 'Unassigned'}</span>
-                  </Link>
-                )
-              })}
-            </div>
-            {list.isFetchingNextPage ? (
-              <p className="py-3 text-center text-[0.75rem] text-ink-3">Loading more</p>
-            ) : null}
-          </div>
-        )}
+        ) : null}
       </Panel>
     </div>
   )
