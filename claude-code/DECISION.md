@@ -181,3 +181,21 @@ Each decision lists context, alternatives, evidence, the choice, trade-offs and 
 - **Context.** Clause 6.46 needs three clearances and an authority decision; the bank must discharge its lien.
 - **Choice.** A case groups deposits of one type. PGRC cannot clear while complaints against the institution are open; it resolves them first. Authorisation is refused unless every condition passes, issues the NOC (or the sanction order for RTGS) and sends a discharge request through the same adapter as confirmations: network banks answer at once, desk banks answer from the bank desk. RTGS deposits are released by the sanction order itself.
 - **Revisit if.** AICTE wants partial releases or penalties deducted from proceeds.
+
+## D26. Registry served from a per-version in-process index
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** Under 20 concurrent users the registry spent most of each request reloading and post-processing every instrument row, so requests queued on one worker.
+- **Choice.** Cache computed states per scope and date, the registry columns, and open-signal counts, keyed by the data version that every write bumps. Release applications and authorisations now bump the version too (they did not, which could leave statuses stale).
+- **Trade-offs.** Memory grows with the portfolio (a few MB at 2,725 instruments); each worker keeps its own copy.
+- **Revisit if.** The portfolio grows past about 100,000 instruments, or several API instances need a shared cache.
+
+## D27. End-to-end tests run locally in the installed Chrome
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** The R16 scenarios need the full stack and real OCR; the automation token cannot change the CI workflow file.
+- **Choice.** Playwright with `channel: 'chrome'` (no browser download), one worker, demo reset before each scenario. S3 (daily runs over simulated days) is tested at the API level, because the browser cannot advance the scheduler's clock.
+- **Revisit if.** The owner adds an end-to-end job to CI.
+
+## D28. Ledger accent darkened for small text
+- **Date.** 25 Oct 2026. **Status.** Accepted.
+- **Context.** The accent (#b6531c) was used for small text such as as-of hints and chips but measured 4.46:1 on the canvas and 4.08:1 on its soft background.
+- **Choice.** #a84c1a, the smallest change that meets 4.5:1 on surface, canvas and accent-soft. The contrast check now enforces the text ratio for accent.

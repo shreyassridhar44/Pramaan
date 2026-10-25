@@ -44,6 +44,14 @@ Licences below are as published by each project and are re-verified when the dep
 | boto3 | AWS SDK | Apache 2.0 | Notice |
 | Caddy | Reverse proxy on the instance | Apache 2.0 | Notice |
 
+## 1a. Development and test tools (not shipped)
+
+| Component | Use | Licence |
+|---|---|---|
+| Playwright (`@playwright/test`, `playwright-core`) | End-to-end tests in the installed Chrome | Apache 2.0 |
+| axe-core and `@axe-core/playwright` | Accessibility checks in component and end-to-end tests | MPL 2.0 |
+| Vitest, Testing Library | Unit and component tests | MIT |
+
 ## 2. Training-only dependencies (GPU machine, not shipped)
 
 | Component | Licence |

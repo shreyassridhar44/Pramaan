@@ -1,0 +1,57 @@
+{
+  "measured_on": "2026-10-25",
+  "machine": "local dev",
+  "seed_seconds": 16.4,
+  "seed_counts": {
+    "institutions": 2600,
+    "instruments": 2725
+  },
+  "portfolio_summary": {
+    "p50_ms": 43.8,
+    "p95_ms": 90.4,
+    "n": 40
+  },
+  "portfolio_summary_past_date": {
+    "p50_ms": 37.5,
+    "p95_ms": 60.9,
+    "n": 40
+  },
+  "registry_first_page": {
+    "p50_ms": 68.8,
+    "p95_ms": 90.0,
+    "n": 40,
+    "matching_instruments": 1016
+  },
+  "registry_page_500_rows": {
+    "p50_ms": 120.2,
+    "p95_ms": 271.3,
+    "n": 20
+  },
+  "document_analysis_seconds": {
+    "specimen_fdr_genuine.jpg": 3.22,
+    "specimen_fdr_altered.jpg": 3.31,
+    "two_page_scan.pdf": 2.74
+  },
+  "load_20_users_browsing": {
+    "users": 20,
+    "seconds": 60,
+    "think_seconds": [
+      1.0,
+      3.0
+    ],
+    "requests": 586,
+    "p50_ms": 87.1,
+    "p95_ms": 245.1
+  },
+  "load_20_users_saturation": {
+    "users": 20,
+    "seconds": 30,
+    "think_seconds": [
+      0.0,
+      0.0
+    ],
+    "requests": 720,
+    "p50_ms": 819.5,
+    "p95_ms": 1248.2
+  }
+}

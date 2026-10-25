@@ -14,7 +14,7 @@ Update this file at the end of every working session and every completed step.
 | 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
 | 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
-| 8 | Release, letters, verification | Done: portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
+| 8 | Release, letters, verification | Done (audited 25 Oct 2026, see below): portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
 | 9 | Command view, forecast, search, reports | Not started | |
 | 10 | Hardening, evaluation, deployment, demo | Not started | |
 
@@ -46,6 +46,19 @@ Update this file at the end of every working session and every completed step.
 ## Exact next steps
 1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
 2. Step 9: command view additions (MaturityRiver, region map, impact panel), the full-screen forecast page on `/portfolio/timeline`, plain-language search through Bedrock with a fallback parser, reports, and admin rules.
+3. Owner (optional): add an end-to-end job to `.github/workflows/ci.yml` (needs a token with the `workflow` scope).
+
+Audit of Steps 1 to 8 (25 October 2026), gaps found and closed:
+- CI had failed on every push since Step 2: the test setup passed CI's psycopg URL to asyncpg. Fixed; CI green from `1480f46`.
+- FR13 corrections were missing: officers now correct permitted declared fields with a reason, the original stays in history, and corrections cannot hide a disagreement with the receipt or the bank.
+- Returned deposits could not be resubmitted: the portal shows the reason and accepts a corrected resubmission; the as-of engine tracks resubmission.
+- No deficiency letter on return (S5, F6): returns now issue a signed, bilingual deficiency letter.
+- No observation composer (PROTOTYPE F4) and timeline events without their reasons: both added.
+- The institution letters page had been committed as the router's placeholder; restored.
+- Registry links with an all-digit search were dropped by the router's JSON parsing; fixed.
+- Release applications and authorisations did not bump the data version, so cached statuses could go stale; fixed, and the registry now serves from a per-version index (DECISION D26).
+- Accessibility: registry table semantics, listbox structure, keyboard-scrollable letters table, and the ledger accent contrast (D28). Axe passes on every route in both themes.
+- Tests added: Playwright scenarios S1, S2, S4, S5, S6, observations and corrections, region scope, accessibility sweep, registry timing; API tests for corrections, resubmission, escalation over simulated days, reminders exactly once (S3) and the renewal chain. Performance targets measured (TESTING.md Section 5).
 
 Notes from Step 8:
 - Release demo: sign in as PGRC, open "Sahyadri College of Engineering, Nashik" (REL/2026/000003), mark the open complaint resolved, then Clear; sign in as the authority, open the case and Issue NOC; open the verification page from the success dialog or scan the QR in the PDF. Revoke from Letters to show the Revoked state.

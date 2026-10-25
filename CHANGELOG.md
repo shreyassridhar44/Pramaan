@@ -5,6 +5,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Officer corrections of declared values with reasons, resubmission of returned deposits from the portal, deficiency letters on return, an observation composer, and event reasons in the timeline.
+- End-to-end tests for the R16 scenarios, an accessibility sweep of every route in both themes, and a performance script with recorded results.
 - Step 8 release workflow: release applications from the portal with live Clause 6.46 hints and specimen documents, a releases list and case page with clearance lanes, a clearance queue for PGRC, Vigilance and Grants (PGRC resolves open complaints before clearing), authorisation by the competent authority only when every condition passes, bilingual NOC and sanction-order PDFs with a signed QR code, bank discharge through the bank network or the bank desk, a letters page with preview and revocation, and a public verify page for phones.
 - Step 7 bank network and monitoring: Ed25519-signed bank confirmations verified before any value is used, automatic answers from network banks, a simulated bank desk for banks that answer manually, field-by-field conflicts with the bank's record, rejection of responses whose signature does not verify, published bank keys, a bank tab with the request handshake and statement-style messages, a daily monitoring run with reminders, escalations, in-app notifications and email, a notifications bell, and renewal submissions prefilled from the deposit being renewed.
 - Step 6 intake: document upload and analysis with checks (document against declaration, amount in figures against words, field-relative forensic outliers, duplicate instruments and images), institution portal with demand card, deadline and penalty slabs, a four-step submission wizard that reads the receipt before submission, specimen receipts in demo mode, officer actions (start scrutiny, verify, return), signal resolution, the verification queue and a document viewer with field boxes and heatmap layers.
@@ -16,6 +18,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - Research, specification and implementation plan: `PROBLEM_STATEMENT.md`, `RESEARCH.md`, `PROJECT.md`, `ARCHITECTURE.md`, supporting documents and the `claude-code/` directory (24 October 2026).
 
 ### Fixed
+- CI: the test setup now normalises the database URL, which had made every API job fail since the domain step.
+- The institution letters page, registry links with an all-digit search, release changes not refreshing cached statuses, and several accessibility issues (registry table semantics, listbox structure, a keyboard-scrollable table, accent contrast).
 - Seeded institutions no longer collide with the release story by name prefix, and seeded letters are numbered in order of issue.
 - Empty successful responses (204) no longer show as failed requests in the web app.
 - The submission confirmation no longer disappears when the portal refreshes after a demand is met.

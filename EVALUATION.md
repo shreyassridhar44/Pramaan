@@ -30,7 +30,7 @@ These are demonstrations of the measurement, not claims about AICTE's current pe
 
 ## 3. Results
 
-Not yet measured. This section is written by the evaluation scripts in Step 10.
+System performance targets are measured and recorded in `TESTING.md` Section 5 (raw figures in `docs/perf-results.json`). Model metrics (localiser, field extractor) and product measures are added after the GPU training run and the Step 10 evaluation scripts.
 
 ## 4. Threats to validity
 

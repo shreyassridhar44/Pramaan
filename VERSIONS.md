@@ -29,7 +29,8 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | lucide-react | 1.61.0 |
 | sonner | 2.0.8 |
 | vitest | 5.0.5 |
-| @playwright/test | 1.64.1 |
+| @playwright/test, playwright-core | 1.63.0 (1.64.1 was under two weeks old on 25 Oct 2026) |
+| @axe-core/playwright | 4.13.0 (4.14.0 was under two weeks old) |
 | typescript | 5.9.3 (7.0.2 is latest; see DECISION D18) |
 
 ## API and ML (latest on 24 Oct 2026)
