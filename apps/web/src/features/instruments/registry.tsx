@@ -16,6 +16,7 @@ import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate, formatINRCompact, formatRelativeDays } from '@/lib/format'
 
+import { AskBar } from './ask-bar'
 import { FilterMenu } from './filter-menu'
 import { useMeta } from './queries'
 
@@ -24,10 +25,16 @@ export type RegistrySearch = {
   q?: string
   region?: string[]
   bank?: string[]
+  kind?: string[]
   status?: string[]
   assurance?: number[]
+  maturity_from?: string
+  maturity_to?: string
+  has_signals?: boolean
   sort?: string
 }
+
+const KIND_LABEL: Record<string, string> = { joint_fdr: 'Joint FDR', rpgf: 'RPGF', rtgs: 'RTGS' }
 
 const PAGE = 200
 const HELD_STATUSES = [
@@ -65,6 +72,8 @@ export function Registry({
   const navigate = useNavigate()
   const [dense, setDense] = useState(false)
   const [text, setText] = useState(search.q ?? '')
+  // Keep the box in step when the search changes from outside (the Ask bar, a link).
+  useEffect(() => setText(search.q ?? ''), [search.q])
   useEffect(() => {
     const t = setTimeout(() => {
       if ((search.q ?? '') !== text) setSearch({ ...search, q: text || undefined })
@@ -79,6 +88,10 @@ export function Registry({
     bank: search.bank,
     status: search.status,
     assurance: search.assurance,
+    kind: search.kind,
+    maturity_from: search.maturity_from,
+    maturity_to: search.maturity_to,
+    has_signals: search.has_signals,
     sort: (search.sort ?? 'maturity') as 'maturity',
     limit: PAGE,
     institution_id: institutionId,
@@ -122,8 +135,42 @@ export function Registry({
     search.region?.length ||
     search.bank?.length ||
     search.status?.length ||
-    search.assurance?.length,
+    search.assurance?.length ||
+    search.kind?.length ||
+    search.maturity_from ||
+    search.maturity_to ||
+    search.has_signals !== undefined,
   )
+  const extra: { label: string; clear: RegistrySearch }[] = [
+    ...(search.kind ?? []).map((k) => ({
+      label: KIND_LABEL[k] ?? k,
+      clear: { ...search, kind: search.kind!.filter((x) => x !== k) },
+    })),
+    ...(search.maturity_from
+      ? [
+          {
+            label: `Matures from ${formatDate(search.maturity_from)}`,
+            clear: { ...search, maturity_from: undefined },
+          },
+        ]
+      : []),
+    ...(search.maturity_to
+      ? [
+          {
+            label: `Matures by ${formatDate(search.maturity_to)}`,
+            clear: { ...search, maturity_to: undefined },
+          },
+        ]
+      : []),
+    ...(search.has_signals !== undefined
+      ? [
+          {
+            label: search.has_signals ? 'Has open signals' : 'No open signals',
+            clear: { ...search, has_signals: undefined },
+          },
+        ]
+      : []),
+  ]
 
   const exportCsv = async () => {
     const all: Row[] = []
@@ -176,6 +223,7 @@ export function Registry({
 
   return (
     <div className="grid gap-4">
+      {institutionId ? null : <AskBar search={search} onApply={setSearch} />}
       <div className={cn('flex flex-wrap items-center gap-2', institutionId && 'hidden')}>
         <label className="relative flex h-9 w-[320px] items-center">
           <Search className="pointer-events-none absolute left-3 size-4 text-ink-3" aria-hidden />
@@ -224,6 +272,22 @@ export function Registry({
             setSearch({ ...search, assurance: v.length ? v.map(Number) : undefined })
           }
         />
+        {extra.map((x) => (
+          <span
+            key={x.label}
+            className="inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft pr-1 pl-3 text-[0.8125rem] text-ink"
+          >
+            {x.label}
+            <button
+              type="button"
+              onClick={() => setSearch(x.clear)}
+              className="grid size-6 place-items-center rounded-full text-ink-3 hover:bg-surface hover:text-ink"
+              aria-label={`Remove ${x.label}`}
+            >
+              <X className="size-3.5" />
+            </button>
+          </span>
+        ))}
         {filtersActive ? (
           <Button
             size="sm"

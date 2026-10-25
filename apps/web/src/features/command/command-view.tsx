@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Inbox } from 'lucide-react'
+import { useState } from 'react'
 
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, SeverityChip, StatusChip } from '@/components/signature/chips'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { api, unwrap } from '@/lib/api/client'
-import { useAsOf } from '@/lib/asof'
+import { addDays, useAsOf } from '@/lib/asof'
 import {
   formatCount,
   formatDate,
@@ -17,27 +18,57 @@ import {
 } from '@/lib/format'
 
 import { HeadlineFigure, RollingNumber } from './headline'
+import { InstrumentSheet } from './instrument-sheet'
+import { ExposuresList, ImpactPanel, RecentSignals, RegionPanel } from './overview-panels'
 import { useSummary } from './queries'
+import { RiverPanel } from './river-panel'
 
 export function CommandView() {
   const summary = useSummary()
+  const [sheet, setSheet] = useState<number | null>(null)
   return (
     <div className="grid gap-5">
       <HeadlineBand />
       <div className="grid gap-5 xl:grid-cols-12">
         <div className="xl:col-span-8">
-          <ActionQueue />
+          <RiverPanel />
         </div>
         <div className="xl:col-span-4">
           <AssuranceComposition data={summary.data} loading={summary.isPending} />
         </div>
       </div>
+      <div className="grid gap-5 xl:grid-cols-12">
+        <div className="xl:col-span-5">
+          <RegionPanel />
+        </div>
+        <div className="xl:col-span-7">
+          <ActionQueue onOpen={setSheet} />
+        </div>
+      </div>
+      <div className="grid gap-5 xl:grid-cols-12">
+        <div className="xl:col-span-6">
+          <RecentSignals />
+        </div>
+        <div className="xl:col-span-6">
+          <ImpactPanel />
+        </div>
+      </div>
+      <InstrumentSheet id={sheet} onClose={() => setSheet(null)} />
     </div>
   )
 }
 
+function delta(now: number, before: number | undefined, format: (n: number) => string) {
+  if (before === undefined) return null
+  const d = now - before
+  if (Math.abs(d) < 1e-9) return 'no change in 30 days'
+  return `${d > 0 ? '+' : '-'}${format(Math.abs(d))} in 30 days`
+}
+
 function HeadlineBand() {
   const { data, isPending, isError, error, refetch } = useSummary()
+  const { asOf } = useAsOf()
+  const before = useSummary(addDays(asOf, -30)).data
   if (isError)
     return (
       <Panel>
@@ -59,18 +90,31 @@ function HeadlineBand() {
   const held = Number(data.held_paise)
   const confirmed = Number(data.by_assurance_paise.a2) + Number(data.by_assurance_paise.a3)
   const share = held ? confirmed / held : 0
+  const bHeld = before ? Number(before.held_paise) : undefined
+  const bShare =
+    before && Number(before.held_paise)
+      ? (Number(before.by_assurance_paise.a2) + Number(before.by_assurance_paise.a3)) /
+        Number(before.held_paise)
+      : undefined
+  const money = (n: number) => formatINRCompact(Math.round(n))
   return (
     <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
       <HeadlineFigure
         label="Value held in trust"
         figure={<RollingNumber value={held} format={(n) => formatINRCompact(Math.round(n))} />}
         caption={`${formatCount(data.held_count)} instruments across ${Object.keys(data.by_bank_paise).length} banks`}
+        delta={delta(held, bHeld, money)}
       />
       <HeadlineFigure
         label="Bank-confirmed"
         tone="a2"
         figure={<RollingNumber value={share * 100} format={(n) => `${n.toFixed(0)}%`} />}
         caption={`${formatINRCompact(confirmed)} proven by the issuing bank`}
+        delta={delta(
+          share * 100,
+          bShare === undefined ? undefined : bShare * 100,
+          (n) => `${n.toFixed(1)} points`,
+        )}
         aside={<AssuranceRing level={share >= 0.5 ? 2 : 1} size={40} />}
       />
       <HeadlineFigure
@@ -78,6 +122,7 @@ function HeadlineBand() {
         tone={data.needs_action_count ? 'overdue' : 'default'}
         figure={<RollingNumber value={data.needs_action_count} format={(n) => formatCount(n)} />}
         caption={`${data.overdue_count} matured without action, ${data.discrepancy_count} discrepancies, ${data.pending_verification_count} awaiting scrutiny`}
+        delta={delta(data.needs_action_count, before?.needs_action_count, (n) => formatCount(n))}
       />
       <HeadlineFigure
         label="Maturing in 90 days"
@@ -89,6 +134,11 @@ function HeadlineBand() {
           />
         }
         caption={`${data.maturing_90_count} instruments need a renewal or release plan`}
+        delta={delta(
+          Number(data.maturing_90_paise),
+          before ? Number(before.maturing_90_paise) : undefined,
+          money,
+        )}
       />
     </div>
   )
@@ -151,11 +201,12 @@ function AssuranceComposition({
           </>
         )}
       </div>
+      <ExposuresList />
     </Panel>
   )
 }
 
-function ActionQueue() {
+function ActionQueue({ onOpen }: { onOpen: (id: number) => void }) {
   const { asOf, isToday } = useAsOf()
   const q = useQuery({
     queryKey: ['portfolio', 'action-queue', asOf],
@@ -206,14 +257,15 @@ function ActionQueue() {
                 <th className="px-3 py-2 font-medium">Institution</th>
                 <th className="px-3 py-2 text-right font-medium">Amount</th>
                 <th className="px-3 py-2 font-medium">Due</th>
-                <th className="px-5 py-2 font-medium">Owner</th>
+                <th className="hidden px-5 py-2 font-medium 2xl:table-cell">Owner</th>
               </tr>
             </thead>
             <tbody>
               {q.data.map((item) => (
                 <tr
                   key={`${item.kind}-${item.instrument_id}`}
-                  className="border-b border-line last:border-0 hover:bg-sunken/50"
+                  onClick={() => onOpen(item.instrument_id)}
+                  className="cursor-pointer border-b border-line last:border-0 hover:bg-sunken/50"
                 >
                   <td className="px-5 py-2.5">
                     <SeverityChip severity={item.severity} />
@@ -223,6 +275,14 @@ function ActionQueue() {
                       to="/instruments/$instrumentId"
                       params={{ instrumentId: String(item.instrument_id) }}
                       search={isToday ? {} : { asOf }}
+                      onClick={(e) => {
+                        // Open beside the command view; a modified click still opens a new tab.
+                        if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          onOpen(item.instrument_id)
+                        }
+                      }}
                       className="block truncate font-medium text-ink hover:text-brand"
                     >
                       {item.title}
@@ -244,7 +304,7 @@ function ActionQueue() {
                       {formatRelativeDays(item.due, asOf)}
                     </span>
                   </td>
-                  <td className="px-5 py-2.5 whitespace-nowrap text-ink-2">
+                  <td className="hidden px-5 py-2.5 whitespace-nowrap text-ink-2 2xl:table-cell">
                     {item.owner ?? 'Unassigned'}
                   </td>
                 </tr>

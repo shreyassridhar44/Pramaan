@@ -2,6 +2,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Registry, type RegistrySearch } from '@/features/instruments/registry'
 
+const isoDate = (v: unknown) =>
+  typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined
+
 const list = (v: unknown) =>
   Array.isArray(v) ? v.map(String) : typeof v === 'string' && v ? [v] : undefined
 
@@ -18,6 +21,10 @@ export const Route = createFileRoute('/_app/instruments/')({
       ?.map(Number)
       .filter((n) => n >= 0 && n <= 3),
     sort: typeof s.sort === 'string' ? s.sort : undefined,
+    kind: list(s.kind),
+    maturity_from: isoDate(s.maturity_from),
+    maturity_to: isoDate(s.maturity_to),
+    has_signals: typeof s.has_signals === 'boolean' ? s.has_signals : undefined,
   }),
   component: InstrumentsPage,
 })

@@ -25,6 +25,11 @@
   --a1: #2f5bd3;
   --a2: #0f7a55;
   --a3: #0a5a40;
+  /* Chart bands (validated with the dataviz palette check): declared, document-checked,
+     bank-confirmed. */
+  --chart-a0: #5f6578;
+  --chart-a1: #2f5bd3;
+  --chart-a2: #0f7a55;
   --a0-soft: #ecebe8;
   --a1-soft: #e3eafb;
   --a2-soft: #dcf1e8;
@@ -61,6 +66,10 @@
   --a1: #6e93ff;
   --a2: #35c58f;
   --a3: #5be0ae;
+  /* Darker than the text tokens so bands sit in the dark lightness band and stay distinct. */
+  --chart-a0: #5d6478;
+  --chart-a1: #4a74e8;
+  --chart-a2: #139a6a;
   --a0-soft: #1c2233;
   --a1-soft: #18244a;
   --a2-soft: #0f2e25;

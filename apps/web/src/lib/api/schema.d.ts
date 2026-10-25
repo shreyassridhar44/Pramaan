@@ -322,6 +322,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portfolio/exposures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exposures
+         * @description Largest deposits held without bank confirmation.
+         */
+        get: operations["exposures_api_v1_portfolio_exposures_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/signals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recent Signals
+         * @description The latest open signals in scope, high severity first within the same day.
+         */
+        get: operations["recent_signals_api_v1_portfolio_signals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/instruments": {
         parameters: {
             query?: never;
@@ -967,6 +1007,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalogue */
+        get: operations["catalogue_api_v1_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report */
+        get: operations["report_api_v1_reports__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{name}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report Pdf */
+        get: operations["report_pdf_api_v1_reports__name__pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rules */
+        get: operations["list_rules_api_v1_rules_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rules/{code}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** New Version */
+        post: operations["new_version_api_v1_rules__code__versions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/interpret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Interpret */
+        post: operations["interpret_api_v1_search_interpret_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/audit": {
         parameters: {
             query?: never;
@@ -1216,6 +1358,15 @@ export interface components {
             /** Aph Ref */
             aph_ref: string;
         };
+        /** Chip */
+        Chip: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+        };
         /** ClearanceBody */
         ClearanceBody: {
             /**
@@ -1240,6 +1391,15 @@ export interface components {
             reason: string | null;
             /** Decided On */
             decided_on: string | null;
+        };
+        /** ColumnOut */
+        ColumnOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Kind */
+            kind: string;
         };
         /** CorrectionBody */
         CorrectionBody: {
@@ -1489,6 +1649,23 @@ export interface components {
             /** Conflict Resolved On */
             conflict_resolved_on: string | null;
         };
+        /** Exposure */
+        Exposure: {
+            /** Instrument Id */
+            instrument_id: number;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Bank */
+            bank: string;
+            /** Amount Paise */
+            amount_paise: string;
+            /** Assurance */
+            assurance: number;
+            /** Status */
+            status: string;
+        };
         /** FieldCompare */
         FieldCompare: {
             /** Field */
@@ -1501,6 +1678,27 @@ export interface components {
             bank_record: string | null;
             /** Match */
             match: boolean;
+        };
+        /** Filters */
+        Filters: {
+            /** Q */
+            q?: string | null;
+            /** Region */
+            region?: string[];
+            /** Bank */
+            bank?: string[];
+            /** Kind */
+            kind?: ("joint_fdr" | "rpgf" | "rtgs")[];
+            /** Status */
+            status?: ("submitted" | "under_scrutiny" | "returned" | "discrepancy" | "active" | "maturing" | "matured" | "renewal_pending" | "renewed" | "release_requested" | "release_cleared" | "released" | "lien_hold" | "forfeited" | "encashed_prematurely")[];
+            /** Assurance */
+            assurance?: number[];
+            /** Maturity From */
+            maturity_from?: string | null;
+            /** Maturity To */
+            maturity_to?: string | null;
+            /** Has Signals */
+            has_signals?: boolean | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1521,6 +1719,8 @@ export interface components {
             /** Data Source */
             data_source: string;
             verification_turnaround_days: components["schemas"]["Turnaround"];
+            /** Turnaround Trend */
+            turnaround_trend: components["schemas"]["TrendPoint"][];
             /** Field Agreement Rate */
             field_agreement_rate: number | null;
             /** Bank Confirmed Share By Count */
@@ -1785,6 +1985,23 @@ export interface components {
             /** Owner */
             owner: string | null;
         };
+        /** InterpretBody */
+        InterpretBody: {
+            /** Text */
+            text: string;
+        };
+        /** InterpretResult */
+        InterpretResult: {
+            filters: components["schemas"]["Filters"];
+            /** Chips */
+            chips: components["schemas"]["Chip"][];
+            /** Source */
+            source: string;
+            /** Unrecognised */
+            unrecognised: string[];
+            /** Note */
+            note: string | null;
+        };
         /** LetterKey */
         LetterKey: {
             /** Key Id */
@@ -1915,6 +2132,20 @@ export interface components {
              * @enum {string}
              */
             kind: "confirm" | "reconfirm";
+        };
+        /** NewVersion */
+        NewVersion: {
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /**
+             * Effective From
+             * Format: date
+             */
+            effective_from: string;
+            /** Note */
+            note: string;
         };
         /** NotificationOut */
         NotificationOut: {
@@ -2079,6 +2310,27 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** RecentSignal */
+        RecentSignal: {
+            /** Id */
+            id: number;
+            /** Instrument Id */
+            instrument_id: number;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Code */
+            code: string;
+            /** Severity */
+            severity: string;
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string | null;
+            /** Raised On */
+            raised_on: string;
+        };
         /** RegionRow */
         RegionRow: {
             /** Code */
@@ -2216,6 +2468,39 @@ export interface components {
             /** Overdue */
             overdue: boolean;
         };
+        /** ReportInfo */
+        ReportInfo: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Params */
+            params: string[];
+        };
+        /** ReportOut */
+        ReportOut: {
+            info: components["schemas"]["ReportInfo"];
+            /** As Of */
+            as_of: string;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Columns */
+            columns: components["schemas"]["ColumnOut"][];
+            /** Rows */
+            rows: {
+                [key: string]: unknown;
+            }[];
+            /** Totals */
+            totals: {
+                [key: string]: unknown;
+            };
+            /** Data Source */
+            data_source: string;
+        };
         /** RequestOut */
         RequestOut: {
             /** Id */
@@ -2300,6 +2585,20 @@ export interface components {
             by_assurance_paise: {
                 [key: string]: string;
             };
+        };
+        /** RuleOut */
+        RuleOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Aph Ref */
+            aph_ref: string;
+            /** Is Assumption */
+            is_assumption: boolean;
+            current: components["schemas"]["VersionOut"];
+            /** History */
+            history: components["schemas"]["VersionOut"][];
         };
         /** RunOut */
         RunOut: {
@@ -2491,6 +2790,15 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** TrendPoint */
+        TrendPoint: {
+            /** Month */
+            month: string;
+            /** Median Days */
+            median_days: number | null;
+            /** Count */
+            count: number;
+        };
         /** Turnaround */
         Turnaround: {
             /** Median */
@@ -2546,6 +2854,23 @@ export interface components {
             issuing_office: string;
             /** Status Note */
             status_note: string | null;
+        };
+        /** VersionOut */
+        VersionOut: {
+            /** Version */
+            version: number;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Effective From */
+            effective_from: string;
+            /** Created By */
+            created_by: string | null;
+            /** Created At */
+            created_at: string;
+            /** Note */
+            note: string | null;
         };
         /** ResolveBody */
         app__api__v1__actions__ResolveBody: {
@@ -3041,6 +3366,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Impact"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    exposures_api_v1_portfolio_exposures_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exposure"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recent_signals_api_v1_portfolio_signals_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecentSignal"][];
                 };
             };
             /** @description Validation Error */
@@ -4227,6 +4616,182 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LetterKey"][];
+                };
+            };
+        };
+    };
+    catalogue_api_v1_reports_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportInfo"][];
+                };
+            };
+        };
+    };
+    report_api_v1_reports__name__get: {
+        parameters: {
+            query?: {
+                as_of?: string | null;
+                days?: number;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_pdf_api_v1_reports__name__pdf_get: {
+        parameters: {
+            query?: {
+                as_of?: string | null;
+                days?: number;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rules_api_v1_rules_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleOut"][];
+                };
+            };
+        };
+    };
+    new_version_api_v1_rules__code__versions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewVersion"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    interpret_api_v1_search_interpret_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterpretBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

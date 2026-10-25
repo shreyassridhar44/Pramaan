@@ -33,11 +33,13 @@ export function HeadlineFigure({
   caption,
   aside,
   tone,
+  delta,
 }: {
   label: string
   figure: ReactNode
   caption?: ReactNode
   aside?: ReactNode
+  delta?: string | null
   tone?: 'default' | 'a2' | 'due' | 'overdue'
 }) {
   return (
@@ -61,6 +63,7 @@ export function HeadlineFigure({
           {figure}
         </p>
         {caption ? <p className="mt-2 text-[0.8125rem] text-ink-3">{caption}</p> : null}
+        {delta ? <p className="mt-1 font-mono text-[0.6875rem] text-ink-3">{delta}</p> : null}
       </div>
       {aside ? <div className="shrink-0 pt-1">{aside}</div> : null}
     </div>
