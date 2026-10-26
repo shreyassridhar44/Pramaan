@@ -18,8 +18,14 @@ run() {
     --document-name AWS-RunShellScript --parameters "file://$params" \
     --query Command.CommandId --output text)
   rm -f "$params"
-  aws ssm wait command-executed --region "$REGION" --command-id "$id" \
-    --instance-id "$INSTANCE" 2>/dev/null || true
+  # `aws ssm wait command-executed` can return while the command is still running.
+  while :; do
+    case $(aws ssm get-command-invocation --region "$REGION" --command-id "$id" \
+      --instance-id "$INSTANCE" --query Status --output text 2>/dev/null || echo Pending) in
+      Pending | InProgress | Delayed) sleep 3 ;;
+      *) break ;;
+    esac
+  done
   aws ssm get-command-invocation --region "$REGION" --command-id "$id" \
     --instance-id "$INSTANCE" --query '[StandardOutputContent,StandardErrorContent]' --output text
 }

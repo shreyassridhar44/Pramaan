@@ -20,8 +20,14 @@ run() {
     --document-name AWS-RunShellScript --parameters "file://$params" \
     --query Command.CommandId --output text)
   rm -f "$params"
-  aws ssm wait command-executed --region "$REGION" --command-id "$id" \
-    --instance-id "$INSTANCE" 2>/dev/null || true
+  # `aws ssm wait command-executed` can return while the command is still running.
+  while :; do
+    case $(aws ssm get-command-invocation --region "$REGION" --command-id "$id" \
+      --instance-id "$INSTANCE" --query Status --output text 2>/dev/null || echo Pending) in
+      Pending | InProgress | Delayed) sleep 3 ;;
+      *) break ;;
+    esac
+  done
   aws ssm get-command-invocation --region "$REGION" --command-id "$id" \
     --instance-id "$INSTANCE" --query StandardOutputContent --output text
 }
@@ -33,7 +39,7 @@ PUB=$(run '{"commands":[
   "mkdir -p /root/.ssh && chmod 700 /root/.ssh",
   "[ -f /root/.ssh/pramaan_deploy ] || ssh-keygen -q -t ed25519 -N \"\" -C pramaan-autodeploy -f /root/.ssh/pramaan_deploy",
   "cat /root/.ssh/pramaan_deploy.pub"
-]}' | tail -n 1)
+]}' | grep -m1 '^ssh-ed25519 ')
 case "$PUB" in ssh-ed25519\ *) ;; *) echo "could not read the host key: $PUB"; exit 1 ;; esac
 
 TOKEN=${GITHUB_TOKEN:-$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill \
