@@ -45,6 +45,17 @@ async def test_altered_receipt_is_caught_by_figures_against_words(client: AsyncC
     assert "figures_words_mismatch" in codes
     amount = next(f for f in result["fields"] if f["field"] == "amount")
     assert amount["norm"] == "350000000"
+    # The trained localiser marks the inserted digit, and the mark is mapped to the amount.
+    marks = [c for c in result["checks"] if c["code"] == "possible_alteration"]
+    assert any(c["field"] == "amount" and c["severity"] == "high" for c in marks)
+
+
+@pytest.mark.slow
+async def test_genuine_receipt_gets_no_high_alteration_mark(client: AsyncClient) -> None:
+    await sign_in(client, "institution")
+    result = await _upload(client, "specimen_fdr_genuine.jpg", "fdr_scan", DECLARED_GENUINE)
+    marks = [c for c in result["checks"] if c["code"] == "possible_alteration"]
+    assert all(c["severity"] == "low" and c["field"] is None for c in marks)
 
 
 @pytest.mark.slow

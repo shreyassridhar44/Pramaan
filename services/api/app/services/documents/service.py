@@ -248,9 +248,11 @@ async def _checks(
 
     # 3. Forensic regions mapped to fields. A mark that touches no value field (printed labels,
     # borders) is still shown, but graded low: an altered deposit changes values.
+    # Overlap is the share of the mark inside the field: a mark on one digit covers only a small
+    # part of a wide field box.
     for region in result.forensics.regions:
-        near = max(fields, key=lambda f: _overlap(f["box"], region.box), default=None)
-        target = near if near and _overlap(near["box"], region.box) > 0.1 else None
+        near = max(fields, key=lambda f: _overlap(region.box, f["box"]), default=None)
+        target = near if near and _overlap(region.box, near["box"]) > 0.3 else None
         if target:
             severity = "high" if region.score > 0.7 else "medium"
             label = FIELD_LABEL.get(target["field"], "a field").lower()
