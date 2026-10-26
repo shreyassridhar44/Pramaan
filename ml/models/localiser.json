@@ -1,0 +1,169 @@
+{
+  "name": "pramaan-edit-localiser",
+  "architecture": "U-Net, EfficientNet-B0 encoder, RGB + 3 SRM residual channels",
+  "input": "RGB float32 in [0,1], NCHW, height and width multiples of 32",
+  "output": "per-pixel logit of edited region",
+  "exported_at": "2026-10-26T01:57:06.437091+00:00",
+  "sha256": "15f85888fe0e4277fb08efd05c5698bac19851aa6afd91e965fc674ebd6b0af7",
+  "onnx_parity_max_abs_diff": 0.00033292174339294434,
+  "onnx_parity_compares": "sigmoid probabilities, PyTorch CPU vs onnxruntime CPU",
+  "training": {
+    "best_val_pixel_f1": 0.9662536515625968,
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 1.1231409617960453,
+        "val_pixel_f1": 0.7520182652686477,
+        "seconds": 495.4
+      },
+      {
+        "epoch": 2,
+        "loss": 0.2753668292760849,
+        "val_pixel_f1": 0.8617628738339355,
+        "seconds": 481.2
+      },
+      {
+        "epoch": 3,
+        "loss": 0.11095571919530631,
+        "val_pixel_f1": 0.9009536635121929,
+        "seconds": 481.8
+      },
+      {
+        "epoch": 4,
+        "loss": 0.07498191098123788,
+        "val_pixel_f1": 0.9469119365954322,
+        "seconds": 482.0
+      },
+      {
+        "epoch": 5,
+        "loss": 0.0663634483460337,
+        "val_pixel_f1": 0.9319366756223773,
+        "seconds": 481.8
+      },
+      {
+        "epoch": 6,
+        "loss": 0.05983116772118956,
+        "val_pixel_f1": 0.9312377174545312,
+        "seconds": 481.6
+      },
+      {
+        "epoch": 7,
+        "loss": 0.05331384381465614,
+        "val_pixel_f1": 0.9369876160672359,
+        "seconds": 482.7
+      },
+      {
+        "epoch": 8,
+        "loss": 0.04901310006529093,
+        "val_pixel_f1": 0.9437862283480083,
+        "seconds": 482.2
+      },
+      {
+        "epoch": 9,
+        "loss": 0.04418421916104853,
+        "val_pixel_f1": 0.944937185501184,
+        "seconds": 481.7
+      },
+      {
+        "epoch": 10,
+        "loss": 0.04247028111945838,
+        "val_pixel_f1": 0.8733670118223139,
+        "seconds": 482.2
+      },
+      {
+        "epoch": 11,
+        "loss": 0.040231585620902476,
+        "val_pixel_f1": 0.9377602325353652,
+        "seconds": 481.3
+      },
+      {
+        "epoch": 12,
+        "loss": 0.0391500788340345,
+        "val_pixel_f1": 0.9516318825404367,
+        "seconds": 481.0
+      },
+      {
+        "epoch": 13,
+        "loss": 0.037689950210042296,
+        "val_pixel_f1": 0.94112002851446,
+        "seconds": 480.9
+      },
+      {
+        "epoch": 14,
+        "loss": 0.03428255331888795,
+        "val_pixel_f1": 0.93409669406523,
+        "seconds": 481.6
+      },
+      {
+        "epoch": 15,
+        "loss": 0.03568070989567786,
+        "val_pixel_f1": 0.963829716257975,
+        "seconds": 481.8
+      },
+      {
+        "epoch": 16,
+        "loss": 0.03164245393266901,
+        "val_pixel_f1": 0.959729550623517,
+        "seconds": 481.8
+      },
+      {
+        "epoch": 17,
+        "loss": 0.031407114776782694,
+        "val_pixel_f1": 0.9545295504677873,
+        "seconds": 481.4
+      },
+      {
+        "epoch": 18,
+        "loss": 0.03103198849596083,
+        "val_pixel_f1": 0.9638636606375164,
+        "seconds": 481.6
+      },
+      {
+        "epoch": 19,
+        "loss": 0.02958460170123726,
+        "val_pixel_f1": 0.9652860085268022,
+        "seconds": 481.9
+      },
+      {
+        "epoch": 20,
+        "loss": 0.027570519210770725,
+        "val_pixel_f1": 0.9662536515625968,
+        "seconds": 482.3
+      },
+      {
+        "epoch": 21,
+        "loss": 0.02715379014937207,
+        "val_pixel_f1": 0.9620964928482013,
+        "seconds": 481.2
+      },
+      {
+        "epoch": 22,
+        "loss": 0.027731814075959847,
+        "val_pixel_f1": 0.9642173939308512,
+        "seconds": 483.0
+      },
+      {
+        "epoch": 23,
+        "loss": 0.028237368870526552,
+        "val_pixel_f1": 0.9630986745515911,
+        "seconds": 482.8
+      },
+      {
+        "epoch": 24,
+        "loss": 0.026954146563075484,
+        "val_pixel_f1": 0.9622436618358344,
+        "seconds": 483.3
+      }
+    ],
+    "args": {
+      "data": "data/loc",
+      "out": "runs/loc",
+      "epochs": 24,
+      "batch": 24,
+      "crop": 512,
+      "lr": 0.0004,
+      "workers": 2,
+      "no_pretrained": false
+    }
+  }
+}

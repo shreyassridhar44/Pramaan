@@ -1,0 +1,45 @@
+{
+  "evaluated_at": "2026-10-26T02:29:30.847057+00:00",
+  "model": "models/localiser.onnx",
+  "data": "data\\loc",
+  "split": "test",
+  "data_source": "synthetic (held-out layouts; splice edits unseen in training)",
+  "images": 3000,
+  "edited_images": 1524,
+  "image_auc": 0.9439594313922142,
+  "pixel_f1_micro": 0.7372616019023482,
+  "false_positive_rate_at_0_5": 0.1897018970189702,
+  "true_positive_rate_at_0_5": 0.9081364829396326,
+  "by_type": {
+    "copy_move_digit": {
+      "n": 338,
+      "pixel_f1_mean": 0.9672872555407511,
+      "iou_mean": 0.9479774997779463,
+      "detected_at_0_5": 1.0
+    },
+    "erase_retype_field": {
+      "n": 408,
+      "pixel_f1_mean": 0.9598035958031912,
+      "iou_mean": 0.9237032103782886,
+      "detected_at_0_5": 1.0
+    },
+    "font_insert_digit": {
+      "n": 402,
+      "pixel_f1_mean": 0.9603258796297558,
+      "iou_mean": 0.9255830580644917,
+      "detected_at_0_5": 1.0
+    },
+    "none": {
+      "n": 1476,
+      "pixel_f1_mean": null,
+      "iou_mean": null,
+      "detected_at_0_5": 0.1897018970189702
+    },
+    "splice_field": {
+      "n": 376,
+      "pixel_f1_mean": 0.1523845733043516,
+      "iou_mean": 0.09745494661038445,
+      "detected_at_0_5": 0.6276595744680851
+    }
+  }
+}

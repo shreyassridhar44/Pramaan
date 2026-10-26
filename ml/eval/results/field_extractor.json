@@ -1,0 +1,29 @@
+{
+  "evaluated_at": "2026-10-26T00:55:06.156460+00:00",
+  "data_source": "synthetic (test layouts unseen in training)",
+  "train_samples": 1600,
+  "train_tokens": 41744,
+  "trained_model": {
+    "per_field_exact_match": {
+      "number": 1.0,
+      "ifsc": 1.0,
+      "amount": 0.99,
+      "issue_date": 0.95,
+      "maturity_date": 0.99
+    },
+    "mean_exact_match": 0.986,
+    "samples": 300
+  },
+  "rule_baseline": {
+    "per_field_exact_match": {
+      "number": 1.0,
+      "ifsc": 1.0,
+      "amount": 0.99,
+      "issue_date": 0.9366666666666666,
+      "maturity_date": 0.9866666666666667
+    },
+    "mean_exact_match": 0.9826666666666666,
+    "samples": 300
+  },
+  "model_file": "models\\field_extractor.txt"
+}
