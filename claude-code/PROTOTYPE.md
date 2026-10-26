@@ -4,14 +4,14 @@ This is the single source of truth for the interface. If code and this file disa
 
 ## 1. Design intent
 
-Pramaan is a working instrument for a financial regulator, not a marketing site and not a generic admin template. Four principles decide every design question:
+Pramaan is a working instrument for a financial regulator, not a marketing site and not a generic admin template. Since 26 October 2026 it speaks the visual language of security printing (Section 13, DECISION D36): proof is drawn the way stamp paper, banknotes and passports show authenticity. Four principles decide every design question:
 
 1. **Evidence first.** Every number can be traced to its source in one click. Proof is the visual hero: the colour of an item tells you how well it is proven.
 2. **Calm density.** Officers handle thousands of records. Screens are information-rich but quiet: generous line height, few borders, one accent at a time.
 3. **Motion explains change.** Animation is used only when something changes state, moves in time, or arrives from outside (a bank response). No decorative loops.
 4. **Regulator-grade trust.** Precise typography, Indian number formats, bilingual where the public sees it, clause references next to rule outcomes, no playful illustrations.
 
-What we avoid: gradient hero banners, glassmorphism, stock illustrations, emoji, rainbow charts, cards inside cards, centred marketing copy on working screens, modal-heavy flows, spinners where a skeleton fits.
+What we avoid: glassmorphism, stock illustrations, emoji, rainbow charts, cards inside cards, centred marketing copy on working screens, modal-heavy flows, spinners where a skeleton fits, and decoration that carries meaning without a text label. The public home page may have a hero; working screens may not.
 
 ## 2. Visual language
 
@@ -88,6 +88,8 @@ Meaningful motion only:
 - The maturity river and map recolour smoothly between forecast steps.
 - Lists animate insertions (new queue items slide in from the top, 200 ms).
 - Route changes: 120 ms fade only.
+
+Security print adds (D36): guilloche strands drawing in once, seals and rubber stamps pressing down when an event lands, split-flap figures riffling when a value changes, a scan line sweeping a document once when it loads, a foil sheen that follows the pointer or the phone's tilt, and very slow rotation of background rosettes. Each is tied to a change of state or to the identity of a surface.
 
 `prefers-reduced-motion`: replace all movement with instant state changes; keep colour transitions at 0 ms.
 
@@ -236,3 +238,20 @@ States: skeletons per panel; if a panel fails, only that panel shows an error wi
 | 2:45 to 3:00 | Close | Command view, product name, team name | Memorable ending |
 
 Recording notes: 2560 by 1440 capture at 60 fps, browser zoom 110% for legibility, demo data reset before each take, Command theme for the forecast shot, Ledger theme elsewhere.
+
+## 13. Security print (DECISION D36)
+
+Components live in `apps/web/src/components/security/`; the pattern maths in `src/lib/guilloche.ts` (rosettes and woven bands from a seed) and `src/lib/guilloche-mask.ts` (the same as CSS masks, cheap enough for every panel).
+
+| Element | Where | Meaning |
+|---|---|---|
+| Guilloche rosette, seeded | Instrument header, letters, passport, panel corners | Identity: the same number always draws the same pattern |
+| Assurance seal (40 px and up) | Instrument header, command board | A0 dashed outline, A1 watermark rosette, A2 embossed seal, A3 seal with foil |
+| Rubber stamp | Home lifecycle, deposit passport | A recorded event, with its date |
+| Split-flap figures | Home board, sign-in, legacy import | Live figures; they riffle when the value changes |
+| Security thread | Active rail item, re-confirmed specimen | Where you are; continuity |
+| Microprint, tricolour hairline, GIGW strip | Every shell | Official identity; the strip says it is a prototype |
+| UV lamp | Document viewer (U key) | The forensic heatmap, magnified, as a note checker shows it |
+| Foil | A3 seals, verify page, identity cards on hover | Highest assurance; a genuine letter |
+
+New screens and moments: public home (`/home`, signed-out visitors land here; `/home?tour=1` starts the tour), identity-card personas on sign-in, the proof moment on the bank desk, the deposit passport (instrument Timeline tab), reminder previews on a phone (Alerts), the audit tamper drill, and legacy import (`/admin/import`, D37).

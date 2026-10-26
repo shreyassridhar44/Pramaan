@@ -40,6 +40,7 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | zod | 4.6.7 |
 | react-hook-form | 7.91.0 |
 | lucide-react | 1.61.0 |
+| jsqr | 1.4.0 (QR decoding where the browser has no BarcodeDetector; added 26 Oct 2026) |
 | sonner | 2.0.8 |
 | vitest | 5.0.5 |
 | @playwright/test, playwright-core | 1.63.0 (1.64.1 was under two weeks old on 25 Oct 2026) |
@@ -63,6 +64,7 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | opencv-python-headless | 5.0.0.93 |
 | scikit-learn | 1.9.1 |
 | reportlab | 5.1.0 |
+| openpyxl | 3.1.5 (legacy register import; added 26 Oct 2026) |
 | uharfbuzz | 0.57.0 |
 | cryptography | 50.0.2 |
 | boto3 | 1.43.118 |

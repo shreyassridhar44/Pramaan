@@ -205,7 +205,12 @@ function HeroFigure({ label, value, tone }: { label: string; value: string; tone
   return (
     <div className="px-4 py-3">
       <dt className="text-[0.625rem] font-medium tracking-[0.1em] text-ink-3 uppercase">{label}</dt>
-      <dd className={cn('mt-1 font-display text-[1.875rem] leading-none text-ink', tone)}>
+      <dd
+        className={cn(
+          'mt-1 font-display text-[1.375rem] leading-none text-ink sm:text-[1.875rem]',
+          tone,
+        )}
+      >
         <SplitFlap value={value} variant="inline" />
       </dd>
     </div>
@@ -243,7 +248,7 @@ function Ticker({ summary }: { summary?: Summary }) {
       aria-label="Today on Pramaan"
       className="flex items-stretch overflow-hidden bg-board text-[0.8125rem] text-board-ink"
     >
-      <p className="relative z-10 flex shrink-0 items-center gap-2 bg-accent px-4 py-2.5 font-semibold text-white">
+      <p className="relative z-10 flex shrink-0 items-center gap-2 bg-[var(--band-copper)] px-4 py-2.5 font-semibold text-white">
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-white/70 motion-reduce:animate-none" />
           <span className="relative inline-flex size-2 rounded-full bg-white" />
@@ -316,13 +321,13 @@ function Board({ summary }: { summary?: Summary }) {
         <div role="table" aria-label="Portfolio board" className="divide-y divide-white/5">
           <div
             role="row"
-            className="grid grid-cols-[1.4fr_1fr_auto] gap-4 px-5 py-2 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/40 uppercase"
+            className="grid grid-cols-[1fr_auto] gap-3 px-4 sm:grid-cols-[1.4fr_1fr_auto] sm:gap-4 sm:px-5 py-2 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/65 uppercase"
           >
             <span role="columnheader">Figure</span>
             <span role="columnheader" className="text-right">
               Value
             </span>
-            <span role="columnheader" className="w-[7.5rem] text-right">
+            <span role="columnheader" className="hidden w-[7.5rem] text-right sm:block">
               State
             </span>
           </div>
@@ -340,17 +345,17 @@ function Board({ summary }: { summary?: Summary }) {
                     {en}
                     <span
                       lang="hi"
-                      className="font-deva text-[0.8125rem] tracking-normal text-board-ink/45 normal-case"
+                      className="hidden font-deva text-[0.8125rem] tracking-normal text-board-ink/70 normal-case sm:inline"
                     >
                       {hi}
                     </span>
                   </span>
-                  <span role="cell" className="text-right text-[1.5rem]">
+                  <span role="cell" className="text-right text-[1.125rem] sm:text-[1.5rem]">
                     <SplitFlap value={value} />
                   </span>
                   <span
                     role="cell"
-                    className="w-[7.5rem] text-right font-mono text-[0.8125rem] tracking-[0.12em] text-saffron"
+                    className="hidden w-[7.5rem] text-right font-mono sm:block text-[0.8125rem] tracking-[0.12em] text-saffron"
                   >
                     {state}
                   </span>

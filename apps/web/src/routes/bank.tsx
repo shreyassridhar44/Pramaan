@@ -31,7 +31,7 @@ function BankLayout() {
           color="color-mix(in srgb, var(--simulated) 14%, transparent)"
         />
         <div className="relative mx-auto flex h-[72px] max-w-[1280px] items-center gap-4 px-6">
-          <span className="grid size-11 place-items-center rounded-full bg-simulated font-semibold text-white ring-4 ring-simulated-soft">
+          <span className="grid size-11 place-items-center rounded-full bg-[var(--band-violet)] font-semibold text-white ring-4 ring-simulated-soft">
             {me?.bank_name
               ?.split(' ')
               .map((w) => w[0])

@@ -5,6 +5,17 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Security-print visual language (DECISION D36): seeded guilloche rosettes, embossed assurance seals that gain features as proof grows, holographic foil, rubber stamps, split-flap figures, microprint, a GIGW strip with text size and contrast, bilingual titles and an official-style footer.
+- Public home page with a live portfolio board, a ticker of aggregate figures, the deposit lifecycle as stamps, regional tiles and QR verification by camera (jsQR where the browser has no detector). Signed-out visitors land here.
+- Identity-card personas on sign-in, a dark command board, and a navy rail with Hindi labels.
+- UV lamp in the document viewer: a magnifying loupe over the forensic heatmap, plus a scan sweep when a page loads.
+- Proof moment on the bank desk: fields checked, the signed message travelling to AICTE, and a seal.
+- Guided tour of the six R16 scenarios across personas (`/home?tour=1`).
+- Audit tamper drill (demo mode): erase a bank-reported mismatch behind Pramaan's back, watch the chain check name the entry, restore it.
+- Legacy register import (DECISION D37): reconcile any desk's Excel or CSV register row by row; a synthetic, roughened sample is generated from the demo records.
+- Reminder previews: the SMS, WhatsApp and email an institution received, in Hindi or English, on a phone.
+- Deposit passport: an instrument's history as dated stamps.
+- Letters carry a guilloche border, a rosette watermark seeded by the reference, and microprint; the verify page shows a holographic seal for a genuine letter.
 - Automatic deploys: the server checks `main` every 2 minutes and deploys any new commit, whoever pushed it, rolling back a release that fails its health check (`infra/aws/enable-autodeploy.sh`).
 - Real-click sign-in and navigation tests in Chrome, Firefox and WebKit (Safari's engine).
 - Trained models in the API: the edit localiser (image-level ROC AUC 0.944 and pixel F1 0.737 on unseen synthetic layouts) and the LightGBM field extractor (98.6% mean exact match against 98.3% for the rules), with results in `EVALUATION.md` and `MODEL_CARD.md`.

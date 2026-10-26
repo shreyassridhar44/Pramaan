@@ -65,7 +65,7 @@ function PortalLayout() {
                 )}
               >
                 {n.label}
-                <span lang="hi" aria-hidden className="font-deva text-[0.625rem] text-board-ink/45">
+                <span lang="hi" aria-hidden className="font-deva text-[0.625rem] text-board-ink/70">
                   {n.hi}
                 </span>
               </Link>

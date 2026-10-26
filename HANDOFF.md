@@ -10,6 +10,8 @@ Summary for anyone picking up the project. The detailed, step-level log is `clau
 - Auto-deploy is on: the server deploys every new commit on `main` within about 2 minutes plus build time, whoever pushes it, and rolls back a release that fails `/readyz` (DECISION D35). `bash infra/aws/ops.sh autodeploy-log` shows the runs and the live release.
 - Tests: API 151 plus 5 slow tests, web 23, Playwright 91 locally across Chrome, Firefox and WebKit.
 
+- Redesign in progress on the `redesign` branch (DECISION D36): security-print visual language, public home page, guided tour, UV lamp, tamper drill, legacy import (D37), reminder previews, deposit passport. Merged to `main` (and so deployed) only after the full test suite passes.
+
 ## Key decisions so far
 
 - Problem statement SIH26265, product name Pramaan.

@@ -45,6 +45,14 @@
 
   --shadow-overlay: 0 12px 32px -8px rgb(18 23 38 / 0.18), 0 2px 6px rgb(18 23 38 / 0.06);
 
+  /* Identity-card bands and badges carry white text in both themes, so they do not change. */
+  --band-navy: #1d2b5c;
+  --band-green: #0f7a55;
+  --band-copper: #a84c1a;
+  --band-violet: #6b4fa0;
+  --band-red: #8f1d1d;
+  --band-grey: #5f6578;
+
   /* Security print (DECISION D36). Decorative only: never used for text or status. */
   --saffron: #ff9933;
   --india-green: #138808;

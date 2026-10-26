@@ -23,19 +23,19 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  // Every spec runs in the installed Chrome. The pointer and sign-in specs also run in Firefox and
+  // Every spec runs in the installed Chrome. The pointer, sign-in and showcase specs also run in Firefox and
   // in WebKit, the engine behind Safari (`npx playwright install firefox webkit` once).
   projects: [
     { name: 'chrome', use: { channel: 'chrome' } },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } },
-      testMatch: /(signin|interactions)\.spec\.ts/,
+      testMatch: /(signin|interactions|showcase)\.spec\.ts/,
     },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
-      testMatch: /(signin|interactions)\.spec\.ts/,
+      testMatch: /(signin|interactions|showcase)\.spec\.ts/,
     },
   ],
   webServer: deployed

@@ -5,6 +5,7 @@ import { signInAs } from './helpers'
 
 /** Every route, as the persona that uses it (TEST_PLAN.md Section 4: axe on every route). */
 const ROUTES: [string, string][] = [
+  ['-', '/home'],
   ['-', '/signin'],
   ['bureau', '/'],
   ['bureau', '/queue'],
@@ -22,6 +23,7 @@ const ROUTES: [string, string][] = [
   ['bureau', '/alerts?tab=escalations'],
   ['authority', '/releases/68'],
   ['section_head', '/admin/rules'],
+  ['bureau', '/admin/import'],
   ['institution', '/portal'],
   ['institution', '/portal/submit'],
   ['institution', '/portal/release'],

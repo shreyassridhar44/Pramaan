@@ -74,7 +74,7 @@ def _indian(rupees: int) -> str:
     if len(s) <= 3:
         return s
     head, tail = s[:-3], s[-3:]
-    groups = []
+    groups: list[str] = []
     while len(head) > 2:
         groups.insert(0, head[-2:])
         head = head[:-2]
@@ -137,7 +137,8 @@ async def sample_register(db: AsyncSession, size: int = 1000) -> bytes:
     ).all()
     picked = rng.sample(list(rows), min(size, len(rows)))
     out: list[list[object]] = []
-    for number, amount, issue, maturity, inst, aicte_id, bank in picked:
+    for number, amount, issue, maturity_on, inst, aicte_id, bank in picked:
+        maturity: date | None = maturity_on
         remarks = ""
         roll = rng.random()
         if roll < 0.04:
@@ -146,7 +147,7 @@ async def sample_register(db: AsyncSession, size: int = 1000) -> bytes:
             i = rng.randrange(len(s))
             amount = int(s[:i] + str((int(s[i]) + rng.randint(1, 8)) % 10) + s[i + 1 :]) * 100
         elif roll < 0.06:
-            maturity = maturity.replace(year=maturity.year + 1)
+            maturity = maturity_on.replace(year=maturity_on.year + 1)
             remarks = "Renewed?"
         elif roll < 0.08:
             maturity = None

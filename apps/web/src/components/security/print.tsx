@@ -7,11 +7,7 @@ const MICRO = 'Pramaan  AICTE Regulation Bureau  Security deposit and FDR portal
  * cheque or banknote. Decorative, hidden from assistive technology.
  */
 export function Microprint({ text = MICRO, className }: { text?: string; className?: string }) {
-  return (
-    <div aria-hidden className={cn('microprint', className)}>
-      {text.repeat(24)}
-    </div>
-  )
+  return <div aria-hidden className={cn('microprint', className)} data-micro={text.repeat(24)} />
 }
 
 /** The windowed, colour-shifting thread woven into a note. */

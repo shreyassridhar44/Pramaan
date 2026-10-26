@@ -15,6 +15,7 @@ Licences below are as published by each project and are re-verified when the dep
 | Apache ECharts | Charts (maturity river, SVG renderer) | Apache 2.0 | Notice file |
 | cmdk | Command palette | MIT | Notice |
 | Lucide icons | Icons | ISC | Notice |
+| jsQR | Decoding a letter's QR code from the camera on the public home page | Apache-2.0 | Notice |
 | Sonner | Toasts | MIT | Notice |
 | FastAPI, Starlette | API | MIT, BSD-3-Clause | Notice |
 | Pydantic | Validation | MIT | Notice |
@@ -36,6 +37,7 @@ Licences below are as published by each project and are re-verified when the dep
 | OpenCV (headless) | Image processing | Apache 2.0 | Notice |
 | pypdfium2 and PDFium | PDF rendering | Apache 2.0 or BSD-3 (pypdfium2), BSD-3 (PDFium) | Notice |
 | ReportLab | PDF generation and letter QR codes | BSD | Notice |
+| openpyxl | Reading legacy registers and writing the synthetic sample register | MIT | Notice |
 | uharfbuzz and HarfBuzz | Devanagari text shaping in letters | Apache 2.0 (uharfbuzz), MIT (HarfBuzz) | Notice |
 | cryptography | Ed25519, hashing | Apache 2.0 or BSD | Notice |
 | argon2-cffi | Password hashing | MIT | Notice |

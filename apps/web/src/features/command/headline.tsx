@@ -77,7 +77,7 @@ export function HeadlineFigure({
         </p>
         {caption ? <p className="mt-2 text-[0.8125rem] text-board-ink/65">{caption}</p> : null}
         {delta ? (
-          <p className="mt-1 font-mono text-[0.6875rem] text-board-ink/45">{delta}</p>
+          <p className="mt-1 font-mono text-[0.6875rem] text-board-ink/65">{delta}</p>
         ) : null}
       </div>
       {aside ? <div className="shrink-0 pt-1">{aside}</div> : null}

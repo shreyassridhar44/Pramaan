@@ -13,8 +13,11 @@ const PERSONAS: [string, RegExp][] = [
 
 for (const [label, home] of PERSONAS) {
   test(`a persona click signs in and lands on the home page: ${label}`, async ({ page }) => {
-    // Visiting a protected page first caches "signed out", which is how people arrive.
+    // Visiting a protected page first caches "signed out", which is how people arrive: they land
+    // on the public home page and click Sign in.
     await page.goto('/')
+    await expect(page).toHaveURL(/\/home$/)
+    await page.getByRole('banner').getByRole('link', { name: 'Sign in' }).click()
     await expect(page).toHaveURL(/\/signin/)
     const button = page
       .getByRole('region', { name: 'Explore the prototype as' })

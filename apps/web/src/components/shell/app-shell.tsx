@@ -179,7 +179,7 @@ function Rail() {
                   <span
                     lang="hi"
                     aria-hidden
-                    className="ml-auto hidden font-deva text-[0.6875rem] text-board-ink/30 xl:inline"
+                    className="ml-auto hidden font-deva text-[0.6875rem] text-board-ink/60 xl:inline"
                   >
                     {item.hi}
                   </span>

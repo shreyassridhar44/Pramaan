@@ -107,7 +107,7 @@ export function ProofSpecimen() {
         >
           Specimen
         </span>
-        <div className="relative grid grid-cols-[1fr_auto] gap-6 px-7 pt-5 pb-6">
+        <div className="relative grid gap-6 px-5 pt-5 pb-6 sm:grid-cols-[1fr_auto] sm:px-7">
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-ink-3 uppercase">
               Bharat National Bank
@@ -131,7 +131,7 @@ export function ProofSpecimen() {
               <Field label="Matures" value="20 Oct 2036" mono read={level >= 1} delay={0.6} />
             </dl>
           </div>
-          <div className="relative flex w-[150px] flex-col items-center justify-start pt-1">
+          <div className="relative flex flex-col items-center justify-start pt-1 sm:w-[150px]">
             <div className="relative grid size-[132px] place-items-center">
               {level >= 2 ? (
                 <Rosette

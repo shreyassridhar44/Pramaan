@@ -123,38 +123,39 @@ function VerifyPage() {
                 </div>
               </Foil>
             ) : null}
-            <motion.section
-              initial={reduce ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-              className={cn(
-                'mt-8 rounded-[var(--radius-panel)] border p-6',
-                r.tone,
-                q.data.result === 'genuine' && 'hidden',
-              )}
-              aria-live="polite"
-            >
-              <div className="flex items-center gap-4">
-                <motion.span
-                  initial={reduce ? false : { scale: 0.6 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 18, delay: 0.1 }}
-                  className={cn('grid size-14 place-items-center rounded-full text-white', r.solid)}
-                >
-                  {r.icon}
-                </motion.span>
-                <div>
-                  <p lang="hi" className="font-deva text-[1rem]">
-                    {r.hi}
-                  </p>
-                  <p className="text-[1.75rem] leading-tight font-semibold">{r.en}</p>
+            {q.data.result !== 'genuine' ? (
+              <motion.section
+                initial={reduce ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
+                className={cn('mt-8 rounded-[var(--radius-panel)] border p-6', r.tone)}
+                aria-live="polite"
+              >
+                <div className="flex items-center gap-4">
+                  <motion.span
+                    initial={reduce ? false : { scale: 0.6 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 320, damping: 18, delay: 0.1 }}
+                    className={cn(
+                      'grid size-14 place-items-center rounded-full text-white',
+                      r.solid,
+                    )}
+                  >
+                    {r.icon}
+                  </motion.span>
+                  <div>
+                    <p lang="hi" className="font-deva text-[1rem]">
+                      {r.hi}
+                    </p>
+                    <p className="text-[1.75rem] leading-tight font-semibold">{r.en}</p>
+                  </div>
                 </div>
-              </div>
-              <p className="mt-4 text-[0.9375rem] text-ink">{r.body}</p>
-              {l?.status_note ? (
-                <p className="mt-2 text-[0.875rem] font-medium text-ink">{l.status_note}</p>
-              ) : null}
-            </motion.section>
+                <p className="mt-4 text-[0.9375rem] text-ink">{r.body}</p>
+                {l?.status_note ? (
+                  <p className="mt-2 text-[0.875rem] font-medium text-ink">{l.status_note}</p>
+                ) : null}
+              </motion.section>
+            ) : null}
 
             {l ? (
               <section className="mt-5 rounded-[var(--radius-panel)] border border-line bg-surface">

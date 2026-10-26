@@ -110,6 +110,9 @@
     color: var(--guilloche);
     user-select: none;
   }
+  .microprint::before {
+    content: attr(data-micro);
+  }
 
   .security-thread {
     background:

@@ -54,14 +54,14 @@ const PERSONA_ICON: Record<string, LucideIcon> = {
 
 /** The colour band of each identity card, by who issues it. */
 const PERSONA_BAND: Record<string, { band: string; label: string }> = {
-  bureau: { band: 'bg-brand', label: 'AICTE' },
-  section_head: { band: 'bg-brand', label: 'AICTE' },
-  authority: { band: 'bg-seal', label: 'AICTE' },
-  regional: { band: 'bg-brand', label: 'AICTE' },
-  pgrc: { band: 'bg-a2', label: 'AICTE cell' },
-  institution: { band: 'bg-accent', label: 'Institution' },
-  bank: { band: 'bg-simulated', label: 'Bank, simulated' },
-  auditor: { band: 'bg-ink-3', label: 'Audit' },
+  bureau: { band: 'bg-[var(--band-navy)]', label: 'AICTE' },
+  section_head: { band: 'bg-[var(--band-navy)]', label: 'AICTE' },
+  authority: { band: 'bg-[var(--band-red)]', label: 'AICTE' },
+  regional: { band: 'bg-[var(--band-navy)]', label: 'AICTE' },
+  pgrc: { band: 'bg-[var(--band-green)]', label: 'AICTE cell' },
+  institution: { band: 'bg-[var(--band-copper)]', label: 'Institution' },
+  bank: { band: 'bg-[var(--band-violet)]', label: 'Bank, simulated' },
+  auditor: { band: 'bg-[var(--band-grey)]', label: 'Audit' },
 }
 
 const PERSONA_ORDER = [
@@ -176,7 +176,7 @@ function SignIn() {
                 value={s ? formatPercent(s.bank_confirmed_share) : '-'}
               />
               <BoardRow label="Institutions" value={s ? formatCount(s.institutions) : '-'} />
-              <p className="px-4 py-2 text-[0.625rem] tracking-[0.06em] text-board-ink/40 uppercase">
+              <p className="px-4 py-2 text-[0.625rem] tracking-[0.06em] text-board-ink/60 uppercase">
                 Live, synthetic data
               </p>
             </div>
@@ -184,7 +184,7 @@ function SignIn() {
 
           <div className="relative">
             <Microprint className="mb-3 text-white/15" />
-            <p className="max-w-md text-[0.75rem] leading-relaxed text-board-ink/50">
+            <p className="max-w-md text-[0.75rem] leading-relaxed text-board-ink/70">
               Smart India Hackathon 2026, problem statement SIH26265. All institutions, deposits,
               banks and documents shown are synthetic. Simulated components are labelled where they
               appear.
@@ -313,7 +313,7 @@ function IdCard({
 }) {
   const reduce = useReducedMotion()
   const Icon = PERSONA_ICON[p.key] ?? UserCog
-  const band = PERSONA_BAND[p.key] ?? { band: 'bg-ink-3', label: 'AICTE' }
+  const band = PERSONA_BAND[p.key] ?? { band: 'bg-[var(--band-grey)]', label: 'AICTE' }
   const idNo = `PRM-${(hashSeed(p.key) % 90000) + 10000}`
   return (
     <motion.div
@@ -329,15 +329,11 @@ function IdCard({
           className="group relative flex w-full flex-col overflow-hidden rounded-[14px] border border-line bg-surface text-left shadow-[0_1px_0_rgb(18_23_38/0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-ink-3 hover:shadow-[var(--shadow-lift)] disabled:cursor-wait"
         >
           <span className={cn('relative flex h-7 items-center justify-between px-3', band.band)}>
-            <GuillocheBand
-              height={28}
-              color="rgb(255 255 255 / 0.22)"
-              className="absolute inset-0"
-            />
+            <GuillocheBand height={28} color="rgb(0 0 0 / 0.22)" className="absolute inset-0" />
             <span className="relative text-[0.5625rem] font-semibold tracking-[0.16em] text-white uppercase">
               {band.label}
             </span>
-            <span className="relative font-mono text-[0.5625rem] tracking-[0.08em] text-white/85">
+            <span className="relative font-mono text-[0.5625rem] tracking-[0.08em] text-white">
               {idNo}
             </span>
           </span>

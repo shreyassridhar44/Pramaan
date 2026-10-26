@@ -20,6 +20,13 @@ Update this file at the end of every working session and every completed step.
 
 ## Session log
 
+### 26 October 2026 (afternoon): security-print redesign (DECISION D36, D37)
+- Owner rated the shipped interface 4 out of 10 and approved a redesign on the `redesign` branch, with the UI frozen at 23:00 IST on 27 October. About 40 public SIH26265 repositories were cloned and read: most share KPI cards, Recharts, Tesseract and a navy and saffron landing page; none ships a trained model, maps are rare, none uses WebGL.
+- Built: security-print components (`components/security/`), public home page (`/home`), GIGW strip and footer, identity-card sign-in, dark rail and command board, assurance seals, UV lamp, proof moment, verify-page hologram, guilloche on PDF letters, guided tour (`/home?tour=1`), audit tamper drill (`/demo/tamper-drill`), legacy register import (`/admin/import`, `/legacy/*`), reminder previews (`/alerts/reminders/{id}/preview`), deposit passport.
+- Signed-out visitors to any officer page now land on `/home` instead of `/signin`.
+- New dependencies: jsqr 1.4.0 (web), openpyxl 3.1.5 (API).
+- The dev server on this laptop runs on port 5174 because an unidentified older node process holds 5173; uvicorn's reload does not notice file changes on this machine, so restart the API after editing it.
+
 ### 24 October 2026: research and specification
 - Captured SIH26265 verbatim; itemised requirements R1 to R16 and constraints C1 to C7.
 - Read APH 2024-2027 and extracted the security deposit rules.
