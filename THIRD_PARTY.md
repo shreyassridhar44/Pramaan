@@ -41,7 +41,10 @@ Licences below are as published by each project and are re-verified when the dep
 | argon2-cffi | Password hashing | MIT | Notice |
 | tzdata | IANA time zone data (Windows and slim images) | Apache 2.0 | Notice |
 | boto3 | AWS SDK | Apache 2.0 | Notice |
-| Caddy | Reverse proxy on the instance | Apache 2.0 | Notice |
+| Caddy | HTTPS entry point on the instance (Let's Encrypt certificates) | Apache 2.0 | Notice |
+| nginx | Serves the web build and proxies the API | BSD-2-Clause | Notice |
+| Mailpit | Captured inbox for the demo deployment | MIT | Notice |
+| sslip.io | Public DNS name that resolves to the instance's IP (service, not shipped) | Apache 2.0 (server code) | None |
 
 ## 1a. Development and test tools (not shipped)
 

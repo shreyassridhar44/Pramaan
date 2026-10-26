@@ -9,6 +9,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - A localiser operating point chosen on validation data (probability above 0.98 over at least 300 px), which cuts marks on unedited test pages from 22.1% to 5.4%; marks that touch no value field are graded low.
 - Deployment set: production images for the API and the web app, `infra/compose.yml` (Postgres, Valkey, API, worker, Mailpit inbox, nginx), and AWS scripts for provisioning (S3, IAM, SSM secrets, security group, Graviton instance, Elastic IP, CloudFront), deploys over SSM Run Command, nightly backups and day-to-day operations.
 - Readiness checks for the queue, document storage and model files.
+- Live deployment on AWS (t4g.small, Caddy with Let's Encrypt) and `E2E_BASE_URL` to run the end-to-end suite against it; a demo script in `docs/DEMO_SCRIPT.md`.
 - Monitoring alerts beyond maturity: re-confirmation reminders, automatic renewal notices and penalty-window notices on overdue demands, sent by email with simulated SMS and WhatsApp; an Alerts page with the reminders sent and the open escalations with their next level.
 - Registry bulk actions (request confirmation, send reminder, assign) that report what was done and why anything was skipped, saved views and a column chooser kept per viewer in the browser.
 - Release penalties computed by the rules engine when a case is applied for, shown with their APH clause on the case page, and recorded as paid by a section head or the competent authority with a payment reference.
@@ -27,6 +28,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - Research, specification and implementation plan: `PROBLEM_STATEMENT.md`, `RESEARCH.md`, `PROJECT.md`, `ARCHITECTURE.md`, supporting documents and the `claude-code/` directory (24 October 2026).
 
 ### Fixed
+- A forensic mark on one digit of a wide field is now mapped to that field; before, it read as outside the value fields.
 - The forecast timeline computes 52 weeks in 1.6 s instead of 8.6 s, with identical output (reminders are computed directly instead of regenerating each deposit's full schedule every week).
 - A rule version scheduled for a later date no longer applies before that date.
 - CI: the test setup now normalises the database URL, which had made every API job fail since the domain step.

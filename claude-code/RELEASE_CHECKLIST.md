@@ -3,10 +3,10 @@
 For the SIH submission release `v1.0.0-sih`.
 
 ## Product
-- [ ] All six R16 scenarios pass end to end on the deployed URL.
-- [ ] Demo data reset works; each scenario can be loaded on demand.
+- [x] All six R16 scenarios pass end to end on the deployed URL (64 of 64 Playwright tests with `E2E_BASE_URL`, 26 Oct 2026).
+- [x] Demo data reset works (`POST /api/v1/demo/reset`, or `SEED=1 bash infra/aws/deploy.sh`).
 - [ ] Every simulated surface is labelled.
-- [ ] All figures on the impact panel and in `EVALUATION.md` come from scripts, with dataset and model versions.
+- [x] All figures on the impact panel and in `EVALUATION.md` come from scripts, with dataset and model versions.
 - [ ] Letters render correctly in Hindi and English; QR verification works from a phone on mobile data.
 
 ## Quality
@@ -15,18 +15,18 @@ For the SIH submission release `v1.0.0-sih`.
 - [ ] Accessibility pass completed.
 
 ## Deployment
-- [ ] CloudFront URL serves the web app over HTTPS.
-- [ ] `/api/v1/readyz` reports all dependencies ready.
-- [ ] EC2 security group allows only CloudFront origin traffic; no open SSH.
-- [ ] Secrets in SSM only; `.env` not committed.
-- [ ] Nightly backup ran; restore drill done.
-- [ ] AWS Budget alarms set.
+- [x] The public URL serves the web app over HTTPS (https://13-204-48-202.sslip.io, Let's Encrypt through Caddy; CloudFront needs AWS account verification, DECISION D33).
+- [x] `/api/v1/readyz` reports all dependencies ready.
+- [x] Security group allows only ports 80 and 443 (Caddy edge); no open SSH; access through Session Manager.
+- [x] Secrets in SSM only; `.env` not committed.
+- [x] Backup ran (database and document store to S3, nightly timer installed); restore drill done into a scratch database, row counts matched (26 Oct 2026).
+- [x] AWS Budget set ($100 a month, existing account budget).
 
 ## Documentation
 - [ ] README quick start verified on a clean machine.
 - [ ] `CHANGELOG.md` has the release entry.
 - [ ] `VERSIONS.md` and `THIRD_PARTY.md` match the lockfiles.
-- [ ] `MODEL_CARD.md` and `EVALUATION.md` contain measured results.
+- [x] `MODEL_CARD.md` and `EVALUATION.md` contain measured results.
 - [ ] `HANDOFF.md` reflects the final state.
 
 ## Submission assets

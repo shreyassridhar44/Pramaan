@@ -16,7 +16,7 @@ Update this file at the end of every working session and every completed step.
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
 | 8 | Release, letters, verification | Done (audited 25 Oct 2026, see below): portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
 | 9 | Command view, forecast, search, reports | Done: command view with monthly maturity river (table view, click-through), region tile cartogram, largest unproven exposures, recent signals, impact panel with turnaround trend, 30-day deltas and an action side sheet; forecast with play, speed, map recolouring, rolling figures, playhead and event stream; plain-language Ask bar (Bedrock path built, rule parser active; 100% on 60 queries and 15/15 held out); eight reports with CSV and PDF reconciling with the summary; versioned rule administration; forecast timeline 1.6 s cold for 52 weeks | see git log |
-| 10 | Hardening, evaluation, deployment, demo | In progress: model results in EVALUATION and MODEL_CARD, operating point calibrated, deployment set and AWS scripts built and tested locally; AWS deploy, demo script, recording and tag pending | see git log |
+| 10 | Hardening, evaluation, deployment, demo | In progress: model results in EVALUATION and MODEL_CARD, operating point calibrated, deployed to AWS at https://13-204-48-202.sslip.io (64 of 64 e2e tests pass on it, backup and restore drill done), demo script written; recording, PPT screenshots and tag pending | see git log |
 
 ## Session log
 
@@ -44,10 +44,11 @@ Update this file at the end of every working session and every completed step.
 5. Whether the AWS account may send email through SES to team members' addresses (needs identity verification of each recipient while in the SES sandbox).
 
 ## Exact next steps
-1. Step 10: provision and deploy to AWS (`infra/aws/provision.sh`, `deploy.sh`), smoke test on the public URL, backup drill.
-2. Step 10: demo script and recording, `RELEASE_CHECKLIST.md`, `VERSIONS.md`, release tag `v1.0.0-sih`.
-3. Owner (optional): add an end-to-end job to `.github/workflows/ci.yml` (needs a token with the `workflow` scope).
-4. Owner: Bedrock inference is blocked for account 067257065056 ("Operation not allowed" for every model and region tried). Ask AWS to enable model access (model access page or a support case); then set `BEDROCK_ENABLED=true` and run `uv run python -m scripts.search_eval --model`.
+1. Owner: record the demo video with `docs/DEMO_SCRIPT.md` on the live site; take PPT screenshots from it.
+2. Step 10: remaining `RELEASE_CHECKLIST.md` items (QR from a phone on mobile data, quality gates, README quick start on a clean machine), then tag `v1.0.0-sih`.
+3. Owner (optional): open an AWS Support case to verify the account for CloudFront; then `EDGE=cloudfront bash infra/aws/provision.sh` gives a cloudfront.net URL.
+4. Owner (optional): add an end-to-end job to `.github/workflows/ci.yml` (needs a token with the `workflow` scope).
+5. Owner: Bedrock inference is blocked for account 067257065056 ("Operation not allowed" for every model and region tried). Ask AWS to enable model access (model access page or a support case); then set `BEDROCK_ENABLED=true` and run `uv run python -m scripts.search_eval --model`.
 
 Notes from Step 10 (26 October 2026):
 - Training results arrived in `add2a64` (authored as the owner). The API loads both models; `/readyz` reports `models: ok`.
@@ -55,7 +56,11 @@ Notes from Step 10 (26 October 2026):
 - Production stack tested locally on port 8088 (`infra/.env` is local only): all containers healthy, readiness ok, API about 220 MB. The full OpenCV that RapidOCR pulls in needs libgl1, libglib2.0-0 and libxcb1 in the image.
 - Playwright does not start the API on this laptop (`uv` is not on the Windows command path it uses); start the API by hand first.
 - An unrelated project's containers (`garuda-*`) run on this laptop and its EC2 instance runs in the same AWS account; leave both alone.
-- Test results after the change: API 151 tests plus 4 slow, Playwright 64 of 64.
+- Test results: API 151 tests plus 5 slow, Playwright 64 of 64 locally and 64 of 64 against the live site.
+- AWS (account 067257065056, ap-south-1): the account is on the Free plan ($95 credit, ends 20 Jan 2027), which refuses t4g.medium and CloudFront until AWS verifies the account. Deployed on a t4g.small (`i-052700f869b9ac939`, Elastic IP 13.204.48.202) with Caddy and Let's Encrypt on `13-204-48-202.sslip.io`. About $15 a month.
+- Live smoke test: uploads analysed in about 8 s; the altered receipt is marked high on the amount (a field-mapping bug that read it as outside the value fields was fixed in `c26a5d8`), the genuine one gets one low mark.
+- After running e2e against the live site, reset its data (`POST /api/v1/demo/reset` as admin); the suite resets only at the start.
+- The Windows AWS CLI cannot read Git Bash's `/tmp` and crashes on non-ASCII output; the scripts keep temporary files in `infra/aws/` and set `PYTHONUTF8=1`.
 
 Notes from Step 9:
 - Demo shots: command view (figures roll, river, cartogram); Ask bar with "SBI and unconfirmed deposits in the Western region maturing before March 2027" (shows chips, flags SBI as not in the portfolio); forecast at 4x; reports; rules.

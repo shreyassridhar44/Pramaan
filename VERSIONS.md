@@ -11,6 +11,20 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | PostgreSQL | 16 |
 | Valkey (Redis-compatible) | 8 |
 
+## Deployment images (pinned in `infra/compose.yml` and the Dockerfiles, 26 Oct 2026)
+
+| Image or tool | Version |
+|---|---|
+| python (API and worker base) | 3.12-slim-bookworm, with uv 0.13.0 |
+| node (web build stage) | 22-bookworm-slim |
+| nginx | 1.29-alpine |
+| caddy | 2.10.2-alpine |
+| postgres | 16-alpine |
+| valkey | 8-alpine |
+| axllent/mailpit | v1.27 |
+| Docker Compose / Buildx on the host | v2.40.3 / v0.29.1 |
+| Host OS | Amazon Linux 2023 arm64 (latest AMI at provisioning) |
+
 ## Web (latest on 24 Oct 2026)
 
 | Package | Version |

@@ -27,7 +27,9 @@ export async function signInAs(page: Page, persona: string) {
 }
 
 async function adminContext(): Promise<APIRequestContext> {
-  const ctx = await request.newContext({ baseURL: 'http://localhost:8000' })
+  const ctx = await request.newContext({
+    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:8000',
+  })
   const r = await ctx.post('/api/v1/auth/persona/admin')
   expect(r.ok()).toBeTruthy()
   return ctx
