@@ -1,0 +1,230 @@
+{
+  "evaluated_at": "2026-10-26T03:25:47.254186+00:00",
+  "model": "models/localiser.onnx",
+  "data_source": "synthetic validation split (validation layouts, no splice edits)",
+  "unedited_pages": 204,
+  "edited_pages": 196,
+  "rules": [
+    {
+      "threshold": 0.5,
+      "min_area": 60,
+      "false_positive_rate": 0.29901960784313725,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.5,
+      "min_area": 150,
+      "false_positive_rate": 0.2549019607843137,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.5,
+      "min_area": 300,
+      "false_positive_rate": 0.14705882352941177,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.5,
+      "min_area": 450,
+      "false_positive_rate": 0.004901960784313725,
+      "edited_detected": 0.7448979591836735
+    },
+    {
+      "threshold": 0.5,
+      "min_area": 600,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.5408163265306123
+    },
+    {
+      "threshold": 0.5,
+      "min_area": 900,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.336734693877551
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 60,
+      "false_positive_rate": 0.25980392156862747,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 150,
+      "false_positive_rate": 0.22058823529411764,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 300,
+      "false_positive_rate": 0.12745098039215685,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 450,
+      "false_positive_rate": 0.004901960784313725,
+      "edited_detected": 0.7397959183673469
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 600,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.5306122448979592
+    },
+    {
+      "threshold": 0.7,
+      "min_area": 900,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.32653061224489793
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 60,
+      "false_positive_rate": 0.22549019607843138,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 150,
+      "false_positive_rate": 0.1568627450980392,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 300,
+      "false_positive_rate": 0.058823529411764705,
+      "edited_detected": 0.9948979591836735
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 450,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.7346938775510204
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 600,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.5255102040816326
+    },
+    {
+      "threshold": 0.9,
+      "min_area": 900,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.32653061224489793
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 60,
+      "false_positive_rate": 0.18137254901960784,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 150,
+      "false_positive_rate": 0.12254901960784313,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 300,
+      "false_positive_rate": 0.05392156862745098,
+      "edited_detected": 0.9948979591836735
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 450,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.7346938775510204
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 600,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.5153061224489796
+    },
+    {
+      "threshold": 0.95,
+      "min_area": 900,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.32653061224489793
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 60,
+      "false_positive_rate": 0.12254901960784313,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 150,
+      "false_positive_rate": 0.07352941176470588,
+      "edited_detected": 1.0
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 300,
+      "false_positive_rate": 0.0392156862745098,
+      "edited_detected": 0.9948979591836735
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 450,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.7346938775510204
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 600,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.5153061224489796
+    },
+    {
+      "threshold": 0.98,
+      "min_area": 900,
+      "false_positive_rate": 0.0,
+      "edited_detected": 0.32653061224489793
+    }
+  ],
+  "extra_pages_region_areas": {
+    "specimen_fdr_genuine.jpg": {
+      "0.5": [
+        317,
+        538
+      ],
+      "0.7": [
+        265,
+        527
+      ],
+      "0.9": [
+        148,
+        517
+      ],
+      "0.95": [
+        87,
+        505
+      ],
+      "0.98": [
+        32,
+        484
+      ]
+    },
+    "specimen_fdr_altered.jpg": {
+      "0.5": [
+        765
+      ],
+      "0.7": [
+        751
+      ],
+      "0.9": [
+        743
+      ],
+      "0.95": [
+        741
+      ],
+      "0.98": [
+        733
+      ]
+    }
+  }
+}

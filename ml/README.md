@@ -76,6 +76,20 @@ eval/results/field_extractor.json
 
 Both model files are small enough for git, and `.gitignore` allows exactly these two names; datasets, checkpoints and smoke outputs stay ignored. The API loads models from `MODELS_DIR` (default `ml/models`). If a file is missing, it falls back to the classical forensics and the rule-based extractor, and it records which method produced every result.
 
+## 7. Operating point (CPU, about 40 minutes)
+
+The API reports a region only where the probability is above 0.98 over at least 300 pixels (`services/api/app/services/documents/forensics.py`). The rule was chosen on validation images and checked once on a slice of the test split:
+
+```bash
+uv run python -m synth.build_dataset --out data/loc_val --train 0 --val 400 --test 0
+uv run python -m eval.calibrate --data data/loc_val --out eval/results/localiser_calibration.json
+uv run python -m synth.build_dataset --out data/loc_test600 --train 0 --val 0 --test 600
+uv run python -m eval.calibrate --data data/loc_test600 --split test \
+  --out eval/results/localiser_operating_point_test.json
+```
+
+Seeds depend only on the split and the index, so these images are the same as the first images of the full run's splits. Results are in `EVALUATION.md` Section 3.
+
 ## Smoke test (CPU, a few minutes)
 
 ```bash

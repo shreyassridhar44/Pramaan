@@ -246,16 +246,23 @@ async def _checks(
                 )
             )
 
-    # 3. Forensic regions mapped to fields.
+    # 3. Forensic regions mapped to fields. A mark that touches no value field (printed labels,
+    # borders) is still shown, but graded low: an altered deposit changes values.
     for region in result.forensics.regions:
         near = max(fields, key=lambda f: _overlap(f["box"], region.box), default=None)
         target = near if near and _overlap(near["box"], region.box) > 0.1 else None
-        label = FIELD_LABEL.get(target["field"], "the page").lower() if target else "the page"
+        if target:
+            severity = "high" if region.score > 0.7 else "medium"
+            label = FIELD_LABEL.get(target["field"], "a field").lower()
+            title = f"Possible alteration near {label}"
+        else:
+            severity = "low"
+            title = "Possible alteration outside the value fields"
         checks.append(
             Check(
                 "possible_alteration",
-                "high" if region.score > 0.7 else "medium",
-                f"Possible alteration near {label}",
+                severity,
+                title,
                 f"The {result.forensics.method} analysis marks this region"
                 f" (score {region.score:.2f}). "
                 "Compare it with the original receipt.",

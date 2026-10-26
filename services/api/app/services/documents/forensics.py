@@ -9,6 +9,12 @@ import cv2
 import numpy as np
 
 MAX_SIDE = 1700
+# Operating point for the learned localiser, chosen on validation data (EVALUATION.md): a region
+# is kept only where the probability exceeds 0.98 over at least 300 pixels. At the raw 0.5
+# threshold about a third of unedited validation pages got a mark; with this rule 3.9% do, and
+# 99.5% of edited pages still get a mark on the edit.
+REGION_THRESHOLD = 0.98
+REGION_MIN_AREA = 300
 
 
 @dataclass
@@ -124,7 +130,7 @@ def analyse(
         "noise_p99": float(np.percentile(noise, 99)),
     }
     if learned is not None:
-        regions = _regions(learned, 0.5, 60)
+        regions = _regions(learned, REGION_THRESHOLD, REGION_MIN_AREA)
         for r in regions:
             x0, y0, x1, y1 = r.box
             r.sources.append("model")
