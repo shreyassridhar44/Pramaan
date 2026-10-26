@@ -78,52 +78,56 @@ function Rail() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { asOf, isToday } = useAsOf()
   const items = NAV.filter((n) => !n.roles || (me && n.roles.includes(me.role)))
+  // The rail never changes width under the pointer (DECISION D34): a rail that widens on hover
+  // either pushes the page aside or covers its left edge, and both turn clicks into misses. Wide
+  // screens show it open with labels; narrower ones show icons with their names as tooltips.
   return (
-    <nav
-      aria-label="Primary"
-      className="group/rail sticky top-0 z-30 flex h-dvh w-16 shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 hover:w-[232px] focus-within:w-[232px]"
-    >
-      <Link
-        to="/"
-        search={isToday ? {} : { asOf }}
-        className="flex h-14 items-center gap-3 overflow-hidden px-[18px]"
+    <div className="w-16 shrink-0 xl:w-[232px]">
+      <nav
+        aria-label="Primary"
+        className="sticky top-0 z-30 flex h-dvh w-16 flex-col border-r border-line bg-surface xl:w-[232px]"
       >
-        <PramaanMark size={28} />
-        <Wordmark className="opacity-0 transition-opacity duration-150 group-hover/rail:opacity-100 group-focus-within/rail:opacity-100" />
-      </Link>
-      <ul className="mt-2 flex flex-1 flex-col gap-0.5 px-2.5">
-        {items.map((item) => {
-          const active = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
-          return (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                search={isToday ? {} : { asOf }}
-                aria-current={active ? 'page' : undefined}
-                className={cn(
-                  'relative flex h-10 items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium whitespace-nowrap transition-colors',
-                  active ? 'bg-sunken text-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink',
-                )}
-              >
-                {active ? (
-                  <span
-                    aria-hidden
-                    className="absolute top-2 bottom-2 left-0 w-[3px] rounded-r bg-accent"
-                  />
-                ) : null}
-                <item.icon className="size-[18px] shrink-0" aria-hidden />
-                <span className="opacity-0 transition-opacity duration-150 group-hover/rail:opacity-100 group-focus-within/rail:opacity-100">
-                  {item.label}
-                </span>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-      <div className="px-2.5 pb-3">
-        <ThemeToggle />
-      </div>
-    </nav>
+        <Link
+          to="/"
+          search={isToday ? {} : { asOf }}
+          className="flex h-14 items-center gap-3 overflow-hidden px-[18px]"
+        >
+          <PramaanMark size={28} />
+          <Wordmark className="hidden xl:block" />
+        </Link>
+        <ul className="mt-2 flex flex-1 flex-col gap-0.5 px-2.5">
+          {items.map((item) => {
+            const active = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  search={isToday ? {} : { asOf }}
+                  aria-current={active ? 'page' : undefined}
+                  title={item.label}
+                  className={cn(
+                    'relative flex h-10 items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium whitespace-nowrap transition-colors',
+                    active ? 'bg-sunken text-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink',
+                  )}
+                >
+                  {active ? (
+                    <span
+                      aria-hidden
+                      className="absolute top-2 bottom-2 left-0 w-[3px] rounded-r bg-accent"
+                    />
+                  ) : null}
+                  <item.icon className="size-[18px] shrink-0" aria-hidden />
+                  <span className="sr-only xl:not-sr-only">{item.label}</span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+        <div className="px-2.5 pb-3">
+          <ThemeToggle />
+        </div>
+      </nav>
+    </div>
   )
 }
 
@@ -133,6 +137,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
+      title={theme === 'command' ? 'Ledger theme' : 'Command theme'}
       className="flex h-10 w-full items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium text-ink-2 hover:bg-sunken hover:text-ink"
     >
       {theme === 'command' ? (
@@ -140,7 +145,7 @@ function ThemeToggle() {
       ) : (
         <Moon className="size-[18px] shrink-0" />
       )}
-      <span className="whitespace-nowrap opacity-0 transition-opacity group-hover/rail:opacity-100 group-focus-within/rail:opacity-100">
+      <span className="sr-only whitespace-nowrap xl:not-sr-only">
         {theme === 'command' ? 'Ledger theme' : 'Command theme'}
       </span>
     </button>

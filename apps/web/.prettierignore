@@ -2,3 +2,6 @@ dist
 node_modules
 src/routeTree.gen.ts
 src/lib/api/schema.d.ts
+e2e-report
+test-results
+playwright-report

@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Input, Label } from '@/components/ui/primitives'
 import { api, ApiError, unwrap } from '@/lib/api/client'
 import { formatCount, formatINRCompact, formatPercent } from '@/lib/format'
-import { homeFor, meQuery } from '@/lib/session'
+import { homeFor, meQuery, type Me } from '@/lib/session'
 
 export const Route = createFileRoute('/signin')({
   component: SignIn,
@@ -67,19 +67,23 @@ function SignIn() {
     queryFn: async () => unwrap(await api.GET('/api/v1/auth/personas')),
   })
 
-  const after = async (role: string) => {
-    await qc.invalidateQueries({ queryKey: meQuery.queryKey })
-    await navigate({ to: homeFor(role) })
+  // The route guards read the cached user without refetching, and a visitor usually arrives with
+  // "signed out" cached, so the new session is written into the cache before navigating. Anything
+  // cached under an earlier session is dropped.
+  const after = async (me: Me) => {
+    qc.removeQueries()
+    qc.setQueryData(meQuery.queryKey, me)
+    await navigate({ to: homeFor(me.role) })
   }
   const login = useMutation({
     mutationFn: async () =>
       unwrap(await api.POST('/api/v1/auth/login', { body: { email, password } })),
-    onSuccess: (me) => after(me.role),
+    onSuccess: after,
   })
   const persona = useMutation({
     mutationFn: async (key: string) =>
       unwrap(await api.POST('/api/v1/auth/persona/{key}', { params: { path: { key } } })),
-    onSuccess: (me) => after(me.role),
+    onSuccess: after,
   })
 
   const submit = (e: FormEvent) => {

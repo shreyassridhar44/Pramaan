@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * End-to-end tests for the R16 scenarios (claude-code/TEST_PLAN.md Section 2). They share one
@@ -19,12 +19,25 @@ export default defineConfig({
   globalSetup: './e2e/global-setup.ts',
   use: {
     baseURL: deployed ?? 'http://localhost:5173',
-    // Uses the installed Chrome, so no browser download is needed.
-    channel: 'chrome',
     viewport: { width: 1440, height: 900 },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
+  // Every spec runs in the installed Chrome. The pointer and sign-in specs also run in Firefox and
+  // in WebKit, the engine behind Safari (`npx playwright install firefox webkit` once).
+  projects: [
+    { name: 'chrome', use: { channel: 'chrome' } },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } },
+      testMatch: /(signin|interactions)\.spec\.ts/,
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
+      testMatch: /(signin|interactions)\.spec\.ts/,
+    },
+  ],
   webServer: deployed
     ? []
     : [
