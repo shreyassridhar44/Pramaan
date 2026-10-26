@@ -13,7 +13,10 @@ const STEP_MS = 3200
 const NUMBER = '6422 6103 4588 12'
 
 const STAGE: Record<AssuranceLevel, { feature: string; evidence: string }> = {
-  0: { feature: 'Plain paper', evidence: 'The institution typed these values. Nothing independent yet.' },
+  0: {
+    feature: 'Plain paper',
+    evidence: 'The institution typed these values. Nothing independent yet.',
+  },
   1: {
     feature: 'Watermark',
     evidence: 'The uploaded scan was read field by field and the values agree.',
@@ -59,7 +62,9 @@ export function ProofSpecimen() {
         <div className="paper-grain absolute inset-0" aria-hidden />
         <GuillocheBand
           height={30}
-          color={level >= 2 ? 'color-mix(in srgb, var(--a2) 55%, transparent)' : 'var(--guilloche-soft)'}
+          color={
+            level >= 2 ? 'color-mix(in srgb, var(--a2) 55%, transparent)' : 'var(--guilloche-soft)'
+          }
           className="transition-colors duration-700"
         />
 
@@ -75,7 +80,11 @@ export function ProofSpecimen() {
               className="pointer-events-none absolute inset-0 grid place-items-center"
               aria-hidden
             >
-              <RosetteMark seed={NUMBER} className="size-[300px] opacity-70" color="var(--guilloche-soft)" />
+              <RosetteMark
+                seed={NUMBER}
+                className="size-[300px] opacity-70"
+                color="var(--guilloche-soft)"
+              />
               <span
                 lang="hi"
                 className="absolute font-deva text-[5.5rem] font-semibold text-[color:var(--guilloche-soft)]"
@@ -106,11 +115,18 @@ export function ProofSpecimen() {
                 Simulated bank
               </span>
             </p>
-            <p className="mt-1 font-display text-[1.75rem] leading-none text-ink">Fixed Deposit Receipt</p>
+            <p className="mt-1 font-display text-[1.75rem] leading-none text-ink">
+              Fixed Deposit Receipt
+            </p>
             <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3.5">
               <Field label="Receipt no." value={NUMBER} mono read={level >= 1} delay={0} wide />
               <Field label="Amount" value="₹15,00,000" mono read={level >= 1} delay={0.15} big />
-              <Field label="Under lien to" value="AICTE Regulation Bureau" read={level >= 1} delay={0.3} />
+              <Field
+                label="Under lien to"
+                value="AICTE Regulation Bureau"
+                read={level >= 1}
+                delay={0.3}
+              />
               <Field label="Issued" value="20 Oct 2026" mono read={level >= 1} delay={0.45} />
               <Field label="Matures" value="20 Oct 2036" mono read={level >= 1} delay={0.6} />
             </dl>
@@ -118,9 +134,18 @@ export function ProofSpecimen() {
           <div className="relative flex w-[150px] flex-col items-center justify-start pt-1">
             <div className="relative grid size-[132px] place-items-center">
               {level >= 2 ? (
-                <Rosette seed={NUMBER} size={132} color="color-mix(in srgb, var(--a2) 70%, transparent)" draw className="absolute" />
+                <Rosette
+                  seed={NUMBER}
+                  size={132}
+                  color="color-mix(in srgb, var(--a2) 70%, transparent)"
+                  draw
+                  className="absolute"
+                />
               ) : (
-                <span className="absolute inset-2 rounded-full border border-dashed border-line-strong" aria-hidden />
+                <span
+                  className="absolute inset-2 rounded-full border border-dashed border-line-strong"
+                  aria-hidden
+                />
               )}
               <AnimatePresence>
                 {level >= 2 ? (
@@ -131,7 +156,12 @@ export function ProofSpecimen() {
                     animate={{ scale: 1, rotate: -9, opacity: 1 }}
                     transition={{ delay: 0.9, type: 'spring', stiffness: 380, damping: 18 }}
                   >
-                    <Seal size={92} tone="green" seed={NUMBER} legend="Bank-confirmed  •  Signed message  •  " />
+                    <Seal
+                      size={92}
+                      tone="green"
+                      seed={NUMBER}
+                      legend="Bank-confirmed  •  Signed message  •  "
+                    />
                   </motion.div>
                 ) : null}
               </AnimatePresence>
@@ -176,13 +206,19 @@ export function ProofSpecimen() {
                 }}
                 className={cn(
                   'flex w-full items-center gap-2 rounded-[var(--radius-control)] border px-2.5 py-2 text-left transition-colors',
-                  level === l ? 'border-ink bg-surface shadow-[var(--shadow-lift)]' : 'border-line hover:border-ink-3',
+                  level === l
+                    ? 'border-ink bg-surface shadow-[var(--shadow-lift)]'
+                    : 'border-line hover:border-ink-3',
                 )}
               >
                 <AssuranceRing level={l} size={20} showTip={false} />
                 <span className="min-w-0">
-                  <span className="block text-[0.6875rem] font-semibold text-ink">{ASSURANCE[l].short}</span>
-                  <span className="block truncate text-[0.6875rem] text-ink-3">{ASSURANCE[l].name}</span>
+                  <span className="block text-[0.6875rem] font-semibold text-ink">
+                    {ASSURANCE[l].short}
+                  </span>
+                  <span className="block truncate text-[0.6875rem] text-ink-3">
+                    {ASSURANCE[l].name}
+                  </span>
                 </span>
               </button>
             </li>
@@ -220,7 +256,13 @@ function Field({
   return (
     <div className={cn('relative', wide && 'col-span-2')}>
       <dt className="text-[0.625rem] font-medium tracking-[0.1em] text-ink-3 uppercase">{label}</dt>
-      <dd className={cn('mt-0.5 text-ink', mono && 'font-mono tabular', big ? 'text-[1.25rem] font-semibold' : 'text-[0.875rem]')}>
+      <dd
+        className={cn(
+          'mt-0.5 text-ink',
+          mono && 'font-mono tabular',
+          big ? 'text-[1.25rem] font-semibold' : 'text-[0.875rem]',
+        )}
+      >
         {value}
       </dd>
       <AnimatePresence>

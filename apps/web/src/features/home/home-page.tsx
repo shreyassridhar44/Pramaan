@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight,
@@ -16,7 +15,7 @@ import {
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
 
-import { PLACE, SHORT } from '@/components/charts/region-cartogram'
+import { PLACE, SHORT } from '@/components/charts/region-layout'
 import { GovFooter } from '@/components/shell/gov-footer'
 import { GovStrip } from '@/components/shell/gov-strip'
 import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
@@ -26,24 +25,16 @@ import { SplitFlap } from '@/components/security/split-flap'
 import { RubberStamp, type StampInk } from '@/components/security/stamp'
 import { PramaanMark, Wordmark } from '@/components/signature/mark'
 import { Button } from '@/components/ui/button'
-import { api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { cn } from '@/lib/cn'
 import { formatCount, formatINRCompact, formatPercent } from '@/lib/format'
 import { homeFor, useMe } from '@/lib/session'
 
+import { usePublicSummary } from './queries'
 import { ProofSpecimen } from './specimen'
 import { VerifyPanel } from './verify-panel'
 
 type Summary = components['schemas']['PublicSummary']
-
-export function usePublicSummary() {
-  return useQuery({
-    queryKey: ['public-summary'],
-    queryFn: async () => unwrap(await api.GET('/api/v1/public/summary')),
-    refetchInterval: 60_000,
-  })
-}
 
 /** The public face of Pramaan: what it is, live figures, how a deposit moves, and verification. */
 export function HomePage() {
@@ -59,7 +50,10 @@ export function HomePage() {
         <Lifecycle />
         <Regions summary={summary} />
         <section id="verify" className="relative overflow-hidden border-y border-line bg-surface">
-          <RosetteMark seed="verify" className="spin-slower absolute -bottom-64 -left-56 size-[620px] opacity-60" />
+          <RosetteMark
+            seed="verify"
+            className="spin-slower absolute -bottom-64 -left-56 size-[620px] opacity-60"
+          />
           <div className="relative mx-auto max-w-[1280px] px-6 py-20">
             <VerifyPanel />
           </div>
@@ -80,14 +74,21 @@ function SiteHeader() {
           <PramaanMark size={40} />
           <Wordmark sub />
         </Link>
-        <nav aria-label="Sections" className="ml-6 hidden items-center gap-1 text-[0.8125rem] font-medium text-ink-2 lg:flex">
+        <nav
+          aria-label="Sections"
+          className="ml-6 hidden items-center gap-1 text-[0.8125rem] font-medium text-ink-2 lg:flex"
+        >
           {[
             ['#board', 'Live figures'],
             ['#how', 'How it works'],
             ['#regions', 'Regions'],
             ['#verify', 'Verify a document'],
           ].map(([href, label]) => (
-            <a key={href} href={href} className="rounded-full px-3 py-1.5 hover:bg-sunken hover:text-ink">
+            <a
+              key={href}
+              href={href}
+              className="rounded-full px-3 py-1.5 hover:bg-sunken hover:text-ink"
+            >
               {label}
             </a>
           ))}
@@ -117,8 +118,15 @@ function Hero({ summary }: { summary?: Summary }) {
   return (
     <section className="relative overflow-hidden">
       <div className="paper-grain absolute inset-0" aria-hidden />
-      <RosetteMark seed="pramaan-hero" className="spin-slow absolute -top-72 -right-72 size-[980px] opacity-60" />
-      <RosetteMark seed="pramaan-hero-2" layers={2} className="spin-slower absolute top-40 -left-80 size-[640px] opacity-50" />
+      <RosetteMark
+        seed="pramaan-hero"
+        className="spin-slow absolute -top-72 -right-72 size-[980px] opacity-60"
+      />
+      <RosetteMark
+        seed="pramaan-hero-2"
+        layers={2}
+        className="spin-slower absolute top-40 -left-80 size-[640px] opacity-50"
+      />
       <div className="relative mx-auto grid max-w-[1280px] items-center gap-14 px-6 pt-16 pb-20 lg:grid-cols-[1.05fr_1fr] lg:pt-24 [&>*]:min-w-0">
         <div>
           <motion.p
@@ -166,11 +174,23 @@ function Hero({ summary }: { summary?: Summary }) {
             </Button>
           </div>
           <dl className="mt-10 grid max-w-xl grid-cols-3 divide-x divide-line rounded-[var(--radius-panel)] border border-line bg-surface/80 backdrop-blur">
-            <HeroFigure label="Held in trust" value={summary ? formatINRCompact(BigInt(summary.held_paise)) : '...'} />
-            <HeroFigure label="Bank-confirmed" value={summary ? formatPercent(summary.bank_confirmed_share) : '...'} tone="text-a2" />
-            <HeroFigure label="Institutions" value={summary ? formatCount(summary.institutions) : '...'} />
+            <HeroFigure
+              label="Held in trust"
+              value={summary ? formatINRCompact(BigInt(summary.held_paise)) : '...'}
+            />
+            <HeroFigure
+              label="Bank-confirmed"
+              value={summary ? formatPercent(summary.bank_confirmed_share) : '...'}
+              tone="text-a2"
+            />
+            <HeroFigure
+              label="Institutions"
+              value={summary ? formatCount(summary.institutions) : '...'}
+            />
           </dl>
-          <p className="mt-2 text-[0.6875rem] text-ink-3">Live from the demonstration portfolio. All data synthetic.</p>
+          <p className="mt-2 text-[0.6875rem] text-ink-3">
+            Live from the demonstration portfolio. All data synthetic.
+          </p>
         </div>
         <ProofSpecimen />
       </div>
@@ -217,7 +237,10 @@ function Ticker({ summary }: { summary?: Summary }) {
     </ul>
   )
   return (
-    <section aria-label="Today on Pramaan" className="flex items-stretch overflow-hidden bg-board text-[0.8125rem] text-board-ink">
+    <section
+      aria-label="Today on Pramaan"
+      className="flex items-stretch overflow-hidden bg-board text-[0.8125rem] text-board-ink"
+    >
       <p className="relative z-10 flex shrink-0 items-center gap-2 bg-accent px-4 py-2.5 font-semibold text-white">
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-white/70 motion-reduce:animate-none" />
@@ -253,7 +276,12 @@ function Board({ summary }: { summary?: Summary }) {
         ['Instruments', 'प्रपत्र', formatCount(summary.held_count), 'ACTIVE'],
         ['Bank-confirmed', 'बैंक पुष्टि', formatPercent(summary.bank_confirmed_share), 'SIGNED'],
         ['Maturing, 90 days', 'परिपक्वता', formatCount(summary.maturing_90_count), 'WATCHED'],
-        ['Awaiting scrutiny', 'जाँच हेतु', formatCount(summary.pending_verification_count), 'IN QUEUE'],
+        [
+          'Awaiting scrutiny',
+          'जाँच हेतु',
+          formatCount(summary.pending_verification_count),
+          'IN QUEUE',
+        ],
         ['Reminders, 7 days', 'अनुस्मारक', formatCount(summary.reminders_7d), 'SENT'],
         ['Letters issued', 'पत्र', formatCount(summary.letters_issued), 'QR'],
       ]
@@ -262,8 +290,12 @@ function Board({ summary }: { summary?: Summary }) {
     <section id="board" className="relative mx-auto max-w-[1280px] scroll-mt-24 px-6 py-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">Portfolio board</p>
-          <h2 className="mt-2 font-display text-[2.75rem] leading-none text-ink">The whole portfolio, at a glance.</h2>
+          <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">
+            Portfolio board
+          </p>
+          <h2 className="mt-2 font-display text-[2.75rem] leading-none text-ink">
+            The whole portfolio, at a glance.
+          </h2>
           <p className="mt-3 max-w-2xl text-[0.9375rem] text-ink-2">
             Computed live by the same engine the officers use. Refreshes every minute.
           </p>
@@ -280,58 +312,157 @@ function Board({ summary }: { summary?: Summary }) {
           </p>
         </div>
         <div role="table" aria-label="Portfolio board" className="divide-y divide-white/5">
-          <div role="row" className="grid grid-cols-[1.4fr_1fr_auto] gap-4 px-5 py-2 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/40 uppercase">
+          <div
+            role="row"
+            className="grid grid-cols-[1.4fr_1fr_auto] gap-4 px-5 py-2 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/40 uppercase"
+          >
             <span role="columnheader">Figure</span>
-            <span role="columnheader" className="text-right">Value</span>
-            <span role="columnheader" className="w-[7.5rem] text-right">State</span>
+            <span role="columnheader" className="text-right">
+              Value
+            </span>
+            <span role="columnheader" className="w-[7.5rem] text-right">
+              State
+            </span>
           </div>
           {rows.length
             ? rows.map(([en, hi, value, state]) => (
-                <div role="row" key={en} className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-4 px-5 py-2.5">
-                  <span role="cell" className="flex items-baseline gap-3 text-[0.9375rem] font-medium tracking-[0.04em] text-board-ink uppercase">
+                <div
+                  role="row"
+                  key={en}
+                  className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-4 px-5 py-2.5"
+                >
+                  <span
+                    role="cell"
+                    className="flex items-baseline gap-3 text-[0.9375rem] font-medium tracking-[0.04em] text-board-ink uppercase"
+                  >
                     {en}
-                    <span lang="hi" className="font-deva text-[0.8125rem] tracking-normal text-board-ink/45 normal-case">
+                    <span
+                      lang="hi"
+                      className="font-deva text-[0.8125rem] tracking-normal text-board-ink/45 normal-case"
+                    >
                       {hi}
                     </span>
                   </span>
                   <span role="cell" className="text-right text-[1.5rem]">
                     <SplitFlap value={value} />
                   </span>
-                  <span role="cell" className="w-[7.5rem] text-right font-mono text-[0.8125rem] tracking-[0.12em] text-saffron">
+                  <span
+                    role="cell"
+                    className="w-[7.5rem] text-right font-mono text-[0.8125rem] tracking-[0.12em] text-saffron"
+                  >
                     {state}
                   </span>
                 </div>
               ))
-            : Array.from({ length: 7 }, (_, i) => <div key={i} className="h-[52px] animate-pulse bg-white/[0.02]" />)}
+            : Array.from({ length: 7 }, (_, i) => (
+                <div key={i} className="h-[52px] animate-pulse bg-white/[0.02]" />
+              ))}
         </div>
       </div>
     </section>
   )
 }
 
-const STEPS: { title: string; hi: string; stamp: string; sub: string; ink: StampInk; shape: 'rect' | 'circle'; body: string; who: string }[] = [
-  { title: 'Submitted', hi: 'प्रस्तुत', stamp: 'Received', sub: 'Online filing', ink: 'navy', shape: 'rect', body: 'The institution files the FDR details and uploads the scan. No paper, no courier.', who: 'Institution' },
-  { title: 'Read', hi: 'जाँचा', stamp: 'Checked', sub: 'Scan read', ink: 'copper', shape: 'circle', body: 'Every field is read from the scan and compared with the declaration. A trained model marks possible alterations for an officer.', who: 'Pramaan' },
-  { title: 'Confirmed', hi: 'पुष्टि', stamp: 'Confirmed', sub: 'By the bank', ink: 'green', shape: 'circle', body: 'The bank confirms each field in a digitally signed message. Declared and confirmed values never mix.', who: 'Bank' },
-  { title: 'Watched', hi: 'निगरानी', stamp: 'Under watch', sub: 'T-90  T-60  T-30', ink: 'navy', shape: 'rect', body: 'Maturity and validity are watched daily. Reminders go out on a configurable ladder, by email, SMS and WhatsApp.', who: 'Pramaan' },
-  { title: 'Escalated', hi: 'उन्नयन', stamp: 'Escalated', sub: 'Overdue', ink: 'red', shape: 'rect', body: 'Anything left unanswered climbs to the next officer on the escalation matrix, with its age and owner.', who: 'Regulation Bureau' },
-  { title: 'Renewed', hi: 'नवीनीकृत', stamp: 'Renewed', sub: 'Linked to previous', ink: 'green', shape: 'rect', body: 'A replacement FDR is linked to the one it replaces, so the full history of every deposit stays in one chain.', who: 'Institution and bank' },
-  { title: 'Released', hi: 'मुक्त', stamp: 'Released', sub: 'By authority', ink: 'violet', shape: 'circle', body: 'Release needs clearances from PGRC, Vigilance and Grants, then a signature from the competent authority. Never automatic.', who: 'Approving authority' },
+const STEPS: {
+  title: string
+  hi: string
+  stamp: string
+  sub: string
+  ink: StampInk
+  shape: 'rect' | 'circle'
+  body: string
+  who: string
+}[] = [
+  {
+    title: 'Submitted',
+    hi: 'प्रस्तुत',
+    stamp: 'Received',
+    sub: 'Online filing',
+    ink: 'navy',
+    shape: 'rect',
+    body: 'The institution files the FDR details and uploads the scan. No paper, no courier.',
+    who: 'Institution',
+  },
+  {
+    title: 'Read',
+    hi: 'जाँचा',
+    stamp: 'Checked',
+    sub: 'Scan read',
+    ink: 'copper',
+    shape: 'circle',
+    body: 'Every field is read from the scan and compared with the declaration. A trained model marks possible alterations for an officer.',
+    who: 'Pramaan',
+  },
+  {
+    title: 'Confirmed',
+    hi: 'पुष्टि',
+    stamp: 'Confirmed',
+    sub: 'By the bank',
+    ink: 'green',
+    shape: 'circle',
+    body: 'The bank confirms each field in a digitally signed message. Declared and confirmed values never mix.',
+    who: 'Bank',
+  },
+  {
+    title: 'Watched',
+    hi: 'निगरानी',
+    stamp: 'Under watch',
+    sub: 'T-90  T-60  T-30',
+    ink: 'navy',
+    shape: 'rect',
+    body: 'Maturity and validity are watched daily. Reminders go out on a configurable ladder, by email, SMS and WhatsApp.',
+    who: 'Pramaan',
+  },
+  {
+    title: 'Escalated',
+    hi: 'उन्नयन',
+    stamp: 'Escalated',
+    sub: 'Overdue',
+    ink: 'red',
+    shape: 'rect',
+    body: 'Anything left unanswered climbs to the next officer on the escalation matrix, with its age and owner.',
+    who: 'Regulation Bureau',
+  },
+  {
+    title: 'Renewed',
+    hi: 'नवीनीकृत',
+    stamp: 'Renewed',
+    sub: 'Linked to previous',
+    ink: 'green',
+    shape: 'rect',
+    body: 'A replacement FDR is linked to the one it replaces, so the full history of every deposit stays in one chain.',
+    who: 'Institution and bank',
+  },
+  {
+    title: 'Released',
+    hi: 'मुक्त',
+    stamp: 'Released',
+    sub: 'By authority',
+    ink: 'violet',
+    shape: 'circle',
+    body: 'Release needs clearances from PGRC, Vigilance and Grants, then a signature from the competent authority. Never automatic.',
+    who: 'Approving authority',
+  },
 ]
 
 function Lifecycle() {
   const reduce = useReducedMotion()
   return (
-    <section id="how" className="relative scroll-mt-24 overflow-hidden border-y border-line bg-paper">
+    <section
+      id="how"
+      className="relative scroll-mt-24 overflow-hidden border-y border-line bg-paper"
+    >
       <div className="paper-grain absolute inset-0" aria-hidden />
       <div className="relative mx-auto max-w-[1280px] px-6 py-20">
-        <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">How it works</p>
+        <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">
+          How it works
+        </p>
         <h2 className="mt-2 max-w-3xl font-display text-[2.75rem] leading-[1.02] text-ink">
           The life of a deposit, stamp by stamp.
         </h2>
         <p className="mt-3 max-w-2xl text-[0.9375rem] text-ink-2">
-          The way an office file collects stamps as it moves from desk to desk, except every stamp here is
-          a recorded event with an officer, a time and a reason.
+          The way an office file collects stamps as it moves from desk to desk, except every stamp
+          here is a recorded event with an officer, a time and a reason.
         </p>
         <ol className="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           {STEPS.map((s, i) => (
@@ -352,7 +483,9 @@ function Lifecycle() {
                   className={s.shape === 'circle' ? 'h-[104px]' : 'h-[78px]'}
                 />
               </motion.div>
-              <p className="mt-4 font-mono text-[0.6875rem] text-ink-3">{String(i + 1).padStart(2, '0')}</p>
+              <p className="mt-4 font-mono text-[0.6875rem] text-ink-3">
+                {String(i + 1).padStart(2, '0')}
+              </p>
               <h3 className="mt-1 flex items-baseline gap-2 text-[1.0625rem] font-semibold text-ink">
                 {s.title}
                 <span lang="hi" className="font-deva text-[0.8125rem] font-normal text-ink-3">
@@ -360,7 +493,9 @@ function Lifecycle() {
                 </span>
               </h3>
               <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-ink-2">{s.body}</p>
-              <p className="mt-2 text-[0.6875rem] font-medium tracking-[0.06em] text-ink-3 uppercase">{s.who}</p>
+              <p className="mt-2 text-[0.6875rem] font-medium tracking-[0.06em] text-ink-3 uppercase">
+                {s.who}
+              </p>
             </li>
           ))}
         </ol>
@@ -374,22 +509,32 @@ function Regions({ summary }: { summary?: Summary }) {
   const regions = summary?.regions ?? []
   const max = Math.max(1, ...regions.map((r) => Number(r.held_paise)))
   return (
-    <section id="regions" className="mx-auto grid max-w-[1280px] scroll-mt-24 items-center gap-12 px-6 py-20 lg:grid-cols-[1fr_1.2fr]">
+    <section
+      id="regions"
+      className="mx-auto grid max-w-[1280px] scroll-mt-24 items-center gap-12 px-6 py-20 lg:grid-cols-[1fr_1.2fr]"
+    >
       <div>
-        <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">Across India</p>
+        <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">
+          Across India
+        </p>
         <h2 className="mt-2 font-display text-[2.75rem] leading-[1.02] text-ink">
           Eleven AICTE regions, one record.
         </h2>
         <p className="mt-3 max-w-lg text-[0.9375rem] text-ink-2">
-          Each tile is a regional office. The rosette grows with the value it holds, and the green arc
-          shows how much of that value the banks have confirmed. Regional officers see only their own
-          region; the Bureau sees all of them.
+          Each tile is a regional office. The rosette grows with the value it holds, and the green
+          arc shows how much of that value the banks have confirmed. Regional officers see only
+          their own region; the Bureau sees all of them.
         </p>
         <p className="mt-6 text-[0.75rem] text-ink-3">
           A cartogram, not a map: tiles are placed roughly by geography and no boundaries are drawn.
         </p>
       </div>
-      <div className="grid grid-cols-5 gap-2" style={{ gridTemplateRows: 'repeat(6, minmax(78px, auto))' }} role="list" aria-label="Regions">
+      <div
+        className="grid grid-cols-5 gap-2"
+        style={{ gridTemplateRows: 'repeat(6, minmax(78px, auto))' }}
+        role="list"
+        aria-label="Regions"
+      >
         {regions.map((r) => {
           const place = PLACE[r.code]
           if (!place) return null
@@ -408,13 +553,22 @@ function Regions({ summary }: { summary?: Summary }) {
                 style={{ transform: `scale(${scale})` }}
                 color="color-mix(in srgb, var(--a2) 32%, transparent)"
               />
-              <p className="relative text-[0.75rem] font-semibold text-ink">{SHORT[r.code] ?? r.name}</p>
+              <p className="relative text-[0.75rem] font-semibold text-ink">
+                {SHORT[r.code] ?? r.name}
+              </p>
               <div className="relative">
-                <p className="font-display text-[1.25rem] leading-none text-ink">{formatINRCompact(BigInt(r.held_paise))}</p>
+                <p className="font-display text-[1.25rem] leading-none text-ink">
+                  {formatINRCompact(BigInt(r.held_paise))}
+                </p>
                 <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-sunken" aria-hidden>
-                  <div className="h-full rounded-full bg-a2" style={{ width: `${r.confirmed_share * 100}%` }} />
+                  <div
+                    className="h-full rounded-full bg-a2"
+                    style={{ width: `${r.confirmed_share * 100}%` }}
+                  />
                 </div>
-                <p className="mt-1 text-[0.625rem] text-ink-3">{formatPercent(r.confirmed_share)} confirmed</p>
+                <p className="mt-1 text-[0.625rem] text-ink-3">
+                  {formatPercent(r.confirmed_share)} confirmed
+                </p>
               </div>
             </div>
           )
@@ -425,20 +579,60 @@ function Regions({ summary }: { summary?: Summary }) {
 }
 
 const ROLES: { title: string; hi: string; body: string; icon: LucideIcon; tone: SealTone }[] = [
-  { title: 'Regulation Bureau', hi: 'विनियमन ब्यूरो', body: 'One command view of value held, proof and pending action, with a forecast that runs the rules forward.', icon: Landmark, tone: 'navy' },
-  { title: 'Regional offices', hi: 'क्षेत्रीय कार्यालय', body: 'The same tools, scoped to the region, with its own queue and escalations.', icon: MapPinned, tone: 'navy' },
-  { title: 'Institutions', hi: 'संस्थान', body: 'File, track and renew deposits online, see exactly what is due and why, and apply for release.', icon: Building2, tone: 'copper' },
-  { title: 'Banks', hi: 'बैंक', body: 'Confirm deposits and discharge liens through signed messages instead of letters (simulated).', icon: Vault, tone: 'green' },
-  { title: 'Clearance cells', hi: 'अनापत्ति प्रकोष्ठ', body: 'PGRC, Vigilance and Grants clear or block a release with a recorded reason.', icon: ScrollText, tone: 'muted' },
-  { title: 'Competent authority', hi: 'सक्षम प्राधिकारी', body: 'Signs the release only when every condition and clearance is met. The system never decides.', icon: Gavel, tone: 'seal' },
+  {
+    title: 'Regulation Bureau',
+    hi: 'विनियमन ब्यूरो',
+    body: 'One command view of value held, proof and pending action, with a forecast that runs the rules forward.',
+    icon: Landmark,
+    tone: 'navy',
+  },
+  {
+    title: 'Regional offices',
+    hi: 'क्षेत्रीय कार्यालय',
+    body: 'The same tools, scoped to the region, with its own queue and escalations.',
+    icon: MapPinned,
+    tone: 'navy',
+  },
+  {
+    title: 'Institutions',
+    hi: 'संस्थान',
+    body: 'File, track and renew deposits online, see exactly what is due and why, and apply for release.',
+    icon: Building2,
+    tone: 'copper',
+  },
+  {
+    title: 'Banks',
+    hi: 'बैंक',
+    body: 'Confirm deposits and discharge liens through signed messages instead of letters (simulated).',
+    icon: Vault,
+    tone: 'green',
+  },
+  {
+    title: 'Clearance cells',
+    hi: 'अनापत्ति प्रकोष्ठ',
+    body: 'PGRC, Vigilance and Grants clear or block a release with a recorded reason.',
+    icon: ScrollText,
+    tone: 'muted',
+  },
+  {
+    title: 'Competent authority',
+    hi: 'सक्षम प्राधिकारी',
+    body: 'Signs the release only when every condition and clearance is met. The system never decides.',
+    icon: Gavel,
+    tone: 'seal',
+  },
 ]
 
 function Roles() {
   return (
     <section className="mx-auto max-w-[1280px] px-6 py-20">
-      <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">Who uses Pramaan</p>
+      <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">
+        Who uses Pramaan
+      </p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
-        <h2 className="font-display text-[2.75rem] leading-[1.02] text-ink">Everyone who touches a deposit.</h2>
+        <h2 className="font-display text-[2.75rem] leading-[1.02] text-ink">
+          Everyone who touches a deposit.
+        </h2>
         <Button asChild variant="primary" size="lg">
           <Link to="/signin">
             <FileCheck2 /> Try any role, no password
@@ -447,14 +641,24 @@ function Roles() {
       </div>
       <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {ROLES.map((r) => (
-          <li key={r.title} className="group relative overflow-hidden rounded-[14px] border border-line bg-surface p-5 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-ink-3 hover:shadow-[var(--shadow-lift)]">
-            <Seal size={120} tone={r.tone} seed={r.title} className="absolute -top-6 -right-6 opacity-[0.12] transition-[opacity,transform] duration-500 group-hover:rotate-12 group-hover:opacity-25" />
+          <li
+            key={r.title}
+            className="group relative overflow-hidden rounded-[14px] border border-line bg-surface p-5 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-ink-3 hover:shadow-[var(--shadow-lift)]"
+          >
+            <Seal
+              size={120}
+              tone={r.tone}
+              seed={r.title}
+              className="absolute -top-6 -right-6 opacity-[0.12] transition-[opacity,transform] duration-500 group-hover:rotate-12 group-hover:opacity-25"
+            />
             <span className="grid size-10 place-items-center rounded-xl bg-sunken text-ink-2 group-hover:bg-accent-soft group-hover:text-accent">
               <r.icon className="size-5" />
             </span>
             <h3 className="mt-4 flex items-baseline gap-2 text-[1.0625rem] font-semibold text-ink">
               {r.title}
-              <span lang="hi" className="font-deva text-[0.8125rem] font-normal text-ink-3">{r.hi}</span>
+              <span lang="hi" className="font-deva text-[0.8125rem] font-normal text-ink-3">
+                {r.hi}
+              </span>
             </h3>
             <p className="mt-1.5 text-[0.875rem] leading-relaxed text-ink-2">{r.body}</p>
           </li>

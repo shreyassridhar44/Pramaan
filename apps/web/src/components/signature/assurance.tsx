@@ -197,7 +197,9 @@ function AssuranceSeal({
         tone="green"
         stamp={animate}
         seed={`assurance-${level}`}
-        legend={level === 3 ? 'Re-confirmed  •  Bank signed  •  ' : 'Bank-confirmed  •  Signed  •  '}
+        legend={
+          level === 3 ? 'Re-confirmed  •  Bank signed  •  ' : 'Bank-confirmed  •  Signed  •  '
+        }
         rotate={-6}
       />
       {level === 3 ? (

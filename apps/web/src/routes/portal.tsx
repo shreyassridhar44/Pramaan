@@ -1,6 +1,9 @@
 import { createFileRoute, Link, Outlet, redirect, useRouterState } from '@tanstack/react-router'
 import { LogOut } from 'lucide-react'
 
+import { GovFooter } from '@/components/shell/gov-footer'
+import { GovStrip } from '@/components/shell/gov-strip'
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
 import { PramaanMark } from '@/components/signature/mark'
 import { cn } from '@/lib/cn'
 import { homeFor, meQuery, useMe, useSignOut } from '@/lib/session'
@@ -26,16 +29,27 @@ function PortalLayout() {
   const signOut = useSignOut()
   const path = useRouterState({ select: (s) => s.location.pathname })
   return (
-    <div className="min-h-dvh bg-canvas text-[1rem]">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex h-16 max-w-[1100px] items-center gap-6 px-6">
+    <div className="flex min-h-dvh flex-col bg-canvas text-[1rem]">
+      <GovStrip compact />
+      <header className="relative overflow-hidden bg-board text-board-ink">
+        <RosetteMark
+          seed="portal"
+          className="pointer-events-none absolute -top-40 right-24 size-[380px]"
+          color="rgb(255 255 255 / 0.06)"
+        />
+        <div className="relative mx-auto flex h-[72px] max-w-[1100px] items-center gap-6 px-6">
           <Link to="/portal" className="flex items-center gap-3">
-            <PramaanMark size={30} />
+            <PramaanMark size={38} />
             <span className="leading-tight">
-              <span className="block font-display text-[1.25rem] leading-none text-ink">
-                Pramaan
+              <span className="flex items-baseline gap-2">
+                <span className="font-display text-[1.375rem] leading-none">Pramaan</span>
+                <span lang="hi" className="font-deva text-[0.75rem] text-saffron">
+                  प्रमाण
+                </span>
               </span>
-              <span className="block text-[0.6875rem] text-ink-3">AICTE institution portal</span>
+              <span className="mt-0.5 block text-[0.6875rem] text-board-ink/60">
+                AICTE institution portal
+              </span>
             </span>
           </Link>
           <nav aria-label="Portal" className="flex gap-1">
@@ -44,33 +58,40 @@ function PortalLayout() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  'rounded-full px-4 py-1.5 text-[0.875rem] font-medium',
-                  path === n.to ? 'bg-sunken text-ink' : 'text-ink-2 hover:text-ink',
+                  'flex flex-col items-center rounded-xl px-4 py-1.5 text-[0.875rem] leading-tight font-medium',
+                  path === n.to
+                    ? 'bg-white/10 text-white shadow-[inset_0_-2px_0_var(--saffron)]'
+                    : 'text-board-ink/70 hover:bg-white/5 hover:text-white',
                 )}
               >
                 {n.label}
+                <span lang="hi" aria-hidden className="font-deva text-[0.625rem] text-board-ink/45">
+                  {n.hi}
+                </span>
               </Link>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <span className="hidden text-right leading-tight sm:block">
-              <span className="block text-[0.875rem] font-medium text-ink">{me?.name}</span>
-              <span className="block text-[0.75rem] text-ink-3">{me?.institution_name}</span>
+              <span className="block text-[0.875rem] font-medium">{me?.name}</span>
+              <span className="block text-[0.75rem] text-board-ink/60">{me?.institution_name}</span>
             </span>
             <button
               type="button"
               onClick={signOut}
-              className="grid size-9 place-items-center rounded-full text-ink-3 hover:bg-sunken hover:text-ink"
+              className="grid size-9 place-items-center rounded-full text-board-ink/70 hover:bg-white/10 hover:text-white"
               aria-label="Sign out"
             >
               <LogOut className="size-4" />
             </button>
           </div>
         </div>
+        <GuillocheBand height={10} color="rgb(255 153 51 / 0.4)" className="relative" />
       </header>
-      <main className="mx-auto max-w-[1100px] px-6 py-8">
+      <main id="main" className="mx-auto w-full max-w-[1100px] flex-1 px-6 py-8">
         <Outlet />
       </main>
+      <GovFooter />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useReducedMotion } from 'motion/react'
-import { useRef, type HTMLAttributes, type PointerEvent } from 'react'
+import { useEffect, useRef, type HTMLAttributes, type PointerEvent } from 'react'
 
 import { cn } from '@/lib/cn'
 
@@ -13,10 +13,31 @@ export function Foil({
   tilt = false,
   intensity = 1,
   always = false,
+  gyro = false,
   ...props
-}: HTMLAttributes<HTMLDivElement> & { tilt?: boolean; intensity?: number; always?: boolean }) {
+}: HTMLAttributes<HTMLDivElement> & {
+  tilt?: boolean
+  intensity?: number
+  always?: boolean
+  /** Also follow the phone's tilt where the browser offers it without a prompt. */
+  gyro?: boolean
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
+  useEffect(() => {
+    if (!gyro || reduce || typeof window.DeviceOrientationEvent === 'undefined') return
+    const on = (e: DeviceOrientationEvent) => {
+      const el = ref.current
+      if (!el || e.beta === null || e.gamma === null) return
+      const x = Math.min(1, Math.max(0, 0.5 + e.gamma / 60))
+      const y = Math.min(1, Math.max(0, 0.5 + (e.beta - 45) / 60))
+      el.style.setProperty('--fx', `${x * 100}%`)
+      el.style.setProperty('--fy', `${y * 100}%`)
+      el.style.setProperty('--fa', `${(x + y) * 180}`)
+    }
+    window.addEventListener('deviceorientation', on)
+    return () => window.removeEventListener('deviceorientation', on)
+  }, [gyro, reduce])
   const move = (e: PointerEvent<HTMLDivElement>) => {
     const el = ref.current
     if (!el || reduce) return
@@ -26,7 +47,8 @@ export function Foil({
     el.style.setProperty('--fx', `${x * 100}%`)
     el.style.setProperty('--fy', `${y * 100}%`)
     el.style.setProperty('--fa', `${(x + y) * 180}`)
-    if (tilt) el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 7}deg) rotateY(${(x - 0.5) * 9}deg)`
+    if (tilt)
+      el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 7}deg) rotateY(${(x - 0.5) * 9}deg)`
   }
   const leave = () => {
     const el = ref.current
@@ -38,7 +60,10 @@ export function Foil({
       ref={ref}
       onPointerMove={move}
       onPointerLeave={leave}
-      className={cn('group/foil relative isolate transition-transform duration-300 ease-out', className)}
+      className={cn(
+        'group/foil relative isolate transition-transform duration-300 ease-out',
+        className,
+      )}
       {...props}
     >
       {children}

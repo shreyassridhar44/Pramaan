@@ -69,11 +69,20 @@ export function Seal({
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn('shrink-0 overflow-visible', stamp && 'stamp-in', className)}
-      style={{ ['--stamp-rotate' as string]: `${rotate}deg`, transform: stamp ? undefined : `rotate(${rotate}deg)` }}
+      style={{
+        ['--stamp-rotate' as string]: `${rotate}deg`,
+        transform: stamp ? undefined : `rotate(${rotate}deg)`,
+      }}
     >
       <defs>
         <filter id={`emboss-${id}`} x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="-0.8" dy="-0.8" stdDeviation="0.4" floodColor="#fff" floodOpacity="0.55" />
+          <feDropShadow
+            dx="-0.8"
+            dy="-0.8"
+            stdDeviation="0.4"
+            floodColor="#fff"
+            floodOpacity="0.55"
+          />
           <feDropShadow dx="1" dy="1.2" stdDeviation="0.6" floodColor="#000" floodOpacity="0.28" />
         </filter>
         <path id={`ring-${id}`} d="M100 100 m-77 0 a77 77 0 1 1 154 0 a77 77 0 1 1 -154 0" />

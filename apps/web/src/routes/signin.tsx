@@ -125,17 +125,31 @@ function SignIn() {
       <GovStrip compact />
       <div className="grid flex-1 lg:grid-cols-[minmax(440px,40%)_1fr]">
         <aside className="relative flex flex-col justify-between overflow-hidden bg-board px-10 py-10 text-board-ink lg:px-14">
-          <RosetteMark seed="signin" className="spin-slow absolute -right-64 -bottom-64 size-[760px]" color="rgb(255 255 255 / 0.07)" />
-          <RosetteMark seed="signin-2" layers={2} className="spin-slower absolute -top-40 -left-40 size-[420px]" color="rgb(255 153 51 / 0.08)" />
+          <RosetteMark
+            seed="signin"
+            className="spin-slow absolute -right-64 -bottom-64 size-[760px]"
+            color="rgb(255 255 255 / 0.07)"
+          />
+          <RosetteMark
+            seed="signin-2"
+            layers={2}
+            className="spin-slower absolute -top-40 -left-40 size-[420px]"
+            color="rgb(255 153 51 / 0.08)"
+          />
           <div className="relative flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <PramaanMark size={40} />
               <div className="leading-tight">
-                <p className="text-[0.8125rem] font-medium">All India Council for Technical Education</p>
+                <p className="text-[0.8125rem] font-medium">
+                  All India Council for Technical Education
+                </p>
                 <p className="text-[0.75rem] text-board-ink/60">Regulation Bureau</p>
               </div>
             </div>
-            <Link to="/home" className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] text-board-ink/70 hover:bg-white/10 hover:text-board-ink">
+            <Link
+              to="/home"
+              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] text-board-ink/70 hover:bg-white/10 hover:text-board-ink"
+            >
               <ArrowLeft className="size-3.5" /> Home
             </Link>
           </div>
@@ -153,13 +167,16 @@ function SignIn() {
               </span>
             </motion.h1>
             <p className="mt-5 max-w-md text-[1.0625rem] leading-relaxed text-board-ink/75">
-              Security deposits and FDRs, proven at source. One record for every deposit AICTE holds,
-              every value traced to the institution, the document or the bank.
+              Security deposits and FDRs, proven at source. One record for every deposit AICTE
+              holds, every value traced to the institution, the document or the bank.
             </p>
 
             <div className="mt-10 max-w-md overflow-hidden rounded-[14px] border border-white/10 bg-black/25">
               <BoardRow label="Held in trust" value={s ? formatINRCompact(s.held_paise) : '-'} />
-              <BoardRow label="Bank-confirmed" value={s ? formatPercent(s.bank_confirmed_share) : '-'} />
+              <BoardRow
+                label="Bank-confirmed"
+                value={s ? formatPercent(s.bank_confirmed_share) : '-'}
+              />
               <BoardRow label="Institutions" value={s ? formatCount(s.institutions) : '-'} />
               <p className="px-4 py-2 text-[0.625rem] tracking-[0.06em] text-board-ink/40 uppercase">
                 Live, synthetic data
@@ -170,8 +187,9 @@ function SignIn() {
           <div className="relative">
             <Microprint className="mb-3 text-white/15" />
             <p className="max-w-md text-[0.75rem] leading-relaxed text-board-ink/50">
-              Smart India Hackathon 2026, problem statement SIH26265. All institutions, deposits, banks
-              and documents shown are synthetic. Simulated components are labelled where they appear.
+              Smart India Hackathon 2026, problem statement SIH26265. All institutions, deposits,
+              banks and documents shown are synthetic. Simulated components are labelled where they
+              appear.
             </p>
           </div>
         </aside>
@@ -223,7 +241,9 @@ function SignIn() {
                   <h3 id="personas-heading" className="text-[0.9375rem] font-semibold text-ink">
                     Explore the prototype as
                   </h3>
-                  <span className="text-[0.75rem] text-ink-3">Demo mode: one click, no password</span>
+                  <span className="text-[0.75rem] text-ink-3">
+                    Demo mode: one click, no password
+                  </span>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {ordered.map((p, i) => (
@@ -232,7 +252,9 @@ function SignIn() {
                       persona={p}
                       index={i}
                       busy={persona.isPending}
-                      chosen={persona.variables === p.key && (persona.isPending || persona.isSuccess)}
+                      chosen={
+                        persona.variables === p.key && (persona.isPending || persona.isSuccess)
+                      }
                       onChoose={() => persona.mutate(p.key)}
                     />
                   ))}
@@ -254,7 +276,9 @@ function SignIn() {
 function BoardRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-white/5 px-4 py-3">
-      <span className="text-[0.75rem] font-medium tracking-[0.1em] text-board-ink/70 uppercase">{label}</span>
+      <span className="text-[0.75rem] font-medium tracking-[0.1em] text-board-ink/70 uppercase">
+        {label}
+      </span>
       <span className="text-[1.375rem]">
         <SplitFlap value={value} />
       </span>
@@ -307,14 +331,24 @@ function IdCard({
           className="group relative flex w-full flex-col overflow-hidden rounded-[14px] border border-line bg-surface text-left shadow-[0_1px_0_rgb(18_23_38/0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-ink-3 hover:shadow-[var(--shadow-lift)] disabled:cursor-wait"
         >
           <span className={cn('relative flex h-7 items-center justify-between px-3', band.band)}>
-            <GuillocheBand height={28} color="rgb(255 255 255 / 0.22)" className="absolute inset-0" />
+            <GuillocheBand
+              height={28}
+              color="rgb(255 255 255 / 0.22)"
+              className="absolute inset-0"
+            />
             <span className="relative text-[0.5625rem] font-semibold tracking-[0.16em] text-white uppercase">
               {band.label}
             </span>
-            <span className="relative font-mono text-[0.5625rem] tracking-[0.08em] text-white/85">{idNo}</span>
+            <span className="relative font-mono text-[0.5625rem] tracking-[0.08em] text-white/85">
+              {idNo}
+            </span>
           </span>
           <span className="relative flex items-start gap-3 p-3.5">
-            <RosetteMark seed={p.key} layers={2} className="absolute -right-6 -bottom-8 size-[120px] opacity-70" />
+            <RosetteMark
+              seed={p.key}
+              layers={2}
+              className="absolute -right-6 -bottom-8 size-[120px] opacity-70"
+            />
             <span className="relative grid size-12 shrink-0 place-items-center rounded-full bg-sunken text-[0.9375rem] font-semibold text-ink-2 ring-1 ring-line-strong group-hover:bg-accent-soft group-hover:text-accent">
               {initials(p.name)}
               <span className="absolute -right-1 -bottom-1 grid size-5 place-items-center rounded-full bg-surface ring-1 ring-line">
@@ -330,13 +364,24 @@ function IdCard({
               aria-hidden
               className="relative ml-auto size-6 shrink-0 rounded-full opacity-80"
               style={{
-                background: 'conic-gradient(from 40deg, #ffd6e0, #fff1c2, #d4f7c9, #c6efff, #e1d6ff, #ffd6e0)',
+                background:
+                  'conic-gradient(from 40deg, #ffd6e0, #fff1c2, #d4f7c9, #c6efff, #e1d6ff, #ffd6e0)',
               }}
             />
           </span>
           {chosen ? (
-            <span className="pointer-events-none absolute inset-0 grid place-items-center bg-surface/40" aria-hidden>
-              <Seal size={96} tone="green" stamp mark="tick" seed={p.key} legend="Admitted  •  प्रवेश  •  " />
+            <span
+              className="pointer-events-none absolute inset-0 grid place-items-center bg-surface/40"
+              aria-hidden
+            >
+              <Seal
+                size={96}
+                tone="green"
+                stamp
+                mark="tick"
+                seed={p.key}
+                legend="Admitted  •  प्रवेश  •  "
+              />
             </span>
           ) : null}
         </button>

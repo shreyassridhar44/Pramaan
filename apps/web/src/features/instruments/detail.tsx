@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, Chip, SimulatedBadge, StatusChip } from '@/components/signature/chips'
@@ -84,8 +85,19 @@ export function InstrumentDetailPage({ id }: { id: number }) {
         <ArrowLeft className="size-4" /> Instruments
       </Link>
 
-      <Panel className="overflow-hidden">
-        <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto]">
+      <Panel className="relative overflow-hidden bg-paper">
+        <div className="paper-grain pointer-events-none absolute inset-0" aria-hidden />
+        <GuillocheBand
+          height={18}
+          color={level >= 2 ? 'color-mix(in srgb, var(--a2) 45%, transparent)' : 'var(--guilloche)'}
+          className="relative"
+        />
+        <RosetteMark
+          seed={d.number}
+          className="pointer-events-none absolute top-1/2 right-[300px] size-[300px] -translate-y-1/2 opacity-70"
+          color="var(--guilloche-soft)"
+        />
+        <div className="relative grid gap-6 p-6 lg:grid-cols-[1fr_auto]">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Chip>{KIND_LABEL[d.kind] ?? d.kind}</Chip>
@@ -138,8 +150,8 @@ export function InstrumentDetailPage({ id }: { id: number }) {
               <ActionBar d={d} />
             </div>
           </div>
-          <div className="flex items-center gap-5 rounded-[var(--radius-panel)] border border-line bg-sunken/50 px-6 py-5 lg:w-[340px]">
-            <AssuranceRing level={level} size={92} animate />
+          <div className="relative flex items-center gap-5 overflow-hidden rounded-[var(--radius-panel)] border border-line bg-surface/80 px-6 py-5 backdrop-blur lg:w-[360px]">
+            <AssuranceRing level={level} size={112} animate />
             <div>
               <Label>Assurance</Label>
               <p className={cn('mt-1 text-[1.25rem] font-semibold', ASSURANCE[level].text)}>

@@ -23,7 +23,10 @@ export function SplitFlap({
   return (
     <span className={cn('inline-flex items-baseline', className)}>
       <span className="sr-only">{value}</span>
-      <span aria-hidden className={cn('inline-flex', variant === 'board' ? 'gap-[0.08em]' : 'gap-0')}>
+      <span
+        aria-hidden
+        className={cn('inline-flex', variant === 'board' ? 'gap-[0.08em]' : 'gap-0')}
+      >
         {chars.map((ch, i) => (
           <FlapCell
             // Cells are keyed from the right so units stay put while digits are added in front.
@@ -85,7 +88,9 @@ function FlapCell({ ch, delay, board }: { ch: string; delay: number; board: bool
     <span
       className={cn(
         'relative inline-flex h-[1.25em] items-center justify-center overflow-hidden rounded-[0.12em] font-mono leading-none',
-        space ? 'w-[0.3em]' : 'w-[0.74em] bg-board text-board-ink shadow-[inset_0_-1px_0_rgb(255_255_255/0.06),0_1px_2px_rgb(0_0_0/0.35)]',
+        space
+          ? 'w-[0.3em]'
+          : 'w-[0.74em] bg-board text-board-ink shadow-[inset_0_-1px_0_rgb(255_255_255/0.06),0_1px_2px_rgb(0_0_0/0.35)]',
       )}
       style={{ perspective: '400px' }}
     >

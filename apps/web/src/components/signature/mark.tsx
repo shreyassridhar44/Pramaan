@@ -19,8 +19,21 @@ export function PramaanMark({ size = 28, className }: { size?: number; className
     >
       <circle cx="100" cy="100" r="98" fill="var(--brand)" />
       <circle cx="100" cy="100" r="90" fill="none" stroke="var(--saffron)" strokeWidth="5" />
-      <circle cx="100" cy="100" r="82" fill="none" stroke="var(--brand-contrast)" strokeOpacity="0.35" strokeWidth="2" />
-      <g fill="none" stroke="var(--brand-contrast)" strokeOpacity="0.55" strokeWidth={size < 40 ? 3 : 1.4}>
+      <circle
+        cx="100"
+        cy="100"
+        r="82"
+        fill="none"
+        stroke="var(--brand-contrast)"
+        strokeOpacity="0.35"
+        strokeWidth="2"
+      />
+      <g
+        fill="none"
+        stroke="var(--brand-contrast)"
+        strokeOpacity="0.55"
+        strokeWidth={size < 40 ? 3 : 1.4}
+      >
         {ROSETTE.map((d, i) => (
           <path key={i} d={d} />
         ))}

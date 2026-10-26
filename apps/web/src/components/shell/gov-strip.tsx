@@ -14,7 +14,13 @@ const SIZES: { size: TextSize; label: string; name: string }[] = [
  * The government website strip (GIGW): who runs the service, skip to content, text size and
  * contrast. It also says plainly that this is a prototype, not an official AICTE website.
  */
-export function GovStrip({ className, compact = false }: { className?: string; compact?: boolean }) {
+export function GovStrip({
+  className,
+  compact = false,
+}: {
+  className?: string
+  compact?: boolean
+}) {
   const size = useTextSize()
   const { theme, toggle } = useTheme()
   return (
@@ -33,7 +39,9 @@ export function GovStrip({ className, compact = false }: { className?: string; c
           </span>
           <span className="opacity-40">|</span>
           <span className="truncate opacity-80">
-            {compact ? 'AICTE, Ministry of Education' : 'All India Council for Technical Education, Ministry of Education, Government of India'}
+            {compact
+              ? 'AICTE, Ministry of Education'
+              : 'All India Council for Technical Education, Ministry of Education, Government of India'}
           </span>
         </p>
         <span className="hidden shrink-0 rounded-full border border-white/20 px-2 py-px text-[0.625rem] tracking-[0.04em] text-white/75 lg:inline">
@@ -50,7 +58,9 @@ export function GovStrip({ className, compact = false }: { className?: string; c
                 onClick={() => setTextSize(s.size)}
                 className={cn(
                   'grid h-6 min-w-6 place-items-center rounded px-1 font-semibold leading-none',
-                  size === s.size ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white',
+                  size === s.size
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white',
                 )}
               >
                 {s.label}

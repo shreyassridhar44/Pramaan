@@ -40,7 +40,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.domain.provenance import rupees
 from app.models import Letter
-from app.services import audit
+from app.services import audit, guilloche
 from app.services.storage import storage
 
 FONTS = Path(__file__).resolve().parents[1] / "assets" / "fonts"
@@ -288,6 +288,46 @@ def _styles() -> dict[str, ParagraphStyle]:
     }
 
 
+def _security_print(c: Canvas, letter: Letter) -> None:
+    """Guilloche border, a rosette watermark seeded by the reference, and a microprint line."""
+    w, h = A4
+    c.saveState()
+    c.setLineWidth(0.25)
+    c.setStrokeColor(colors.HexColor("#0f7a55"))
+    c.setStrokeAlpha(0.32)
+    inset = 8 * mm
+
+    def polyline(points: list[tuple[float, float]]) -> None:
+        path = c.beginPath()
+        path.moveTo(*points[0])
+        for x, y in points[1:]:
+            path.lineTo(x, y)
+        c.drawPath(path, stroke=1, fill=0)
+
+    for strand in guilloche.band_strands(w - 2 * inset, 1.6 * mm, 9 * mm, 6):
+        polyline([(inset + x, inset + 1.6 * mm + y) for x, y in strand if x <= w - 2 * inset])
+        polyline([(inset + x, h - inset - 1.6 * mm + y) for x, y in strand if x <= w - 2 * inset])
+    for strand in guilloche.band_strands(h - 2 * inset, 1.6 * mm, 9 * mm, 6):
+        polyline([(inset + 1.6 * mm + y, inset + x) for x, y in strand if x <= h - 2 * inset])
+        polyline([(w - inset - 1.6 * mm + y, inset + x) for x, y in strand if x <= h - 2 * inset])
+
+    c.setStrokeColor(BRAND)
+    c.setStrokeAlpha(0.07)
+    c.setLineWidth(0.3)
+    scale = 0.8 * mm
+    cx, cy = w / 2, h / 2 - 8 * mm
+    for layer in guilloche.rosette_layers(letter.reference):
+        for strand in guilloche.rosette_strands(layer, 300):
+            polyline([(cx + x * scale, cy + y * scale) for x, y in strand])
+
+    c.setFillColor(INK_3)
+    c.setFillAlpha(0.55)
+    c.setFont("Sans", 2.2)
+    micro = "PRAMAAN  AICTE REGULATION BUREAU  SECURITY DEPOSIT AND FDR PORTAL  " * 8
+    c.drawString(20 * mm, h - 36.6 * mm, micro[:240])
+    c.restoreState()
+
+
 def _header(c: Canvas, letter: Letter) -> None:
     w, h = A4
     c.saveState()
@@ -512,6 +552,7 @@ def render_pdf(letter: Letter) -> bytes:
     ]
 
     def decorate(c: Canvas, _doc: object) -> None:
+        _security_print(c, letter)
         _header(c, letter)
         _footer(c, letter, token)
 

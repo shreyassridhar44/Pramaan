@@ -159,7 +159,9 @@ function Rail() {
                       : 'text-board-ink/65 hover:bg-white/[0.06] hover:text-white',
                   )}
                 >
-                  {active ? <SecurityThread className="absolute top-1.5 bottom-1.5 left-0" /> : null}
+                  {active ? (
+                    <SecurityThread className="absolute top-1.5 bottom-1.5 left-0" />
+                  ) : null}
                   <item.icon
                     className={cn('size-[18px] shrink-0', active && 'text-saffron')}
                     aria-hidden

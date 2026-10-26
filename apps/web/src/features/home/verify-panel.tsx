@@ -7,14 +7,7 @@ import { Seal } from '@/components/security/seal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/primitives'
 
-/** The token from a verification link, or the text itself when it is a bare code. */
-export function tokenFrom(text: string): string | null {
-  const t = text.trim()
-  if (!t) return null
-  const m = t.match(/\/verify\/([^/?#\s]+)/)
-  if (m) return decodeURIComponent(m[1]!)
-  return /^[\w.~-]{8,}$/.test(t) ? t : null
-}
+import { tokenFrom } from './token'
 
 /**
  * Anyone can check a Pramaan letter: paste its link or code, or hold its QR code up to the
@@ -43,15 +36,18 @@ export function VerifyPanel() {
     <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
       <div>
         <p className="text-[0.75rem] font-semibold tracking-[0.12em] text-accent uppercase">
-          Public verification <span lang="hi" className="font-deva normal-case">सार्वजनिक सत्यापन</span>
+          Public verification{' '}
+          <span lang="hi" className="font-deva normal-case">
+            सार्वजनिक सत्यापन
+          </span>
         </p>
         <h2 className="mt-2 font-display text-[2.75rem] leading-[1.02] text-ink">
           Is this letter genuine? Check it in one scan.
         </h2>
         <p className="mt-4 max-w-xl text-[1rem] leading-relaxed text-ink-2">
-          Every NOC, sanction order and acknowledgement Pramaan issues carries a signed QR code. Banks,
-          institutions and members of the public can check it here, without signing in. The answer
-          comes from AICTE&apos;s record, not from the paper.
+          Every NOC, sanction order and acknowledgement Pramaan issues carries a signed QR code.
+          Banks, institutions and members of the public can check it here, without signing in. The
+          answer comes from AICTE&apos;s record, not from the paper.
         </p>
         <form onSubmit={submit} className="mt-7 flex max-w-xl flex-col gap-3 sm:flex-row">
           <label className="sr-only" htmlFor="verify-code">
@@ -82,7 +78,7 @@ export function VerifyPanel() {
         ) : null}
       </div>
       <PhoneSpecimen />
-      <ScanDialog open={scanning} onOpenChange={setScanning} onCode={go} />
+      {scanning ? <ScanDialog open onOpenChange={setScanning} onCode={go} /> : null}
     </div>
   )
 }
@@ -99,7 +95,12 @@ function PhoneSpecimen() {
             </p>
             <p className="text-[0.75rem] text-ink-3">Document verification</p>
             <div className="mx-auto mt-4 grid place-items-center">
-              <Seal size={120} tone="green" seed="verify-specimen" legend="Genuine  •  प्रामाणिक  •  " />
+              <Seal
+                size={120}
+                tone="green"
+                seed="verify-specimen"
+                legend="Genuine  •  प्रामाणिक  •  "
+              />
             </div>
             <p className="mt-3 font-display text-[2rem] leading-none text-a2">Genuine</p>
             <p lang="hi" className="font-deva text-[0.875rem] text-a2">
@@ -149,7 +150,6 @@ function ScanDialog({
     let last = 0
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d', { willReadFrequently: true })
-    setProblem(null)
 
     const start = async () => {
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -162,7 +162,9 @@ function ScanDialog({
           audio: false,
         })
       } catch {
-        setProblem('Camera permission was not given. Paste the link instead, or allow the camera and try again.')
+        setProblem(
+          'Camera permission was not given. Paste the link instead, or allow the camera and try again.',
+        )
         return
       }
       if (stopped || !video.current) return
@@ -189,7 +191,8 @@ function ScanDialog({
           canvas.height = v.videoHeight
           ctx.drawImage(v, 0, 0)
           const img = ctx.getImageData(0, 0, canvas.width, canvas.height)
-          found = jsqr(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' })?.data ?? null
+          found =
+            jsqr(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' })?.data ?? null
         }
         if (found && !stopped) {
           stopped = true
@@ -216,7 +219,10 @@ function ScanDialog({
             <Dialog.Title className="flex items-center gap-2 text-[0.9375rem] font-semibold text-ink">
               <ScanLine className="size-4 text-accent" /> Hold the QR code up to the camera
             </Dialog.Title>
-            <Dialog.Close className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-sunken hover:text-ink" aria-label="Close">
+            <Dialog.Close
+              className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-sunken hover:text-ink"
+              aria-label="Close"
+            >
               <X className="size-4" />
             </Dialog.Close>
           </div>
@@ -225,19 +231,26 @@ function ScanDialog({
           </Dialog.Description>
           <div className="relative aspect-[4/3] bg-board">
             <video ref={video} muted playsInline className="size-full object-cover" />
-            <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden>
+            <div
+              className="pointer-events-none absolute inset-0 grid place-items-center"
+              aria-hidden
+            >
               <div className="relative size-[58%] rounded-2xl border-2 border-white/80 shadow-[0_0_0_9999px_rgb(0_0_0/0.35)]">
                 <span className="scan-line absolute inset-x-3 top-0 h-0.5 bg-saffron shadow-[0_0_12px_var(--saffron)] [animation-iteration-count:infinite]" />
               </div>
             </div>
             {problem ? (
-              <p role="alert" className="absolute inset-x-4 bottom-4 rounded-lg bg-surface px-3 py-2 text-[0.8125rem] text-ink">
+              <p
+                role="alert"
+                className="absolute inset-x-4 bottom-4 rounded-lg bg-surface px-3 py-2 text-[0.8125rem] text-ink"
+              >
                 {problem}
               </p>
             ) : null}
           </div>
           <p className="px-5 py-3 text-[0.75rem] text-ink-3">
-            The image stays on this device. Only the decoded code is checked against AICTE&apos;s record.
+            The image stays on this device. Only the decoded code is checked against AICTE&apos;s
+            record.
           </p>
         </Dialog.Content>
       </Dialog.Portal>

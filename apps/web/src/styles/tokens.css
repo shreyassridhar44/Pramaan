@@ -60,6 +60,8 @@
   --board-a2: #35c58f;
   --board-due: #f2b54b;
   --board-overdue: #ff7a6e;
+  --uv-ground: #12062b;
+  --uv-glow: #7dffb0;
   --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 18px 40px -22px rgb(18 23 38 / 0.35);
 }
 
@@ -116,6 +118,8 @@
   --board-a2: #35c58f;
   --board-due: #f2b54b;
   --board-overdue: #ff7a6e;
+  --uv-ground: #12062b;
+  --uv-glow: #7dffb0;
   --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -22px rgb(0 0 0 / 0.7);
 }
 

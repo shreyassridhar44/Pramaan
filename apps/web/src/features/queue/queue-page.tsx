@@ -57,7 +57,7 @@ export function QueuePage() {
   }, [items, current])
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[400px_1fr]">
+    <div className="grid gap-5 xl:grid-cols-[400px_minmax(0,1fr)] [&>*]:min-w-0">
       <Panel className="overflow-hidden xl:sticky xl:top-20 xl:max-h-[calc(100dvh-110px)] xl:overflow-y-auto">
         <PanelHeader
           title="Waiting for scrutiny"

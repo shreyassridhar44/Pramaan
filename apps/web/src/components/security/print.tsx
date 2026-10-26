@@ -16,7 +16,9 @@ export function Microprint({ text = MICRO, className }: { text?: string; classNa
 
 /** The windowed, colour-shifting thread woven into a note. */
 export function SecurityThread({ className }: { className?: string }) {
-  return <span aria-hidden className={cn('security-thread block w-[3px] rounded-full', className)} />
+  return (
+    <span aria-hidden className={cn('security-thread block w-[3px] rounded-full', className)} />
+  )
 }
 
 /** Saffron, white and green, as a hairline. */

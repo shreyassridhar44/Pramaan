@@ -4,6 +4,8 @@ import { Inbox, LogOut } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Amount } from '@/components/signature/chips'
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
+import { GovStrip } from '@/components/shell/gov-strip'
 import { PramaanMark } from '@/components/signature/mark'
 import { EmptyState, ErrorState, Kbd, Panel, Skeleton } from '@/components/ui/primitives'
 import { CaseView } from '@/features/releases/case-view'
@@ -50,34 +52,44 @@ function ClearancesLayout() {
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex h-16 max-w-[1480px] items-center gap-4 px-6">
-          <PramaanMark size={32} />
+      <GovStrip compact />
+      <header className="relative overflow-hidden bg-board text-board-ink">
+        <RosetteMark
+          seed={me?.cell ?? 'cell'}
+          className="pointer-events-none absolute -top-36 right-40 size-[340px]"
+          color="rgb(255 255 255 / 0.06)"
+        />
+        <div className="relative mx-auto flex h-[72px] max-w-[1480px] items-center gap-4 px-6">
+          <PramaanMark size={38} />
           <span className="leading-tight">
-            <span className="block text-[0.9375rem] font-semibold text-ink">
+            <span className="block font-display text-[1.375rem] leading-none">
               {CELL_NAME[me?.cell ?? ''] ?? 'Clearance cell'}
             </span>
-            <span className="block text-[0.75rem] text-ink-3">
+            <span className="mt-0.5 block text-[0.75rem] text-board-ink/60">
               Clearance queue for release of security deposits
             </span>
           </span>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-right text-[0.8125rem] leading-tight">
-              <span className="block font-medium text-ink">{me?.name}</span>
-              <span className="block text-[0.75rem] text-ink-3">{me?.designation}</span>
+              <span className="block font-medium">{me?.name}</span>
+              <span className="block text-[0.75rem] text-board-ink/60">{me?.designation}</span>
             </span>
             <button
               type="button"
               onClick={signOut}
-              className="grid size-9 place-items-center rounded-full text-ink-3 hover:bg-sunken hover:text-ink"
+              className="grid size-9 place-items-center rounded-full text-board-ink/70 hover:bg-white/10 hover:text-white"
               aria-label="Sign out"
             >
               <LogOut className="size-4" />
             </button>
           </div>
         </div>
+        <GuillocheBand height={10} color="rgb(53 197 143 / 0.45)" className="relative" />
       </header>
-      <main className="mx-auto grid max-w-[1480px] gap-5 px-6 py-6 xl:grid-cols-[380px_1fr]">
+      <main
+        id="main"
+        className="mx-auto grid max-w-[1480px] gap-5 px-6 py-6 xl:grid-cols-[380px_1fr]"
+      >
         <Panel className="overflow-hidden xl:sticky xl:top-6 xl:max-h-[calc(100dvh-48px)] xl:overflow-y-auto">
           <div className="flex items-center gap-1 border-b border-line p-2">
             {(['pending', 'decided'] as const).map((t) => (

@@ -4,6 +4,9 @@ import { CircleHelp, KeyRound, Loader2, ShieldAlert, ShieldCheck, ShieldX } from
 import { motion, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 
+import { Foil } from '@/components/security/foil'
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
+import { Seal } from '@/components/security/seal'
 import { PramaanMark } from '@/components/signature/mark'
 import { api, unwrap } from '@/lib/api/client'
 import { cn } from '@/lib/cn'
@@ -61,8 +64,13 @@ function VerifyPage() {
   const r = q.data ? RESULT[q.data.result] : null
   const l = q.data?.letter
   return (
-    <div className="min-h-dvh bg-canvas text-[1rem]">
-      <div className="mx-auto max-w-[560px] px-4 pt-6 pb-12 sm:pt-12">
+    <div className="relative min-h-dvh overflow-hidden bg-canvas text-[1rem]">
+      <div className="tricolour h-1" aria-hidden />
+      <RosetteMark
+        seed="verify-page"
+        className="spin-slower pointer-events-none absolute -top-48 -right-48 size-[520px]"
+      />
+      <div className="relative mx-auto max-w-[560px] px-4 pt-6 pb-12 sm:pt-12">
         <header className="flex items-center gap-3">
           <PramaanMark size={34} />
           <div className="leading-tight">
@@ -83,11 +91,47 @@ function VerifyPage() {
           </div>
         ) : (
           <>
+            {q.data.result === 'genuine' ? (
+              <Foil
+                always
+                gyro
+                tilt
+                className="mt-8 overflow-hidden rounded-[18px] border border-a2/40 bg-paper shadow-[0_30px_60px_-30px_rgb(15_122_85/0.45)]"
+              >
+                <div className="paper-grain absolute inset-0" aria-hidden />
+                <GuillocheBand height={22} color="color-mix(in srgb, var(--a2) 55%, transparent)" />
+                <div
+                  className="relative flex flex-col items-center px-6 pt-6 pb-7 text-center"
+                  aria-live="polite"
+                >
+                  <Seal
+                    size={168}
+                    tone="green"
+                    stamp={!reduce}
+                    seed={l?.reference ?? 'genuine'}
+                    legend="Genuine  •  प्रामाणिक  •  AICTE  •  "
+                    label="Genuine"
+                  />
+                  <p className="mt-4 font-display text-[3rem] leading-none text-a2">Genuine</p>
+                  <p lang="hi" className="font-deva text-[1.125rem] text-a2">
+                    प्रामाणिक
+                  </p>
+                  <p className="mt-4 max-w-sm text-[0.9375rem] text-ink">{r.body}</p>
+                  <p className="mt-3 text-[0.6875rem] tracking-[0.08em] text-ink-3 uppercase">
+                    Tilt or touch to see the hologram
+                  </p>
+                </div>
+              </Foil>
+            ) : null}
             <motion.section
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-              className={cn('mt-8 rounded-[var(--radius-panel)] border p-6', r.tone)}
+              className={cn(
+                'mt-8 rounded-[var(--radius-panel)] border p-6',
+                r.tone,
+                q.data.result === 'genuine' && 'hidden',
+              )}
               aria-live="polite"
             >
               <div className="flex items-center gap-4">

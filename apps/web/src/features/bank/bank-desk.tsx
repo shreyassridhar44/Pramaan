@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Check, Inbox, KeyRound, PenLine, X } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { Check, Inbox, PenLine, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Amount } from '@/components/signature/chips'
+import { ProofMoment } from '@/components/security/proof-moment'
 import { BankMessage } from '@/components/signature/bank-message'
 import { Button } from '@/components/ui/button'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
@@ -106,6 +106,7 @@ function readable(field: string, v: string | null | undefined) {
 function DeskDetail({ id }: { id: number }) {
   const qc = useQueryClient()
   const [signing, setSigning] = useState(false)
+  const [delivered, setDelivered] = useState<{ conflicts: number } | null>(null)
   const q = useQuery({
     queryKey: ['bank', 'request', id],
     queryFn: async () =>
@@ -130,7 +131,7 @@ function DeskDetail({ id }: { id: number }) {
       return r
     },
     onSuccess: (r) => {
-      setSigning(false)
+      setDelivered({ conflicts: r.conflicts.length })
       toast.success(
         r.conflicts.length
           ? 'Signed and sent. AICTE will see that your record differs from what was declared.'
@@ -228,29 +229,18 @@ function DeskDetail({ id }: { id: number }) {
               </Button>
             </div>
           ) : null}
-          <AnimatePresence>
-            {signing ? (
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="mt-4 flex items-center gap-3 rounded-[var(--radius-panel)] border border-simulated/30 bg-simulated-soft px-4 py-3 text-[0.8125rem] text-ink"
-              >
-                <KeyRound className="size-4 text-simulated" />
-                <span>
-                  Signing with key <span className="font-mono">{d.key_id}</span> (Ed25519)
-                </span>
-                <motion.span className="ml-auto h-1 w-24 overflow-hidden rounded-full bg-surface">
-                  <motion.span
-                    className="block h-full bg-simulated"
-                    initial={{ width: '0%' }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: 1.5 }}
-                  />
-                </motion.span>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+          <ProofMoment
+            open={signing}
+            done={delivered !== null}
+            fields={d.comparison.map((c) => c.label)}
+            keyId={d.key_id}
+            bank={d.bank}
+            conflicts={delivered?.conflicts ?? 0}
+            onClose={() => {
+              setSigning(false)
+              setDelivered(null)
+            }}
+          />
         </div>
       </Panel>
       {d.history.map((m) => (
