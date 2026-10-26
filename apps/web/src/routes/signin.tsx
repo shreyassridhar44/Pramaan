@@ -33,8 +33,6 @@ import { hashSeed } from '@/lib/guilloche'
 import { homeFor, meQuery, type Me } from '@/lib/session'
 
 export const Route = createFileRoute('/signin')({
-  validateSearch: (search: Record<string, unknown>): { tour?: number } =>
-    search.tour ? { tour: 1 } : {},
   component: SignIn,
 })
 

@@ -1242,6 +1242,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/demo/tamper-drill": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Tamper Drill
+         * @description Edits one audit entry directly, as an insider with database access might, so the chain
+         *     check can be seen catching it. Demo mode only; restore with /demo/tamper-drill/restore.
+         */
+        post: operations["tamper_drill_api_v1_demo_tamper_drill_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/demo/tamper-drill/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Drill */
+        post: operations["restore_drill_api_v1_demo_tamper_drill_restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1751,6 +1789,21 @@ export interface components {
             document_id: number | null;
             /** Filename */
             filename: string | null;
+        };
+        /** DrillResult */
+        DrillResult: {
+            /** Entry Id */
+            entry_id: number;
+            /** Action */
+            action: string;
+            /** Field */
+            field: string;
+            /** Before */
+            before: string;
+            /** After */
+            after: string;
+            /** Active */
+            active: boolean;
         };
         /** EscalationOut */
         EscalationOut: {
@@ -5213,6 +5266,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResetResult"];
+                };
+            };
+        };
+    };
+    tamper_drill_api_v1_demo_tamper_drill_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrillResult"];
+                };
+            };
+        };
+    };
+    restore_drill_api_v1_demo_tamper_drill_restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrillResult"];
                 };
             };
         };

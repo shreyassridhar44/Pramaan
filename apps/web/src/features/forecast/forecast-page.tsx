@@ -129,7 +129,11 @@ export function ForecastPage() {
   const confirmedShare = step && held ? Number(step.confirmed_paise) / held : 0
 
   return (
-    <div ref={root} className={cn('grid gap-5', full && 'overflow-y-auto bg-canvas p-6')}>
+    <div
+      ref={root}
+      data-tour="forecast"
+      className={cn('grid gap-5', full && 'overflow-y-auto bg-canvas p-6')}
+    >
       <Panel className="p-5">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">

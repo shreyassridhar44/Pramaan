@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
-import { Link2, ShieldCheck, ShieldX } from 'lucide-react'
+import { Link2, Link2Off, RotateCcw, ShieldCheck, ShieldX, Skull } from 'lucide-react'
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -8,6 +8,7 @@ import { ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primit
 import { api, unwrap } from '@/lib/api/client'
 import { cn } from '@/lib/cn'
 import { formatCount } from '@/lib/format'
+import { useMe } from '@/lib/session'
 
 const ACTIONS = [
   ['', 'All actions'],
@@ -129,6 +130,16 @@ function ChainCheck({
   const verify = useMutation({
     mutationFn: async () => unwrap(await api.POST('/api/v1/audit/verify')),
   })
+  const me = useMe().data
+  const canDrill = !!me && ['admin', 'auditor', 'bureau_officer', 'section_head'].includes(me.role)
+  const drill = useMutation({
+    mutationFn: async (restore: boolean) =>
+      unwrap(
+        await api.POST(restore ? '/api/v1/demo/tamper-drill/restore' : '/api/v1/demo/tamper-drill'),
+      ),
+    onSuccess: () => verify.mutate(),
+  })
+  const drillActive = drill.data?.active === true
   const progress = useMotionValue(0)
   const counted = useTransform(progress, (v) => formatCount(Math.round(v)))
   const [doneFor, setDoneFor] = useState<unknown>(null)
@@ -146,7 +157,13 @@ function ChainCheck({
   }, [verify.data, progress, reduce])
   const result = verify.data
   return (
-    <Panel className="sticky top-20">
+    <Panel
+      data-tour="chain"
+      className={cn(
+        'sticky top-20 transition-colors duration-500',
+        done && result && !result.valid && 'border-overdue shadow-[0_0_0_4px_var(--overdue-soft)]',
+      )}
+    >
       <PanelHeader
         title="Verify the chain"
         caption="Recomputes every hash from the first entry. Any edit made outside the application breaks a link and is reported with the first bad entry."
@@ -184,6 +201,43 @@ function ChainCheck({
           <ShieldCheck /> {verify.isPending ? 'Verifying' : 'Verify chain'}
         </Button>
         {verify.isError ? <ErrorState error={verify.error} compact /> : null}
+        {canDrill ? (
+          <div className="mt-4 rounded-[var(--radius-panel)] border border-dashed border-overdue/40 bg-overdue-soft/30 p-4">
+            <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-ink">
+              <Skull className="size-4 text-overdue" /> Tamper drill (demo)
+            </p>
+            <p className="mt-1 text-[0.75rem] leading-relaxed text-ink-2">
+              Play an insider with database access: quietly erase a mismatch that a bank reported,
+              without going through Pramaan, then watch the chain catch it.
+            </p>
+            {drill.data ? (
+              <p className="mt-2 rounded-md bg-surface px-3 py-2 font-mono text-[0.6875rem] text-ink">
+                Entry #{drill.data.entry_id} ({drill.data.action}):{' '}
+                {drill.data.field === 'conflicts'
+                  ? `the bank's reported mismatch ${drill.data.active ? drill.data.before : drill.data.after} was erased`
+                  : `${drill.data.field} was changed`}
+                {drill.data.active ? '' : ' (restored)'}
+              </p>
+            ) : null}
+            <div className="mt-3 flex gap-2">
+              {drillActive ? (
+                <Button size="sm" onClick={() => drill.mutate(true)} disabled={drill.isPending}>
+                  <RotateCcw /> Restore the entry
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => drill.mutate(false)}
+                  disabled={drill.isPending}
+                >
+                  <Skull /> Tamper with an entry
+                </Button>
+              )}
+            </div>
+            {drill.isError ? <ErrorState error={drill.error} compact /> : null}
+          </div>
+        ) : null}
         {result ? (
           <div className="mt-4 rounded-[var(--radius-panel)] border border-line p-4" role="status">
             <p className="font-display text-[2rem] leading-none text-ink">
@@ -196,10 +250,22 @@ function ChainCheck({
                   <ShieldCheck className="size-4" /> Every link is intact.
                 </p>
               ) : (
-                <p className="mt-2 flex items-center gap-2 text-[0.875rem] font-medium text-overdue">
-                  <ShieldX className="size-4" /> Broken at entry #{result.first_bad_id}:{' '}
-                  {result.reason}
-                </p>
+                <motion.div
+                  initial={reduce ? false : { x: 0 }}
+                  animate={reduce ? undefined : { x: [0, -8, 8, -5, 5, 0] }}
+                  transition={{ duration: 0.45 }}
+                  className="mt-3 flex items-start gap-3"
+                >
+                  <span className="relative grid size-12 shrink-0 place-items-center rounded-full bg-overdue-soft text-overdue">
+                    <Link2Off className="size-6" />
+                  </span>
+                  <p className="text-[0.875rem] font-medium text-overdue">
+                    <span className="flex items-center gap-2">
+                      <ShieldX className="size-4" /> Broken at entry #{result.first_bad_id}
+                    </span>
+                    <span className="mt-0.5 block font-normal text-ink-2">{result.reason}</span>
+                  </p>
+                </motion.div>
               )
             ) : null}
           </div>

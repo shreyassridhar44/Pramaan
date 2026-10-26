@@ -3,6 +3,7 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { Toaster } from 'sonner'
 
 import { TooltipProvider } from '@/components/ui/primitives'
+import { TourOverlay } from '@/features/tour/tour-overlay'
 
 export interface RouterContext {
   queryClient: QueryClient
@@ -22,6 +23,7 @@ function Root() {
   return (
     <TooltipProvider>
       <Outlet />
+      <TourOverlay />
       <Toaster
         position="bottom-right"
         toastOptions={{

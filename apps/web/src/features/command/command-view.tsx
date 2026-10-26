@@ -30,9 +30,11 @@ export function CommandView() {
   const [sheet, setSheet] = useState<number | null>(null)
   return (
     <div className="grid gap-5">
-      <HeadlineBand />
+      <div data-tour="board">
+        <HeadlineBand />
+      </div>
       <div className="grid gap-5 xl:grid-cols-12">
-        <div className="xl:col-span-8">
+        <div className="xl:col-span-8" data-tour="river">
           <RiverPanel />
         </div>
         <div className="xl:col-span-4">

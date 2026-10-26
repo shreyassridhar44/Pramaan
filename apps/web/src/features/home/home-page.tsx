@@ -31,6 +31,8 @@ import { formatCount, formatINRCompact, formatPercent } from '@/lib/format'
 import { homeFor, useMe } from '@/lib/session'
 
 import { usePublicSummary } from './queries'
+import { tour } from '@/features/tour/store'
+
 import { ProofSpecimen } from './specimen'
 import { VerifyPanel } from './verify-panel'
 
@@ -162,10 +164,8 @@ function Hero({ summary }: { summary?: Summary }) {
                 Explore the portal <ArrowRight />
               </Link>
             </Button>
-            <Button asChild size="lg">
-              <Link to="/signin" search={{ tour: 1 }}>
-                <PlayCircle /> Watch Pramaan work
-              </Link>
+            <Button size="lg" onClick={() => tour.start()}>
+              <PlayCircle /> Watch Pramaan work
             </Button>
             <Button asChild variant="ghost" size="lg">
               <a href="#verify">
@@ -192,7 +192,9 @@ function Hero({ summary }: { summary?: Summary }) {
             Live from the demonstration portfolio. All data synthetic.
           </p>
         </div>
-        <ProofSpecimen />
+        <div data-tour="specimen">
+          <ProofSpecimen />
+        </div>
       </div>
       <GuillocheBand height={36} className="relative" />
     </section>
