@@ -4,7 +4,7 @@
 # "stop" halts the instance to save money (the disk and the Elastic IP are still billed); "start"
 # brings it back on the same URL, and the containers restart on their own.
 set -euo pipefail
-export MSYS_NO_PATHCONV=1 AWS_PAGER=""
+export MSYS_NO_PATHCONV=1 AWS_PAGER="" PYTHONUTF8=1 PYTHONIOENCODING=utf-8
 cd "$(dirname "$0")"
 source ./config.sh
 INSTANCE=$(instance_id)

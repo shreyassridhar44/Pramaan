@@ -5,7 +5,7 @@
 #   bash infra/aws/provision.sh                  # Caddy and Let's Encrypt on the instance
 #   EDGE=cloudfront bash infra/aws/provision.sh  # CloudFront in front (account must be verified)
 set -euo pipefail
-export MSYS_NO_PATHCONV=1 AWS_PAGER=""
+export MSYS_NO_PATHCONV=1 AWS_PAGER="" PYTHONUTF8=1 PYTHONIOENCODING=utf-8
 cd "$(dirname "$0")"
 source ./config.sh
 

@@ -30,7 +30,7 @@ umask 077
 umask 022
 
 compose() { docker compose -f infra/compose.yml "$@"; }
-compose build
+compose build --quiet
 compose up -d postgres valkey mailpit
 compose run --rm api alembic upgrade head
 if [ "$SEED" = "1" ] || [ ! -f /opt/pramaan/.seeded ]; then
