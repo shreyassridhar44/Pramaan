@@ -41,11 +41,25 @@ test.describe('Management layer (Step 9)', () => {
     expect((await pdf.body()).subarray(0, 4).toString()).toBe('%PDF')
   })
 
-  test('a click on the maturity river lists that month in the registry', async ({ page }) => {
+  test('a click on the maturity clock lists that month in the registry', async ({ page }) => {
     await signInAs(page, 'bureau')
     await page.goto('/')
+    const clock = page.getByRole('img', { name: /^Maturity clock/ })
+    await expect(clock).toBeVisible()
+    await clock
+      .getByRole('button', { name: / deposits$/ })
+      .nth(2)
+      .click()
+    await expect(page).toHaveURL(/\/instruments\?.*maturity_from=\d{4}-\d{2}-01/)
+  })
+
+  test('the river view still lists a month on click', async ({ page }) => {
+    await signInAs(page, 'bureau')
+    await page.goto('/')
+    await page.getByRole('button', { name: 'River', exact: true }).click()
     const chart = page.getByRole('img', { name: 'Value maturing each month by proof level' })
     await expect(chart).toBeVisible()
+    await chart.scrollIntoViewIfNeeded()
     const box = (await chart.boundingBox())!
     await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.6)
     await expect(page).toHaveURL(/\/instruments\?.*maturity_from=\d{4}-\d{2}-01/)
@@ -54,8 +68,11 @@ test.describe('Management layer (Step 9)', () => {
   test('the forecast plays forward week by week', async ({ page }) => {
     await signInAs(page, 'bureau')
     await page.goto('/forecast')
-    const week = page.getByText('Week of', { exact: true }).locator('xpath=following-sibling::p[1]')
-    await expect(week).not.toHaveText('Loading')
+    const week = page
+      .getByText('Forecast week of', { exact: true })
+      .locator('xpath=following-sibling::p[1]')
+    await expect(week).not.toHaveText(/--/)
+    await page.waitForTimeout(1500) // let the board settle
     const first = await week.textContent()
     await page.getByRole('button', { name: '4x' }).click()
     await page.getByRole('button', { name: 'Play' }).click()

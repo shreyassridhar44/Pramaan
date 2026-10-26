@@ -122,14 +122,6 @@ export function ProofGauge({ shares }: { shares: ProofShares }) {
         <text x={CX} y={CY - 8} textAnchor="middle" fontSize="11" fill="var(--ink-3)">
           proven by the issuing bank
         </text>
-        <circle
-          cx={CX}
-          cy={CY}
-          r="11"
-          fill="var(--surface)"
-          stroke="var(--accent)"
-          strokeWidth="3"
-        />
       </svg>
       <ul className="relative mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5">
         {SEGMENTS.map((s) => (

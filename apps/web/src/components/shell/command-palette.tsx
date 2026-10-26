@@ -2,9 +2,10 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { Command } from 'cmdk'
-import { ArrowRight, FileSearch, Landmark, Moon, Search } from 'lucide-react'
+import { ArrowRight, Landmark, Moon, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
 import { api, unwrap } from '@/lib/api/client'
 import { useAsOf } from '@/lib/asof'
 import { formatINRCompact } from '@/lib/format'
@@ -75,6 +76,22 @@ export function CommandPalette({
           className="fixed top-[14vh] left-1/2 z-50 w-[640px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-[14px] border border-line bg-surface shadow-[var(--shadow-overlay)]"
         >
           <Dialog.Title className="sr-only">Search and commands</Dialog.Title>
+          <div className="relative overflow-hidden bg-board px-4 py-2 text-board-ink">
+            <GuillocheBand
+              height={6}
+              color="rgb(255 153 51 / 0.45)"
+              className="absolute inset-x-0 top-0"
+            />
+            <p className="flex items-center justify-between pt-1 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/70 uppercase">
+              <span>
+                Search Pramaan{' '}
+                <span lang="hi" className="font-deva tracking-normal normal-case">
+                  खोजें
+                </span>
+              </span>
+              <span>Ctrl K</span>
+            </p>
+          </div>
           <Command shouldFilter={false} loop>
             <div className="flex items-center gap-3 border-b border-line px-4">
               <Search className="size-4 text-ink-3" aria-hidden />
@@ -98,7 +115,12 @@ export function CommandPalette({
                       onSelect={() => go(`/instruments/${i.id}`)}
                       className="palette-item"
                     >
-                      <FileSearch className="size-4 text-ink-3" />
+                      <RosetteMark
+                        seed={i.number}
+                        layers={2}
+                        className="size-5"
+                        color="color-mix(in srgb, var(--brand) 55%, transparent)"
+                      />
                       <span className="font-mono text-[0.8125rem]">{i.number}</span>
                       <span className="truncate text-ink-2">{i.institution}</span>
                       <span className="ml-auto font-mono text-[0.75rem] text-ink-3">
@@ -153,6 +175,19 @@ export function CommandPalette({
               </Command.Group>
             </Command.List>
           </Command>
+          <div className="flex items-center gap-4 border-t border-line bg-sunken/60 px-4 py-2 text-[0.6875rem] text-ink-3">
+            <span>
+              <kbd className="rounded border border-line-strong px-1 font-mono">Up</kbd>{' '}
+              <kbd className="rounded border border-line-strong px-1 font-mono">Down</kbd> move
+            </span>
+            <span>
+              <kbd className="rounded border border-line-strong px-1 font-mono">Enter</kbd> open
+            </span>
+            <span>
+              <kbd className="rounded border border-line-strong px-1 font-mono">Esc</kbd> close
+            </span>
+            <span className="ml-auto">Searches the records you are allowed to see</span>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
