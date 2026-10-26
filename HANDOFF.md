@@ -2,22 +2,22 @@
 
 Summary for anyone picking up the project. The detailed, step-level log is `claude-code/HANDOFF.md`.
 
-## Current state (24 October 2026)
+## Current state (26 October 2026)
 
-- Problem statement captured and analysed.
-- Domain, technical and competitor research complete (18 competitor repositories inspected).
-- Product specification, architecture, UI specification and a 10-step plan written.
-- Awaiting owner approval to begin implementation (Step 1).
+- Steps 1 to 9 built and re-audited; Step 10 in progress.
+- Trained models (edit localiser, field extractor) are in the repository and active in the API; results in `EVALUATION.md` and `MODEL_CARD.md`.
+- Deployment set (`infra/compose.yml`, production images) and AWS scripts (`infra/aws/`) built and tested locally.
+- Tests: API 151 plus 4 slow OCR tests, web 23, Playwright 64.
 
 ## Key decisions so far
 
 - Problem statement SIH26265, product name Pramaan.
 - React SPA plus FastAPI monolith with workers; PostgreSQL and Redis; ONNX Runtime for ML inference.
-- AWS: one t4g.medium in ap-south-1 with Docker Compose, static web on S3, CloudFront in front; about $21 to $24 per month.
+- AWS: one t4g.medium in ap-south-1 with Docker Compose serving the web app and API, CloudFront in front (DECISION D33); about $23 per month while running.
 - Bedrock (India-resident Claude Haiku 4.5) for plain-language search only.
 - Edit-localisation model trained on the team's GPU machine using synthetic data.
 
 ## Next steps
 
-1. Owner reviews and approves the specification and open questions in `claude-code/HANDOFF.md`.
-2. Start Step 1 in `claude-code/STEPS.md`.
+1. Deploy to AWS with `infra/aws/provision.sh` and `infra/aws/deploy.sh`; smoke test the public URL.
+2. Demo script and recording; release tag `v1.0.0-sih`.

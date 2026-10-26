@@ -1,0 +1,53 @@
+# Served by the web container. CloudFront adds the X-Pramaan-Origin header; requests without it
+# (anyone reaching the instance directly) are refused. An empty ORIGIN_SECRET disables the check
+# for local runs. The check runs before location matching, so health probes send the header too.
+map $http_x_pramaan_origin $origin_ok {
+    default 0;
+    "${ORIGIN_SECRET}" 1;
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    root /usr/share/nginx/html;
+    client_max_body_size 15m;
+    server_tokens off;
+
+    location = /nginx-health {
+        access_log off;
+        return 200 "ok\n";
+    }
+
+    if ($origin_ok = 0) {
+        return 403;
+    }
+
+    location /api/ {
+        include /etc/nginx/snippets/security-headers.conf;
+        proxy_pass http://api:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 120s;
+    }
+
+    location /mail/ {
+        proxy_pass http://mailpit:8025;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location /assets/ {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    location / {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "no-cache";
+        try_files $uri $uri/ /index.html;
+    }
+}

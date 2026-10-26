@@ -5,6 +5,10 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Trained models in the API: the edit localiser (image-level ROC AUC 0.944 and pixel F1 0.737 on unseen synthetic layouts) and the LightGBM field extractor (98.6% mean exact match against 98.3% for the rules), with results in `EVALUATION.md` and `MODEL_CARD.md`.
+- A localiser operating point chosen on validation data (probability above 0.98 over at least 300 px), which cuts marks on unedited test pages from 22.1% to 5.4%; marks that touch no value field are graded low.
+- Deployment set: production images for the API and the web app, `infra/compose.yml` (Postgres, Valkey, API, worker, Mailpit inbox, nginx), and AWS scripts for provisioning (S3, IAM, SSM secrets, security group, Graviton instance, Elastic IP, CloudFront), deploys over SSM Run Command, nightly backups and day-to-day operations.
+- Readiness checks for the queue, document storage and model files.
 - Monitoring alerts beyond maturity: re-confirmation reminders, automatic renewal notices and penalty-window notices on overdue demands, sent by email with simulated SMS and WhatsApp; an Alerts page with the reminders sent and the open escalations with their next level.
 - Registry bulk actions (request confirmation, send reminder, assign) that report what was done and why anything was skipped, saved views and a column chooser kept per viewer in the browser.
 - Release penalties computed by the rules engine when a case is applied for, shown with their APH clause on the case page, and recorded as paid by a section head or the competent authority with a payment reference.

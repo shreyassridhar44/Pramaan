@@ -25,7 +25,6 @@ async def healthz() -> Health:
 
 @router.get("/readyz", response_model=Readiness)
 async def readyz() -> Readiness:
-    # Dependency checks are registered as the services they cover are added (Step 2 onwards).
     from app.readiness import run_checks
 
     checks = await run_checks()

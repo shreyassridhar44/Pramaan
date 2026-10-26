@@ -1,0 +1,7 @@
+[Unit]
+Description=Pramaan database backup to S3
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pramaan-backup

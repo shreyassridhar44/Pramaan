@@ -1,0 +1,107 @@
+# Deployment set: one host runs everything. Secrets come from infra/.env, which the deploy script
+# writes from SSM Parameter Store (see infra/aws/README.md). Never commit infra/.env.
+#   docker compose -f infra/compose.yml up -d --build
+#   docker compose -f infra/compose.yml run --rm api alembic upgrade head
+#   docker compose -f infra/compose.yml run --rm api python -m scripts.seed
+name: pramaan
+
+x-api-env: &api-env
+  ENVIRONMENT: production
+  DEMO_MODE: "true"
+  ALLOW_DEMO_IN_PRODUCTION: "true"
+  LOG_LEVEL: INFO
+  DATABASE_URL: postgresql+asyncpg://pramaan:${POSTGRES_PASSWORD:?}@postgres:5432/pramaan
+  REDIS_URL: redis://valkey:6379/0
+  SESSION_SECRET: ${SESSION_SECRET:?}
+  LETTER_SIGNING_KEY_B64: ${LETTER_SIGNING_KEY_B64:?}
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?}
+  CORS_ORIGINS: '["${PUBLIC_BASE_URL}"]'
+  STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+  STORAGE_BUCKET: ${STORAGE_BUCKET:-pramaan-docs}
+  AWS_REGION: ${AWS_REGION:-ap-south-1}
+  EMAIL_BACKEND: smtp
+  SMTP_HOST: mailpit
+  SMTP_PORT: "1025"
+  EMAIL_FROM: Pramaan <no-reply@pramaan.local>
+  BEDROCK_ENABLED: ${BEDROCK_ENABLED:-false}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pramaan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: pramaan
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pramaan -d pramaan"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    mem_limit: 640m
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    restart: unless-stopped
+    command: ["valkey-server", "--save", "", "--maxmemory", "96mb"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    mem_limit: 128m
+
+  # Captured inbox: the portfolio's recipients are synthetic, so email is delivered here and shown
+  # at /mail/ behind a password instead of being sent to real addresses (DECISION D33).
+  mailpit:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    environment:
+      MP_WEBROOT: mail
+      MP_UI_AUTH: ${MAIL_UI_AUTH:?}
+      MP_MAX_MESSAGES: "2000"
+    mem_limit: 128m
+
+  api:
+    build: { context: .., dockerfile: services/api/Dockerfile }
+    image: pramaan-api
+    restart: unless-stopped
+    environment: *api-env
+    volumes: [storage:/data/storage]
+    depends_on:
+      postgres: { condition: service_healthy }
+      valkey: { condition: service_healthy }
+    mem_limit: 1600m
+
+  worker:
+    image: pramaan-api
+    restart: unless-stopped
+    command: ["arq", "app.workers.settings.WorkerSettings"]
+    environment: *api-env
+    volumes: [storage:/data/storage]
+    healthcheck: { disable: true }
+    depends_on:
+      api: { condition: service_started }
+    mem_limit: 512m
+
+  web:
+    build: { context: .., dockerfile: infra/web.Dockerfile }
+    image: pramaan-web
+    restart: unless-stopped
+    environment:
+      ORIGIN_SECRET: ${ORIGIN_SECRET:-}
+      NGINX_ENVSUBST_FILTER: ORIGIN_SECRET
+    ports: ["${WEB_PORT:-80}:80"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null --header \"X-Pramaan-Origin: $$ORIGIN_SECRET\" http://127.0.0.1/nginx-health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      api: { condition: service_started }
+    mem_limit: 96m
+
+volumes:
+  pgdata:
+  storage:

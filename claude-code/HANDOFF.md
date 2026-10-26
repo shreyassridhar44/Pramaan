@@ -9,14 +9,14 @@ Update this file at the end of every working session and every completed step.
 | 0 | Research and specification | Done, awaiting owner approval | docs commit (24 Oct 2026) |
 | 1 | Foundation and tooling | Done (API 2 tests, web 12 tests, lint, types, contrast) | see git log |
 | 2 | Domain model, rules, synthetic portfolio | Done (81 API tests; seed 2,600 institutions in about 25 s) | see git log |
-| 3 | ML kit | Done: renderer (12 layouts), degradation, tamper generator, dataset builder, localiser training and ONNX export, field extractor training, evaluation scripts, document pipeline in the API; smoke-tested on CPU; full training pending on the owner's RTX 4090 | see git log |
+| 3 | ML kit | Done: renderer (12 layouts), degradation, tamper generator, dataset builder, localiser training and ONNX export, field extractor training, evaluation scripts, document pipeline in the API; trained on an RTX A5000 on 26 Oct 2026 (`ml/TRAINING_REPORT.md`) and active in the API | see git log |
 | 4 | Design system and shell | Done: tokens (Ledger and Command themes), primitives, AssuranceRing, chips, AsOfControl, command palette, shell, sign-in with personas, route guards, first command view (headline band, assurance composition, action queue); 20 web tests with axe. ProvenanceGrid, SignalCard, BankMessage and AuditChain are built in Steps 5 to 7 where they are first used (recorded deviation) | see git log |
 | 5 | Registry, detail, institutions | Done: virtualised registry with URL filters and CSV export, instrument detail with ProvenanceGrid (display-normalised character diff), signals, key dates and reminder ladder, renewal chain, demand, timeline and audit tabs; institutions list and profile with Table 1.4 explanation; audit page with chain verification | see git log |
 | 6 | Intake and document intelligence | Done: storage interface, document upload with synchronous analysis, checks (document against declaration, figures against words, field-relative forensic outliers, duplicate instrument and image), institution portal home and 4-step wizard with specimen receipts, officer action bar, signal resolution, verification queue, DocumentViewer; 105 API tests | see git log |
 | 7 | Bank network, monitoring, notifications | Done: Ed25519-signed bank messages verified before use, automatic answers from network banks, bank desk for desk banks (simulated, labelled), conflicts raised field by field, tampered responses rejected with a signal, published bank keys; daily monitoring run (reminders, escalations, notifications, email through Mailpit or SES, simulated SMS and WhatsApp) that is idempotent, arq worker schedule, notifications bell; renewal submissions that link and close the predecessor; 115 API tests | see git log |
 | 8 | Release, letters, verification | Done (audited 25 Oct 2026, see below): portal release application with live eligibility hints and specimen documents, releases list and case page with ClearanceLanes, cell clearance queue (PGRC resolves complaints before clearing), authorisation only by the competent authority when every Clause 6.46 condition passes, NOC or sanction order PDF (bilingual, HarfBuzz-shaped Devanagari, signed QR), bank discharge through the network or the bank desk, letters page with preview and revoke, public mobile verify page (Genuine, Superseded, Revoked, Not recognised); 119 API tests plus 4 slow OCR tests, 23 web tests | see git log |
 | 9 | Command view, forecast, search, reports | Done: command view with monthly maturity river (table view, click-through), region tile cartogram, largest unproven exposures, recent signals, impact panel with turnaround trend, 30-day deltas and an action side sheet; forecast with play, speed, map recolouring, rolling figures, playhead and event stream; plain-language Ask bar (Bedrock path built, rule parser active; 100% on 60 queries and 15/15 held out); eight reports with CSV and PDF reconciling with the summary; versioned rule administration; forecast timeline 1.6 s cold for 52 weeks | see git log |
-| 10 | Hardening, evaluation, deployment, demo | Not started (Steps 1 to 9 re-audited 25 Oct 2026; 154 API tests plus 4 slow, 23 web tests, 64 Playwright tests) | |
+| 10 | Hardening, evaluation, deployment, demo | In progress: model results in EVALUATION and MODEL_CARD, operating point calibrated, deployment set and AWS scripts built and tested locally; AWS deploy, demo script, recording and tag pending | see git log |
 
 ## Session log
 
@@ -44,10 +44,18 @@ Update this file at the end of every working session and every completed step.
 5. Whether the AWS account may send email through SES to team members' addresses (needs identity verification of each recipient while in the SES sandbox).
 
 ## Exact next steps
-1. Owner: run `ml/README.md` sections 1 to 6 on the RTX 4090 and copy the model files and results back.
-2. Step 10: hardening, evaluation results into the docs, AWS deployment (t4g.medium, CloudFront, S3, SES), demo script and recording, release tag `v1.0.0-sih`.
+1. Step 10: provision and deploy to AWS (`infra/aws/provision.sh`, `deploy.sh`), smoke test on the public URL, backup drill.
+2. Step 10: demo script and recording, `RELEASE_CHECKLIST.md`, `VERSIONS.md`, release tag `v1.0.0-sih`.
 3. Owner (optional): add an end-to-end job to `.github/workflows/ci.yml` (needs a token with the `workflow` scope).
 4. Owner: Bedrock inference is blocked for account 067257065056 ("Operation not allowed" for every model and region tried). Ask AWS to enable model access (model access page or a support case); then set `BEDROCK_ENABLED=true` and run `uv run python -m scripts.search_eval --model`.
+
+Notes from Step 10 (26 October 2026):
+- Training results arrived in `add2a64` (authored as the owner). The API loads both models; `/readyz` reports `models: ok`.
+- At the raw 0.5 threshold the localiser marked 19% of unedited test pages, and the genuine demo receipt got two marks. The operating point (probability above 0.98, at least 300 px) was chosen on 400 regenerated validation images and checked once on the first 600 test images: unedited pages marked 5.4%, edited pages marked on the edit 83.8% (trained types 98 to 100%, unseen splice 44%). Marks that touch no value field are graded low. The genuine demo receipt now gets one low mark on the printed "IFSC" label; the altered one gets one high mark on the changed digit.
+- Production stack tested locally on port 8088 (`infra/.env` is local only): all containers healthy, readiness ok, API about 220 MB. The full OpenCV that RapidOCR pulls in needs libgl1, libglib2.0-0 and libxcb1 in the image.
+- Playwright does not start the API on this laptop (`uv` is not on the Windows command path it uses); start the API by hand first.
+- An unrelated project's containers (`garuda-*`) run on this laptop and its EC2 instance runs in the same AWS account; leave both alone.
+- Test results after the change: API 151 tests plus 4 slow, Playwright 64 of 64.
 
 Notes from Step 9:
 - Demo shots: command view (figures roll, river, cartogram); Ask bar with "SBI and unconfirmed deposits in the Western region maturing before March 2027" (shows chips, flags SBI as not in the portfolio); forecast at 4x; reports; rules.
