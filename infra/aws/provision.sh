@@ -130,24 +130,44 @@ IP=$(aws ec2 describe-addresses --region "$REGION" --allocation-ids "$ALLOC" \
 ORIGIN="ec2-${IP//./-}.$REGION.compute.amazonaws.com"
 log "origin $ORIGIN"
 
-# 7a. Default edge: Caddy on the instance with a Let's Encrypt certificate for an sslip.io name
-#     that resolves to the Elastic IP. Ports 80 (certificate challenge, redirect) and 443 open.
+# 7a. Default edge: Caddy on the instance with a Let's Encrypt certificate. DOMAIN (for example
+#     pramaan.duckdns.org) must already point at the Elastic IP; without it an sslip.io name for
+#     the IP is used. The sslip.io name is always served too, so older links keep working.
+#     Ports 80 (certificate challenge, redirect) and 443 are open.
 if [ "$EDGE" = "caddy" ]; then
   for port in 80 443; do
-    aws ec2 authorize-security-group-ingress --region "$REGION" --group-id "$SG"       --ip-permissions "IpProtocol=tcp,FromPort=$port,ToPort=$port,IpRanges=[{CidrIp=0.0.0.0/0}]"       >/dev/null 2>&1 || true
+    aws ec2 authorize-security-group-ingress --region "$REGION" --group-id "$SG" \
+      --ip-permissions "IpProtocol=tcp,FromPort=$port,ToPort=$port,IpRanges=[{CidrIp=0.0.0.0/0}]" \
+      >/dev/null 2>&1 || true
   done
-  SITE="${IP//./-}.sslip.io"
-  aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String     --value "$SITE" --overwrite >/dev/null
-  aws ssm put-parameter --region "$REGION" --name "/$NAME/PUBLIC_BASE_URL" --type String     --value "https://$SITE" --overwrite >/dev/null
+  FALLBACK="${IP//./-}.sslip.io"
+  if [ -n "$DOMAIN" ]; then
+    RESOLVED=$(curl -s "https://dns.google/resolve?name=$DOMAIN&type=A" \
+      | grep -o '"data":"[0-9.]*"' | head -1 | cut -d'"' -f4)
+    [ "$RESOLVED" = "$IP" ] || {
+      log "$DOMAIN resolves to '${RESOLVED:-nothing}', not $IP; point it at $IP first"
+      exit 1
+    }
+    SITE=$DOMAIN
+    ADDRESSES="$DOMAIN, $FALLBACK"
+  else
+    SITE=$FALLBACK
+    ADDRESSES=$FALLBACK
+  fi
+  aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String \
+    --value "$ADDRESSES" --overwrite >/dev/null
+  aws ssm put-parameter --region "$REGION" --name "/$NAME/PUBLIC_BASE_URL" --type String \
+    --value "https://$SITE" --overwrite >/dev/null
   log "done: instance $INSTANCE"
-  log "public URL: https://$SITE (the certificate is issued on the first deploy)"
+  log "public URL: https://$SITE (the certificate is issued on the next deploy)"
   log "next: bash infra/aws/deploy.sh"
   exit 0
 fi
 
 # 7b. EDGE=cloudfront: HTTPS at CloudFront, the secret header to the origin, nothing cached except
 #     the hashed web assets. Needs an account that AWS has verified for CloudFront.
-aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String   --value ":80" --overwrite >/dev/null
+aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String \
+  --value ":80" --overwrite >/dev/null
 DIST=$(aws cloudfront list-distributions \
   --query "DistributionList.Items[?Comment=='$NAME'].Id | [0]" --output text)
 if [ "$DIST" = "None" ] || [ -z "$DIST" ]; then

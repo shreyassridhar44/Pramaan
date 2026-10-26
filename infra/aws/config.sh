@@ -7,6 +7,8 @@ BUCKET=${BUCKET:-$NAME-$ACCOUNT-$REGION}
 ROLE=${ROLE:-$NAME-ec2}
 # caddy: TLS on the instance with an sslip.io name; cloudfront: CloudFront in front.
 EDGE=${EDGE:-caddy}
+# Public host name for the caddy edge; must point at the Elastic IP. Empty: <ip>.sslip.io.
+DOMAIN=${DOMAIN:-pramaan.duckdns.org}
 
 instance_id() {
   aws ec2 describe-instances --region "$REGION" \
