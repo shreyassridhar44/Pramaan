@@ -3,7 +3,7 @@
 For the SIH submission release `v1.0.0-sih`.
 
 ## Product
-- [x] All six R16 scenarios pass end to end on the deployed URL (64 of 64 Playwright tests with `E2E_BASE_URL`, 26 Oct 2026).
+- [x] All six R16 scenarios pass end to end on the deployed URL (64 of 64 Playwright tests with `E2E_BASE_URL=https://pramaan.duckdns.org`, 26 Oct 2026).
 - [x] Demo data reset works (`POST /api/v1/demo/reset`, or `SEED=1 bash infra/aws/deploy.sh`).
 - [ ] Every simulated surface is labelled.
 - [x] All figures on the impact panel and in `EVALUATION.md` come from scripts, with dataset and model versions.
@@ -15,7 +15,7 @@ For the SIH submission release `v1.0.0-sih`.
 - [ ] Accessibility pass completed.
 
 ## Deployment
-- [x] The public URL serves the web app over HTTPS (https://13-204-48-202.sslip.io, Let's Encrypt through Caddy; CloudFront needs AWS account verification, DECISION D33).
+- [x] The public URL serves the web app over HTTPS (https://pramaan.duckdns.org, Let's Encrypt through Caddy; the earlier sslip.io name still works; CloudFront needs AWS account verification, DECISION D33).
 - [x] `/api/v1/readyz` reports all dependencies ready.
 - [x] Security group allows only ports 80 and 443 (Caddy edge); no open SSH; access through Session Manager.
 - [x] Secrets in SSM only; `.env` not committed.

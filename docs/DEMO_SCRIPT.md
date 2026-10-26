@@ -1,6 +1,6 @@
 # Demo script
 
-Target length 3:00, following `claude-code/PROTOTYPE.md` Section 12. Live site: https://13-204-48-202.sslip.io (demo password for every persona: `Pramaan@2026`, or use the persona buttons on the sign-in page). All data is synthetic; simulated parts (bank network, bank desk, SMS, WhatsApp) are labelled on screen.
+Target length 3:00, following `claude-code/PROTOTYPE.md` Section 12. Live site: https://pramaan.duckdns.org (demo password for every persona: `Pramaan@2026`, or use the persona buttons on the sign-in page). All data is synthetic; simulated parts (bank network, bank desk, SMS, WhatsApp) are labelled on screen.
 
 ## Before each take
 
