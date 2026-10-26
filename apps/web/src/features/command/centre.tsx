@@ -298,9 +298,7 @@ export function ActionDocket({ onOpen }: { onOpen: (id: number) => void }) {
                         )}
                       >
                         {d < 0 ? `${-d} d late` : d === 0 ? 'due today' : `in ${d} d`}
-                        <span className="block text-[0.625rem] opacity-80">
-                          {item.owner ?? 'Unassigned'}
-                        </span>
+                        <span className="block text-[0.625rem]">{item.owner ?? 'Unassigned'}</span>
                       </span>
                     </span>
                   </span>

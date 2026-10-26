@@ -66,7 +66,7 @@ export function MaturityClock({
       />
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        role="img"
+        role="group"
         aria-label={`Maturity clock: ${formatINRCompact(grand)} maturing over the next 24 months, ${formatINRCompact(next90)} in the next 90 days`}
         className="relative w-full"
         onMouseLeave={() => setHover(null)}

@@ -254,4 +254,6 @@ Components live in `apps/web/src/components/security/`; the pattern maths in `sr
 | UV lamp | Document viewer (U key) | The forensic heatmap, magnified, as a note checker shows it |
 | Foil | A3 seals, verify page, identity cards on hover | Highest assurance; a genuine letter |
 
+Dashboards (D38): the command view is a brief, a board with a pulse monitor, a maturity clock (river and table one click away), a proof meter, isometric regional towers, a docket of case files, signal cards and analogue dials. The forecast is a time-machine console. The institution home is a certificate band, a challan with a counterfoil countdown and sealed deposit cards.
+
 New screens and moments: public home (`/home`, signed-out visitors land here; `/home?tour=1` starts the tour), identity-card personas on sign-in, the proof moment on the bank desk, the deposit passport (instrument Timeline tab), reminder previews on a phone (Alerts), the audit tamper drill, and legacy import (`/admin/import`, D37).

@@ -44,7 +44,7 @@ test.describe('Management layer (Step 9)', () => {
   test('a click on the maturity clock lists that month in the registry', async ({ page }) => {
     await signInAs(page, 'bureau')
     await page.goto('/')
-    const clock = page.getByRole('img', { name: /^Maturity clock/ })
+    const clock = page.getByRole('group', { name: /^Maturity clock/ })
     await expect(clock).toBeVisible()
     await clock
       .getByRole('button', { name: / deposits$/ })

@@ -114,7 +114,7 @@ export function BankDesk() {
                 <p className="mt-4 font-display text-[1.75rem] leading-none text-ink">
                   Nothing to sign
                 </p>
-                <p className="mt-2 max-w-sm text-[0.875rem] text-ink-3">
+                <p className="mt-2 max-w-sm text-[0.875rem] text-ink-2">
                   When an AICTE officer asks this bank to confirm a deposit, the request appears on
                   the left with the bank's own record beside it.
                 </p>

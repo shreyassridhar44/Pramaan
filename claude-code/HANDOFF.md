@@ -20,6 +20,11 @@ Update this file at the end of every working session and every completed step.
 
 ## Session log
 
+### 26 October 2026 (evening): dashboards as instruments (DECISION D38)
+- Owner rated the first redesign 7 out of 10 and asked for the dashboards to change most. Built the command centre (brief, pulse, maturity clock, proof meter, isometric towers, docket, signal cards, dials), the forecast console, the institution certificate dashboard, the release line, registry ribbon, alert stairs, audit chain strip, bank terminal, entry gate and page transitions.
+- New endpoint `/portfolio/pulse`. Tests updated for the clock (the river view is still tested).
+- From this session on, commits are authored and pushed as Ayaan0777 <6syedayaan@gmail.com> (owner's instruction). Git Credential Manager's stored login for Ayaan0777 was rejected by GitHub; until it is refreshed with `git credential-manager github login --username Ayaan0777`, commits wait locally.
+
 ### 26 October 2026 (afternoon): security-print redesign (DECISION D36, D37)
 - Owner rated the shipped interface 4 out of 10 and approved a redesign on the `redesign` branch, with the UI frozen at 23:00 IST on 27 October. About 40 public SIH26265 repositories were cloned and read: most share KPI cards, Recharts, Tesseract and a navy and saffron landing page; none ships a trained model, maps are rare, none uses WebGL.
 - Built: security-print components (`components/security/`), public home page (`/home`), GIGW strip and footer, identity-card sign-in, dark rail and command board, assurance seals, UV lamp, proof moment, verify-page hologram, guilloche on PDF letters, guided tour (`/home?tour=1`), audit tamper drill (`/demo/tamper-drill`), legacy register import (`/admin/import`, `/legacy/*`), reminder previews (`/alerts/reminders/{id}/preview`), deposit passport.

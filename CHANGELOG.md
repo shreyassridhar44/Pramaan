@@ -5,6 +5,7 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Dashboards as instruments (DECISION D38): command view brief, 90-day pulse monitor (`/portfolio/pulse`), maturity clock, proof meter, isometric regional towers, case-file docket, signal cards and impact dials; a time-machine forecast console; the institution dashboard as a certificate band, challan and sealed deposit cards; a release line; a registry status ribbon; reminder and escalation stairs; a lighting audit chain; a bank terminal strip; an entry gate after sign-in; page transitions; a search board for Ctrl K.
 - Security-print visual language (DECISION D36): seeded guilloche rosettes, embossed assurance seals that gain features as proof grows, holographic foil, rubber stamps, split-flap figures, microprint, a GIGW strip with text size and contrast, bilingual titles and an official-style footer.
 - Public home page with a live portfolio board, a ticker of aggregate figures, the deposit lifecycle as stamps, regional tiles and QR verification by camera (jsQR where the browser has no detector). Signed-out visitors land here.
 - Identity-card personas on sign-in, a dark command board, and a navy rail with Hindi labels.
