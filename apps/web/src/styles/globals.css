@@ -264,3 +264,13 @@
   border: 4px solid var(--saffron);
   box-shadow: 0 0 18px var(--saffron);
 }
+
+/* Clearances flowing along a cleared lane towards the authority. */
+.flow-dash {
+  animation: flow-dash 1.2s linear infinite;
+}
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -14;
+  }
+}

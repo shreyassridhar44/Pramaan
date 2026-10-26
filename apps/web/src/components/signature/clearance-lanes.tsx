@@ -11,6 +11,8 @@ import {
 import { motion, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 
+import { Seal } from '@/components/security/seal'
+import { RubberStamp } from '@/components/security/stamp'
 import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/format'
 
@@ -66,7 +68,7 @@ export function ClearanceLanes({
             <li
               key={l.cell}
               className={cn(
-                'flex gap-3 rounded-[var(--radius-panel)] border bg-surface px-4 py-3 @3xl:h-[92px] @3xl:overflow-hidden',
+                'relative flex gap-3 rounded-[var(--radius-panel)] border bg-surface px-4 py-3 @3xl:h-[92px] @3xl:overflow-hidden',
                 l.status === 'cleared' && 'border-a2/40',
                 l.status === 'blocked' && 'border-overdue/50 bg-overdue-soft/40',
                 l.status === 'pending' && 'border-line',
@@ -106,6 +108,20 @@ export function ClearanceLanes({
                   </>
                 )}
               </div>
+              {l.status !== 'pending' ? (
+                <span
+                  className="pointer-events-none absolute top-1/2 right-[104px] w-[90px] -translate-y-1/2 opacity-80"
+                  aria-hidden
+                >
+                  <RubberStamp
+                    title={l.status === 'cleared' ? 'Cleared' : 'Blocked'}
+                    ink={l.status === 'cleared' ? 'green' : 'red'}
+                    rotate={-8}
+                    stamp={!reduce}
+                    className="h-[40px]"
+                  />
+                </span>
+              ) : null}
             </li>
           ))}
         </ol>
@@ -121,17 +137,29 @@ export function ClearanceLanes({
             const y = LANE_H / 2 + i * (LANE_H + GAP)
             const d = `M0 ${y} C 40 ${y}, 32 ${HEIGHT / 2}, 72 ${HEIGHT / 2}`
             return (
-              <motion.path
-                key={l.cell}
-                d={d}
-                fill="none"
-                stroke={stroke(l.status)}
-                strokeWidth={l.status === 'pending' ? 1.5 : 2}
-                strokeDasharray={l.status === 'pending' ? '4 4' : undefined}
-                initial={reduce ? false : { pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.2, 0, 0, 1] }}
-              />
+              <g key={l.cell}>
+                <motion.path
+                  d={d}
+                  fill="none"
+                  stroke={stroke(l.status)}
+                  strokeWidth={l.status === 'pending' ? 1.5 : 2}
+                  strokeDasharray={l.status === 'pending' ? '4 4' : undefined}
+                  initial={reduce ? false : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.2, 0, 0, 1] }}
+                />
+                {l.status === 'cleared' ? (
+                  <path
+                    d={d}
+                    fill="none"
+                    stroke="var(--board-ink)"
+                    strokeWidth="2"
+                    strokeDasharray="2 12"
+                    className="flow-dash"
+                    opacity="0.9"
+                  />
+                ) : null}
+              </g>
             )
           })}
         </svg>
@@ -211,7 +239,7 @@ function FlowNode({
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-panel)] border px-4 py-4 text-center',
+        'relative rounded-[var(--radius-panel)] border px-4 py-4 text-center',
         state === 'done' && 'border-a2/50 bg-a2-soft/50',
         state === 'ready' &&
           'border-accent bg-accent-soft/50 shadow-[0_0_0_4px_var(--accent-soft)]',
@@ -230,6 +258,11 @@ function FlowNode({
       >
         {state === 'done' ? <Check className="size-5" /> : icon}
       </span>
+      {state === 'done' ? (
+        <span className="pointer-events-none absolute top-2 right-2" aria-hidden>
+          <Seal size={64} tone="green" stamp seed={title} legend={`${title}  •  Done  •  `} />
+        </span>
+      ) : null}
       <p className="mt-2 text-[0.875rem] font-semibold text-ink">{title}</p>
       <p className="mt-0.5 text-[0.75rem] leading-snug text-ink-3">{caption}</p>
     </div>
