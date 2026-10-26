@@ -4,6 +4,7 @@ import {
   BellRing,
   ClipboardCheck,
   FileBarChart,
+  FileSpreadsheet,
   FileText,
   Gauge,
   Landmark,
@@ -49,6 +50,13 @@ const NAV: NavItem[] = [
   { to: '/letters', label: 'Letters', hi: 'पत्र', icon: FileText },
   { to: '/audit', label: 'Audit', hi: 'लेखापरीक्षा', icon: ScrollText },
   {
+    to: '/admin/import',
+    label: 'Legacy import',
+    hi: 'पुरानी पंजी',
+    icon: FileSpreadsheet,
+    roles: ['bureau_officer', 'section_head', 'admin'],
+  },
+  {
     to: '/admin/rules',
     label: 'Rules',
     hi: 'नियम',
@@ -73,6 +81,7 @@ const TITLE_HI: Record<string, string> = {
   Letters: 'पत्र',
   Audit: 'लेखापरीक्षा',
   Rules: 'नियम',
+  'Legacy import': 'पुरानी पंजी का आयात',
 }
 
 export function AppShell({ children, title }: { children: ReactNode; title?: ReactNode }) {

@@ -28,6 +28,7 @@ import { Route as PortalLettersRouteImport } from './routes/portal/letters'
 import { Route as PortalReleaseRouteImport } from './routes/portal/release'
 import { Route as PortalSubmitRouteImport } from './routes/portal/submit'
 import { Route as VerifyTokenRouteImport } from './routes/verify.$token'
+import { Route as AppAdminImportRouteImport } from './routes/_app/admin/import'
 import { Route as AppAdminRulesRouteImport } from './routes/_app/admin/rules'
 import { Route as AppInstitutionsIndexRouteImport } from './routes/_app/institutions/index'
 import { Route as AppInstitutionsInstitutionIdRouteImport } from './routes/_app/institutions/$institutionId'
@@ -130,6 +131,11 @@ const VerifyTokenRoute = VerifyTokenRouteImport.update({
   path: '/verify/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAdminImportRoute = AppAdminImportRouteImport.update({
+  id: '/admin/import',
+  path: '/admin/import',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminRulesRoute = AppAdminRulesRouteImport.update({
   id: '/admin/rules',
   path: '/admin/rules',
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/portal/submit': typeof PortalSubmitRoute
   '/verify/$token': typeof VerifyTokenRoute
   '/portal/': typeof PortalIndexRoute
+  '/admin/import': typeof AppAdminImportRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/verify/$token': typeof VerifyTokenRoute
   '/': typeof AppIndexRoute
   '/portal': typeof PortalIndexRoute
+  '/admin/import': typeof AppAdminImportRoute
   '/admin/rules': typeof AppAdminRulesRoute
   '/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/verify/$token': typeof VerifyTokenRoute
   '/_app/': typeof AppIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/_app/admin/import': typeof AppAdminImportRoute
   '/_app/admin/rules': typeof AppAdminRulesRoute
   '/_app/institutions/$institutionId': typeof AppInstitutionsInstitutionIdRoute
   '/_app/instruments/$instrumentId': typeof AppInstrumentsInstrumentIdRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/portal/submit'
     | '/verify/$token'
     | '/portal/'
+    | '/admin/import'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/verify/$token'
     | '/'
     | '/portal'
+    | '/admin/import'
     | '/admin/rules'
     | '/institutions/$institutionId'
     | '/instruments/$instrumentId'
@@ -325,6 +336,7 @@ export interface FileRouteTypes {
     | '/verify/$token'
     | '/_app/'
     | '/portal/'
+    | '/_app/admin/import'
     | '/_app/admin/rules'
     | '/_app/institutions/$institutionId'
     | '/_app/instruments/$instrumentId'
@@ -480,6 +492,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/admin/import': {
+      id: '/_app/admin/import'
+      path: '/admin/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AppAdminImportRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/rules': {
       id: '/_app/admin/rules'
       path: '/admin/rules'
@@ -540,6 +559,7 @@ interface AppRouteChildren {
   AppQueueRoute: typeof AppQueueRoute
   AppReportsRoute: typeof AppReportsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAdminImportRoute: typeof AppAdminImportRoute
   AppAdminRulesRoute: typeof AppAdminRulesRoute
   AppInstitutionsInstitutionIdRoute: typeof AppInstitutionsInstitutionIdRoute
   AppInstrumentsInstrumentIdRoute: typeof AppInstrumentsInstrumentIdRoute
@@ -557,6 +577,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppQueueRoute: AppQueueRoute,
   AppReportsRoute: AppReportsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAdminImportRoute: AppAdminImportRoute,
   AppAdminRulesRoute: AppAdminRulesRoute,
   AppInstitutionsInstitutionIdRoute: AppInstitutionsInstitutionIdRoute,
   AppInstrumentsInstrumentIdRoute: AppInstrumentsInstrumentIdRoute,

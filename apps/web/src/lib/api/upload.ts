@@ -39,3 +39,27 @@ export async function specimenFile(name: string): Promise<File> {
   const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? `${name}.pdf`
   return new File([blob], filename, { type: blob.type })
 }
+
+/** Multipart POST of one file to an endpoint the generated client does not model. */
+export async function postFile<T>(url: string, file: File): Promise<T> {
+  const fd = new FormData()
+  fd.append('file', file)
+  const token =
+    document.cookie
+      .split('; ')
+      .find((c) => c.startsWith('pramaan_csrf='))
+      ?.split('=')[1] ?? ''
+  const res = await fetch(url, {
+    method: 'POST',
+    body: fd,
+    credentials: 'include',
+    headers: { 'x-csrf-token': token },
+  })
+  const body = await res.json()
+  if (!res.ok)
+    throw new ApiError(
+      body?.error?.code ?? 'upload_failed',
+      body?.error?.message ?? 'Upload failed.',
+    )
+  return body as T
+}

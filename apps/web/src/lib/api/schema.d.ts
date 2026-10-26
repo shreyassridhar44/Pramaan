@@ -1086,6 +1086,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/legacy/sample": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sample
+         * @description A synthetic legacy register built from the demo records, roughened like a real one.
+         */
+        get: operations["sample_api_v1_legacy_sample_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/legacy/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile
+         * @description Reads a register (xlsx or csv) and compares every row with Pramaan. Writes nothing except
+         *     an audit entry; differences are for an officer to resolve.
+         */
+        post: operations["reconcile_api_v1_legacy_reconcile_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports": {
         parameters: {
             query?: never;
@@ -1447,6 +1488,11 @@ export interface components {
             /** Simulated */
             simulated: boolean;
         };
+        /** Body_reconcile_api_v1_legacy_reconcile_post */
+        Body_reconcile_api_v1_legacy_reconcile_post: {
+            /** File */
+            file: string;
+        };
         /** Body_upload_api_v1_documents_post */
         Body_upload_api_v1_documents_post: {
             /** File */
@@ -1764,6 +1810,15 @@ export interface components {
             /** Changed */
             changed: boolean;
         };
+        /** Difference */
+        Difference: {
+            /** Field */
+            field: string;
+            /** In Register */
+            in_register: string;
+            /** Pramaan */
+            pramaan: string;
+        };
         /** DocumentBrief */
         DocumentBrief: {
             /** Id */
@@ -1902,6 +1957,27 @@ export interface components {
             maturity_to?: string | null;
             /** Has Signals */
             has_signals?: boolean | null;
+        };
+        /** FindingOut */
+        FindingOut: {
+            /** Line */
+            line: number;
+            /** Outcome */
+            outcome: string;
+            /** Number */
+            number: string;
+            /** Institution */
+            institution: string;
+            /** Bank */
+            bank: string;
+            /** Amount Paise */
+            amount_paise: string | null;
+            /** Instrument Id */
+            instrument_id: number | null;
+            /** Differences */
+            differences: components["schemas"]["Difference"][];
+            /** Problem */
+            problem: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2577,6 +2653,31 @@ export interface components {
             detail: string | null;
             /** Raised On */
             raised_on: string;
+        };
+        /** ReconcileReport */
+        ReconcileReport: {
+            /** Filename */
+            filename: string;
+            /** Rows Read */
+            rows_read: number;
+            /** Columns */
+            columns: {
+                [key: string]: number;
+            };
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** Matched Value Paise */
+            matched_value_paise: string;
+            /** Sequence */
+            sequence: string;
+            /** Findings */
+            findings: components["schemas"]["FindingOut"][];
+            /** Elapsed Ms */
+            elapsed_ms: number;
+            /** Data Source */
+            data_source: string;
         };
         /** RegionRow */
         RegionRow: {
@@ -5013,6 +5114,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LetterKey"][];
+                };
+            };
+        };
+    };
+    sample_api_v1_legacy_sample_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reconcile_api_v1_legacy_reconcile_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_reconcile_api_v1_legacy_reconcile_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconcileReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -57,7 +57,7 @@ async def public_summary(db: DbSession) -> PublicSummary:
     letters = await db.scalar(
         select(func.count()).select_from(Letter).where(Letter.status == "issued")
     )
-    names = dict((await db.execute(select(Region.code, Region.name))).tuples().all())
+    names = dict((await db.execute(select(Region.code, Region.name))).all())
     regions = [
         PublicRegion(
             code=code,
