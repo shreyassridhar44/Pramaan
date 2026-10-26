@@ -1,10 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
-import { Table2, Waves } from 'lucide-react'
+import { Clock3, Table2, Waves } from 'lucide-react'
 import { useState } from 'react'
 
+import { MaturityClock } from '@/components/charts/maturity-clock'
 import { MaturityRiver, RiverLegend } from '@/components/charts/maturity-river'
 import { RIVER_BANDS, bandValue, byMonth } from '@/components/charts/river-bands'
-import { Button } from '@/components/ui/button'
 import { ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { useAsOf } from '@/lib/asof'
 import { formatINRCompact } from '@/lib/format'
@@ -22,26 +22,45 @@ export function RiverPanel() {
   const { asOf, isToday } = useAsOf()
   const navigate = useNavigate()
   const q = useRiver(asOf)
-  const [table, setTable] = useState(false)
+  const [view, setView] = useState<'clock' | 'river' | 'table'>('clock')
+  const table = view === 'table'
   const months = byMonth(q.data ?? [])
   const busy = months.filter((m) => m.count > 0)
   return (
     <Panel className="h-full">
       <PanelHeader
         title="What matures when"
-        caption="Value maturing each month over the next 24 months, by how well it is proven. Click a month to list its deposits."
+        caption="24 months around a dial from twelve o'clock; bank-confirmed money at the core. Click a month."
         actions={
           <div className="flex items-center gap-3">
             <RiverLegend />
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setTable((t) => !t)}
-              aria-pressed={table}
-              aria-label={table ? 'Show chart' : 'Show as table'}
+            <div
+              role="group"
+              aria-label="View"
+              className="flex rounded-full border border-line p-0.5"
             >
-              {table ? <Waves /> : <Table2 />} {table ? 'Chart' : 'Table'}
-            </Button>
+              {(
+                [
+                  ['clock', 'Clock', Clock3],
+                  ['river', 'River', Waves],
+                  ['table', 'Table', Table2],
+                ] as const
+              ).map(([k, label, Icon]) => (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={view === k}
+                  onClick={() => setView(k)}
+                  className={
+                    view === k
+                      ? 'flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[0.75rem] font-medium text-canvas'
+                      : 'flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] font-medium text-ink-2 hover:text-ink'
+                  }
+                >
+                  <Icon className="size-3.5" /> {label}
+                </button>
+              ))}
+            </div>
           </div>
         }
       />
@@ -89,6 +108,20 @@ export function RiverPanel() {
               </tbody>
             </table>
           </div>
+        ) : view === 'clock' ? (
+          <MaturityClock
+            months={months.slice(0, 24)}
+            onMonthClick={(month) =>
+              void navigate({
+                to: '/instruments',
+                search: {
+                  maturity_from: month,
+                  maturity_to: monthEnd(month),
+                  ...(isToday ? {} : { asOf }),
+                },
+              })
+            }
+          />
         ) : (
           <MaturityRiver
             weeks={months}

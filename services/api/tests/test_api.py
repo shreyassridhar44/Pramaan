@@ -162,3 +162,12 @@ class TestAudit:
             await session.rollback()
         assert not check.valid
         assert check.first_bad_id == target
+
+
+async def test_pulse_counts_daily_activity_in_scope(client: AsyncClient) -> None:
+    await sign_in(client, "bureau")
+    days = (await client.get("/api/v1/portfolio/pulse", params={**AS_OF, "days": 60})).json()
+    assert len(days) == 60 and days[-1]["day"] == ANCHOR.isoformat()
+    assert sum(d["bank"] + d["submitted"] + d["checked"] + d["reminders"] for d in days) > 0
+    await sign_in(client, "institution")
+    assert (await client.get("/api/v1/portfolio/pulse")).status_code == 403

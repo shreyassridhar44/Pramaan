@@ -1,17 +1,18 @@
 from collections import Counter
-from datetime import date
+from datetime import date, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.api.deps import DbSession, OfficerReader, instrument_scope
-from app.models import Institution, Instrument, Signal
+from app.models import Event, Institution, Instrument, Reminder, Signal
 from app.schemas.portfolio import (
     ActionItem,
     AssuranceSplit,
     Exposure,
     Impact,
+    PulseDay,
     RecentSignal,
     RegionRow,
     RiverWeek,
@@ -178,4 +179,65 @@ async def recent_signals(
             raised_on=s.raised_on.isoformat(),
         )
         for s, number, name in rows
+    ]
+
+
+PULSE_KIND = {
+    "instrument.submitted": "submitted",
+    "instrument.resubmitted": "submitted",
+    "instrument.document_checked": "checked",
+    "instrument.verified": "checked",
+    "bank.confirmed": "bank",
+    "bank.reconfirmed": "bank",
+    "bank.response_received": "bank",
+    "instrument.released": "released",
+    "instrument.renewed": "released",
+}
+
+
+@router.get("/pulse", response_model=list[PulseDay])
+async def pulse(
+    principal: OfficerReader,
+    db: DbSession,
+    as_of: AsOf = None,
+    days: Annotated[int, Query(ge=14, le=365)] = 90,
+) -> list[PulseDay]:
+    """Daily counts of recorded events within the principal's scope, for the activity trace."""
+    end = _as_of(as_of)
+    start = end - timedelta(days=days - 1)
+    counts: dict[date, Counter[str]] = {start + timedelta(days=i): Counter() for i in range(days)}
+    events = await db.execute(
+        select(Event.occurred_on, Event.type, func.count())
+        .join(Instrument, Instrument.id == Event.entity_id)
+        .join(Institution, Institution.id == Instrument.institution_id)
+        .where(
+            Event.entity_type == "instrument",
+            Event.type.in_(PULSE_KIND),
+            Event.occurred_on.between(start, end),
+            instrument_scope(principal),
+        )
+        .group_by(Event.occurred_on, Event.type)
+    )
+    for on, kind, n in events.all():
+        counts[on][PULSE_KIND[kind]] += n
+    reminders = await db.execute(
+        select(Reminder.sent_on, func.count())
+        .join(Instrument, Instrument.id == Reminder.instrument_id)
+        .join(Institution, Institution.id == Instrument.institution_id)
+        .where(Reminder.sent_on.between(start, end), instrument_scope(principal))
+        .group_by(Reminder.sent_on)
+    )
+    for sent_on, n in reminders.all():
+        if sent_on is not None and sent_on in counts:
+            counts[sent_on]["reminders"] += n
+    return [
+        PulseDay(
+            day=d.isoformat(),
+            submitted=c["submitted"],
+            checked=c["checked"],
+            bank=c["bank"],
+            reminders=c["reminders"],
+            released=c["released"],
+        )
+        for d, c in sorted(counts.items())
     ]

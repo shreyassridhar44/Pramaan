@@ -419,6 +419,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portfolio/pulse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pulse
+         * @description Daily counts of recorded events within the principal's scope, for the activity trace.
+         */
+        get: operations["pulse_api_v1_portfolio_pulse_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/instruments": {
         parameters: {
             query?: never;
@@ -2636,6 +2656,24 @@ export interface components {
             /** Demo Mode */
             demo_mode: boolean;
         };
+        /**
+         * PulseDay
+         * @description Recorded activity on one day, by kind.
+         */
+        PulseDay: {
+            /** Day */
+            day: string;
+            /** Submitted */
+            submitted: number;
+            /** Checked */
+            checked: number;
+            /** Bank */
+            bank: number;
+            /** Reminders */
+            reminders: number;
+            /** Released */
+            released: number;
+        };
         /** QueueItem */
         QueueItem: {
             row: components["schemas"]["ReleaseRow"];
@@ -3930,6 +3968,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RecentSignal"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pulse_api_v1_portfolio_pulse_get: {
+        parameters: {
+            query?: {
+                /** @description Compute figures as of this date (default today) */
+                as_of?: string | null;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PulseDay"][];
                 };
             };
             /** @description Validation Error */

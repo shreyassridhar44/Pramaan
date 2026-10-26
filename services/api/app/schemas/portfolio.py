@@ -127,3 +127,14 @@ class RecentSignal(BaseModel):
     title: str
     detail: str | None
     raised_on: str
+
+
+class PulseDay(BaseModel):
+    """Recorded activity on one day, by kind."""
+
+    day: str
+    submitted: int
+    checked: int
+    bank: int
+    reminders: int
+    released: int
