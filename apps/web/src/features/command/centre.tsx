@@ -4,7 +4,8 @@ import { ArrowUpRight, Cpu, FileWarning, Inbox, Landmark, ShieldQuestion } from 
 import { motion, useReducedMotion } from 'motion/react'
 
 import { Dial } from '@/components/charts/dial'
-import { PULSE_SERIES, PulseTrace } from '@/components/charts/pulse-trace'
+import { PULSE_SERIES } from '@/components/charts/pulse-series'
+import { PulseTrace } from '@/components/charts/pulse-trace'
 import { Sparkline } from '@/components/charts/sparkline'
 import { RubberStamp, type StampInk } from '@/components/security/stamp'
 import { Amount } from '@/components/signature/chips'

@@ -28,13 +28,14 @@ export function ProofGauge({ shares }: { shares: ProofShares }) {
   const reduce = useReducedMotion()
   const proven = shares.a3 + shares.a2
   const deg = -90 + 180 * proven
+  const arcs: { key: string; label: string; fill: string; d: string | null }[] = []
   let start = 0
-  const arcs = SEGMENTS.map((s) => {
+  for (const seg of SEGMENTS) {
     const a1 = -90 + 180 * start
-    start += shares[s.key]
+    start += shares[seg.key]
     const a2 = -90 + 180 * start
-    return { ...s, d: a2 - a1 > 0.2 ? sector(CX, CY, R - T, R, a1 + 0.4, a2 - 0.4) : null }
-  })
+    arcs.push({ ...seg, d: a2 - a1 > 0.2 ? sector(CX, CY, R - T, R, a1 + 0.4, a2 - 0.4) : null })
+  }
   return (
     <div className="relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[200px] overflow-hidden">

@@ -5,11 +5,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { MaturityRiver, RiverLegend } from '@/components/charts/maturity-river'
 import { byMonth } from '@/components/charts/river-bands'
-import { RegionCartogram } from '@/components/charts/region-cartogram'
-import { Button } from '@/components/ui/button'
+import { IsoIndia } from '@/components/charts/iso-india'
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
+import { SplitFlap } from '@/components/security/split-flap'
 import { ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { useRegions, useRiver } from '@/features/command/queries'
-import { RollingNumber } from '@/features/command/headline'
 import { api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { todayIso } from '@/lib/asof'
@@ -134,92 +134,152 @@ export function ForecastPage() {
       data-tour="forecast"
       className={cn('grid gap-5', full && 'overflow-y-auto bg-canvas p-6')}
     >
-      <Panel className="p-5">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="primary"
-              size="icon"
+      <section className="relative overflow-hidden rounded-[18px] bg-board text-board-ink shadow-[0_30px_70px_-40px_rgb(0_0_0/0.8)]">
+        <RosetteMark
+          seed="time-machine"
+          className="spin-slow pointer-events-none absolute -top-56 -right-40 size-[620px]"
+          color="rgb(255 255 255 / 0.05)"
+        />
+        <GuillocheBand height={12} color="rgb(255 153 51 / 0.4)" />
+        <div className="relative flex flex-wrap items-center gap-x-8 gap-y-5 px-6 py-5">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
               onClick={() => {
                 if (index >= last) setIndex(0)
                 setPlaying((p) => !p)
               }}
               disabled={!data.length}
               aria-label={playing ? 'Pause' : 'Play'}
+              className="relative grid size-16 place-items-center rounded-full bg-saffron text-board shadow-[0_0_0_6px_rgb(255_153_51/0.18),0_0_40px_rgb(255_153_51/0.45)] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
             >
-              {playing ? <Pause /> : <Play />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
+              {playing ? (
+                <span className="absolute inset-0 animate-ping rounded-full bg-saffron/30 motion-reduce:animate-none" />
+              ) : null}
+              {playing ? (
+                <Pause className="relative size-6" />
+              ) : (
+                <Play className="relative ml-1 size-6" />
+              )}
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setPlaying(false)
                 setIndex(0)
               }}
               aria-label="Back to today"
+              className="grid size-10 place-items-center rounded-full bg-white/10 hover:bg-white/20"
             >
-              <RotateCcw />
-            </Button>
+              <RotateCcw className="size-4" />
+            </button>
           </div>
-          <div className="min-w-[200px]">
-            <p className="text-[0.6875rem] font-medium tracking-[0.06em] text-ink-3 uppercase">
-              Week of
+          <div>
+            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/60 uppercase">
+              Forecast week of
             </p>
-            <p className="font-mono text-[1.25rem] text-ink">
-              {step ? formatDate(step.start) : 'Loading'}
+            <p className="mt-1 text-[1.75rem] text-saffron">
+              <SplitFlap value={step ? boardDate(step.start) : '-- --- ----'} stagger={20} />
             </p>
           </div>
-          <label className="flex min-w-[240px] flex-1 items-center gap-3">
-            <span className="sr-only">Week</span>
-            <input
-              type="range"
-              min={0}
-              max={last}
-              value={index}
-              onChange={(e) => {
-                setPlaying(false)
-                setIndex(Number(e.target.value))
-              }}
-              className="w-full accent-[var(--accent)]"
-              aria-valuetext={step ? `Week of ${formatDate(step.start)}` : undefined}
-            />
-          </label>
-          <div
-            className="flex gap-1 rounded-[var(--radius-control)] bg-sunken p-1"
-            role="group"
-            aria-label="Speed"
-          >
-            {SPEEDS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSpeed(s)}
-                aria-pressed={speed === s}
-                className={cn(
-                  'rounded-md px-2.5 py-1 font-mono text-[0.75rem]',
-                  speed === s ? 'bg-surface text-ink shadow-sm' : 'text-ink-3 hover:text-ink',
-                )}
-              >
-                {s}x
-              </button>
-            ))}
+          <div>
+            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/60 uppercase">
+              Ahead of today
+            </p>
+            <p className="mt-1 text-[1.75rem]">
+              <SplitFlap value={`+${String(index * 7).padStart(3, '0')} D`} stagger={20} />
+            </p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              document.fullscreenElement
-                ? void document.exitFullscreen()
-                : void root.current?.requestFullscreen()
-            }
-          >
-            {full ? <Shrink /> : <Expand />} {full ? 'Exit full screen' : 'Full screen'}
-          </Button>
+          <div className="min-w-[260px] flex-1">
+            <label className="block">
+              <span className="sr-only">Week</span>
+              <input
+                type="range"
+                min={0}
+                max={last}
+                value={index}
+                onChange={(e) => {
+                  setPlaying(false)
+                  setIndex(Number(e.target.value))
+                }}
+                className="time-scrubber w-full"
+                style={{ ['--pct' as string]: `${last ? (index / last) * 100 : 0}%` }}
+                aria-valuetext={step ? `Week of ${formatDate(step.start)}` : undefined}
+              />
+            </label>
+            <div
+              className="mt-1 flex justify-between font-mono text-[0.625rem] text-board-ink/60"
+              aria-hidden
+            >
+              {data
+                .filter((_, i) => i % 9 === 0)
+                .map((d) => (
+                  <span key={d.start}>
+                    {new Date(d.start).toLocaleDateString('en-IN', {
+                      month: 'short',
+                      year: '2-digit',
+                    })}
+                  </span>
+                ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="flex gap-1 rounded-full bg-white/10 p-1"
+              role="group"
+              aria-label="Speed"
+            >
+              {SPEEDS.map((sp) => (
+                <button
+                  key={sp}
+                  type="button"
+                  onClick={() => setSpeed(sp)}
+                  aria-pressed={speed === sp}
+                  className={cn(
+                    'rounded-full px-3 py-1 font-mono text-[0.75rem]',
+                    speed === sp ? 'bg-board-ink text-board' : 'text-board-ink/70 hover:text-white',
+                  )}
+                >
+                  {sp}x
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                document.fullscreenElement
+                  ? void document.exitFullscreen()
+                  : void root.current?.requestFullscreen()
+              }
+              className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[0.75rem] hover:bg-white/20"
+            >
+              {full ? <Shrink className="size-3.5" /> : <Expand className="size-3.5" />}
+              {full ? 'Exit full screen' : 'Full screen'}
+            </button>
+          </div>
         </div>
-        <p className="mt-3 text-[0.75rem] text-ink-3">
+        <div className="relative grid grid-cols-2 border-t border-white/10 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
+          <BoardFigure label="Value held" value={formatINRCompact(Math.round(held))} />
+          <BoardFigure
+            label="Bank-confirmed"
+            value={`${(confirmedShare * 100).toFixed(0)}%`}
+            tone="text-board-a2"
+          />
+          <BoardFigure
+            label="Matured without action"
+            value={formatCount(step?.overdue_count ?? 0)}
+            tone="text-board-overdue"
+          />
+          <BoardFigure
+            label="Escalated above dealing officer"
+            value={formatCount(escalations)}
+            tone="text-board-due"
+          />
+        </div>
+        <p className="relative border-t border-white/10 px-6 py-2 text-[0.6875rem] text-board-ink/65">
           Forecast from current rules and data, one week per second at 1x. Nothing is saved.
         </p>
-      </Panel>
+      </section>
 
       {steps.isError ? (
         <Panel>
@@ -232,11 +292,11 @@ export function ForecastPage() {
           <Panel>
             <PanelHeader
               title="Overdue by region"
-              caption="Share of held deposits matured without a renewal or release application"
+              caption="Towers grow and shrink with value held; beacons light up where deposits mature without action"
             />
             <div className="px-5 pb-5">
               {regionRows.length && step ? (
-                <RegionCartogram regions={regionRows} mode="overdue" />
+                <IsoIndia regions={regionRows} />
               ) : (
                 <Skeleton className="h-[420px]" />
               )}
@@ -265,30 +325,6 @@ export function ForecastPage() {
           </Panel>
         </div>
         <div className="grid content-start gap-5 xl:col-span-5">
-          <div className="grid grid-cols-2 gap-3">
-            <Figure
-              label="Value held"
-              value={held}
-              format={(n) => formatINRCompact(Math.round(n))}
-            />
-            <Figure
-              label="Bank-confirmed"
-              value={confirmedShare * 100}
-              format={(n) => `${n.toFixed(0)}%`}
-            />
-            <Figure
-              label="Matured without action"
-              value={step?.overdue_count ?? 0}
-              format={(n) => formatCount(Math.round(n))}
-              tone="overdue"
-            />
-            <Figure
-              label="Escalated above the dealing officer"
-              value={escalations}
-              format={(n) => formatCount(Math.round(n))}
-              tone="due"
-            />
-          </div>
           <Panel>
             <PanelHeader title="Event stream" caption="What the rules would do, week by week" />
             <ol className="px-5 pb-4" aria-live="polite">
@@ -317,28 +353,21 @@ export function ForecastPage() {
   )
 }
 
-function Figure({
-  label,
-  value,
-  format,
-  tone,
-}: {
-  label: string
-  value: number
-  format: (n: number) => string
-  tone?: 'overdue' | 'due'
-}) {
+function boardDate(iso: string) {
+  return new Date(iso)
+    .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    .toUpperCase()
+}
+
+function BoardFigure({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <Panel className="p-4">
-      <p className="text-[0.75rem] text-ink-3">{label}</p>
-      <p
-        className={cn(
-          'mt-1 font-display text-[2.25rem] leading-none',
-          tone === 'overdue' ? 'text-overdue' : tone === 'due' ? 'text-due' : 'text-ink',
-        )}
-      >
-        <RollingNumber value={value} format={format} />
+    <div className="px-6 py-4">
+      <p className="text-[0.625rem] font-semibold tracking-[0.14em] text-board-ink/65 uppercase">
+        {label}
       </p>
-    </Panel>
+      <p className={cn('mt-2 font-display text-[2.5rem] leading-none', tone ?? 'text-board-ink')}>
+        <SplitFlap value={value} variant="inline" stagger={25} />
+      </p>
+    </div>
   )
 }

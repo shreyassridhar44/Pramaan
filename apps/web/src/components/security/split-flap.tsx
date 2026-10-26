@@ -80,7 +80,7 @@ function FlapCell({ ch, delay, board }: { ch: string; delay: number; board: bool
         style={{ perspective: '400px' }}
       >
         <span key={flip} className={flip ? 'flap-glyph' : undefined}>
-          {shown}
+          {shown === ' ' ? ' ' : shown}
         </span>
       </span>
     )

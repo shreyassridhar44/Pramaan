@@ -179,6 +179,7 @@ function Tower({ height, conf, active }: { height: number; conf: number; active:
           height,
           transformOrigin: 'top',
           transform: 'rotateX(90deg)',
+          transition: 'height 600ms, width 600ms',
           background: shade('to bottom', 14),
         }}
       />
@@ -191,6 +192,7 @@ function Tower({ height, conf, active }: { height: number; conf: number; active:
           height: w,
           transformOrigin: 'left',
           transform: 'rotateY(-90deg)',
+          transition: 'height 600ms, width 600ms',
           background: shade('to right', 34),
         }}
       />
@@ -198,6 +200,7 @@ function Tower({ height, conf, active }: { height: number; conf: number; active:
         className={cn('absolute inset-0 block rounded-[2px]', active && 'ring-2 ring-saffron')}
         style={{
           transform: `translateZ(${height}px)`,
+          transition: 'transform 600ms, background-color 600ms',
           background: conf >= 0.5 ? 'var(--chart-a2)' : 'var(--chart-a1)',
           boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / 0.25)',
         }}
@@ -210,7 +213,11 @@ function Beacon({ height, count }: { height: number; count: number }) {
   return (
     <span
       className="absolute inset-0 grid place-items-center"
-      style={{ transform: `translateZ(${height + 1}px)`, transformStyle: 'preserve-3d' }}
+      style={{
+        transform: `translateZ(${height + 1}px)`,
+        transformStyle: 'preserve-3d',
+        transition: 'transform 600ms',
+      }}
     >
       <span className="absolute size-9 animate-ping rounded-full bg-overdue/40 motion-reduce:animate-none" />
       <span className="relative grid size-6 place-items-center rounded-full bg-[var(--band-red)] text-[0.625rem] font-bold text-white ring-2 ring-white">

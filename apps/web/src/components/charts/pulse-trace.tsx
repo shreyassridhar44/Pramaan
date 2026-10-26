@@ -4,15 +4,9 @@ import { useMemo, useState } from 'react'
 import type { components } from '@/lib/api/schema'
 import { formatCount, formatDate } from '@/lib/format'
 
-type Day = components['schemas']['PulseDay']
+import { PULSE_SERIES } from './pulse-series'
 
-export const PULSE_SERIES = [
-  { key: 'submitted', label: 'Submitted', color: 'var(--board-ink)' },
-  { key: 'checked', label: 'Checked', color: 'var(--chart-a1)' },
-  { key: 'bank', label: 'Bank-confirmed', color: 'var(--board-a2)' },
-  { key: 'reminders', label: 'Reminders sent', color: 'var(--saffron)' },
-  { key: 'released', label: 'Released or renewed', color: 'var(--simulated)' },
-] as const
+type Day = components['schemas']['PulseDay']
 
 const W = 1200
 const H = 150
