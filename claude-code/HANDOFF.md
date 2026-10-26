@@ -59,6 +59,8 @@ Notes from Step 10 (26 October 2026):
 - Test results: API 151 tests plus 5 slow, Playwright 64 of 64 locally and 64 of 64 against the live site.
 - AWS (account 067257065056, ap-south-1): the account is on the Free plan ($95 credit, ends 20 Jan 2027), which refuses t4g.medium and CloudFront until AWS verifies the account. Deployed on a t4g.small (`i-052700f869b9ac939`, Elastic IP 13.204.48.202) with Caddy and Let's Encrypt on `pramaan.duckdns.org` (DuckDNS name claimed by the owner, pointing at the Elastic IP; `13-204-48-202.sslip.io` is still served). About $15 a month.
 - Live smoke test: uploads analysed in about 8 s; the altered receipt is marked high on the amount (a field-mapping bug that read it as outside the value fields was fixed in `c26a5d8`), the genuine one gets one low mark.
+- Sign-in and clickability (D34): persona clicks were dropped by a stale cached session in the route guards, and the hover-widening rail moved the page under the pointer. Both fixed; `e2e/signin.spec.ts` and `e2e/interactions.spec.ts` click for real in Chrome, Firefox and WebKit (`npx playwright install firefox webkit` once).
+- Auto-deploy (D35): `pramaan-autodeploy.timer` on the instance deploys new commits on `main` with a read-only deploy key; `ops.sh autodeploy-log` shows its runs. Manual `deploy.sh` refuses anything but `origin/main` unless `FORCE=1`.
 - After running e2e against the live site, reset its data (`POST /api/v1/demo/reset` as admin); the suite resets only at the start.
 - The Windows AWS CLI cannot read Git Bash's `/tmp` and crashes on non-ASCII output; the scripts keep temporary files in `infra/aws/` and set `PYTHONUTF8=1`.
 

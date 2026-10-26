@@ -32,7 +32,8 @@ On the instance, `infra/compose.yml` runs Postgres, Valkey, the API (one uvicorn
 1. `bash infra/aws/provision.sh`: bucket, instance role, secrets, security group (ports 80 and 443; no SSH), instance, Elastic IP, and the public host name. Prints the public URL.
 2. `bash infra/aws/deploy.sh`: uploads the committed `HEAD`, then on the instance writes `infra/.env` from SSM, builds the images, migrates, seeds on the first deploy, starts the stack, and installs the nightly backup timer.
 3. Verify: `https://<ip-with-dashes>.sslip.io/api/v1/readyz` reports every check `ok` (the deploy prints it); sign in with a persona; upload the altered specimen.
-4. Later deploys: commit, then `bash infra/aws/deploy.sh` (`SEED=1` resets the demo data).
+4. `bash infra/aws/enable-autodeploy.sh` once. From then on every push to `main`, by anyone on the team, is deployed within about 2 minutes plus build time, and a release that fails its health check is rolled back (DECISION D35). `bash infra/aws/ops.sh autodeploy-log` shows what was deployed.
+5. Reset the demo data with `SEED=1 bash infra/aws/deploy.sh` from an up-to-date `main`, or `POST /api/v1/demo/reset` as the admin persona.
 
 ### 2.3 Operating the budget
 

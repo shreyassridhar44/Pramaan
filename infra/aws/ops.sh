@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Day-to-day operations on the deployment.
 #   bash infra/aws/ops.sh status | start | stop | logs [service] | shell | backup | inbox-login
+#                         | autodeploy-log | deploy-now
 # "stop" halts the instance to save money (the disk and the Elastic IP are still billed); "start"
 # brings it back on the same URL, and the containers restart on their own.
 set -euo pipefail
@@ -42,6 +43,12 @@ case "${1:-status}" in
   stop)
     aws ec2 stop-instances --region "$REGION" --instance-ids "$INSTANCE" >/dev/null
     echo "stopping $INSTANCE"
+    ;;
+  autodeploy-log)
+    run 'journalctl -u pramaan-autodeploy --no-pager -n 40 -o cat; echo; echo live: $(readlink -f /opt/pramaan/current)'
+    ;;
+  deploy-now)
+    run 'systemctl start --no-block pramaan-autodeploy && echo started'
     ;;
   logs)
     run "cd /opt/pramaan/current && docker compose -f infra/compose.yml logs --tail 80 ${2:-api}"

@@ -11,6 +11,13 @@ INSTANCE=$(instance_id)
 [ "$INSTANCE" != "None" ] || { echo "no instance; run provision.sh first"; exit 1; }
 SHA=$(git rev-parse --short HEAD)
 [ -z "$(git status --porcelain)" ] || echo "[deploy] note: uncommitted changes are not shipped"
+# The host deploys origin/main by itself (enable-autodeploy.sh), so any other commit shipped by
+# hand would be replaced within minutes. FORCE=1 ships it anyway.
+git fetch -q origin main
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ] && [ "${FORCE:-0}" != 1 ]; then
+  echo "[deploy] HEAD is not origin/main; push first (or FORCE=1)"
+  exit 1
+fi
 
 TMP=$(mktemp -d .release.XXXXXX)
 git -C ../.. archive --format=tar.gz -o "infra/aws/$TMP/$SHA.tar.gz" HEAD

@@ -5,6 +5,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 ## [Unreleased]
 
 ### Added
+- Automatic deploys: the server checks `main` every 2 minutes and deploys any new commit, whoever pushed it, rolling back a release that fails its health check (`infra/aws/enable-autodeploy.sh`).
+- Real-click sign-in and navigation tests in Chrome, Firefox and WebKit (Safari's engine).
 - Trained models in the API: the edit localiser (image-level ROC AUC 0.944 and pixel F1 0.737 on unseen synthetic layouts) and the LightGBM field extractor (98.6% mean exact match against 98.3% for the rules), with results in `EVALUATION.md` and `MODEL_CARD.md`.
 - A localiser operating point chosen on validation data (probability above 0.98 over at least 300 px), which cuts marks on unedited test pages from 22.1% to 5.4%; marks that touch no value field are graded low.
 - Deployment set: production images for the API and the web app, `infra/compose.yml` (Postgres, Valkey, API, worker, Mailpit inbox, nginx), and AWS scripts for provisioning (S3, IAM, SSM secrets, security group, Graviton instance, Elastic IP, CloudFront), deploys over SSM Run Command, nightly backups and day-to-day operations.
@@ -28,6 +30,8 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - Research, specification and implementation plan: `PROBLEM_STATEMENT.md`, `RESEARCH.md`, `PROJECT.md`, `ARCHITECTURE.md`, supporting documents and the `claude-code/` directory (24 October 2026).
 
 ### Fixed
+- Persona and password sign-in often bounced back to the sign-in page because the route guards read a cached "signed out"; sign-in now writes the new session into the cache.
+- The navigation rail no longer widens on hover, which pushed the page sideways and made clicks near it miss; it is open with labels on wide screens and icon-only with tooltips below 1280 px.
 - A forensic mark on one digit of a wide field is now mapped to that field; before, it read as outside the value fields.
 - The forecast timeline computes 52 weeks in 1.6 s instead of 8.6 s, with identical output (reminders are computed directly instead of regenerating each deposit's full schedule every week).
 - A rule version scheduled for a later date no longer applies before that date.

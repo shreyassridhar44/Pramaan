@@ -8,16 +8,20 @@ Run from Git Bash or any Unix shell with the AWS CLI v2, `git` and `openssl`. De
 |---|---|
 | `provision.sh` | Creates or reuses: the S3 bucket (releases and backups, private, encrypted, lifecycle), the instance role (Session Manager, its bucket, `/pramaan/*` parameters), generated secrets in SSM Parameter Store, a security group (ports 80 and 443, or 80 from CloudFront only), the t4g.small instance (the account's Free plan allows only free-tier types), an Elastic IP, and the public host name (or the CloudFront distribution). Prints the public URL. Safe to rerun. |
 | `deploy.sh` | Packs the committed `HEAD` with `git archive`, uploads it, and runs `remote-deploy.sh` on the instance through SSM Run Command: writes `infra/.env` from SSM, builds the images, migrates, seeds on the first deploy (`SEED=1` reseeds), starts everything and installs the nightly backup timer. |
-| `ops.sh` | `status`, `start`, `stop`, `logs [service]`, `shell` (Session Manager), `backup`, `inbox-login`. |
+| `enable-autodeploy.sh` | One-time: the instance makes an SSH key, GitHub gets its public half as a read-only deploy key, and a timer then deploys every new commit on `main` within about 2 minutes plus build time, whoever pushed it. A release that fails to build, start or pass `/readyz` is rolled back to the previous one (DECISION D35). |
+| `ops.sh` | `status`, `start`, `stop`, `logs [service]`, `shell` (Session Manager), `backup`, `inbox-login`, `autodeploy-log` (recent automatic deploys and the live release), `deploy-now` (check `main` immediately). |
 
 First time:
 
 ```bash
 bash infra/aws/provision.sh
 bash infra/aws/deploy.sh          # 10 to 20 minutes the first time (image builds on the instance)
+bash infra/aws/enable-autodeploy.sh
 ```
 
-Later deploys: commit, then `bash infra/aws/deploy.sh`. To save money between demos: `bash infra/aws/ops.sh stop`, and `start` before the next one; the URL stays the same.
+After that, deploying is pushing to `main`, from any team member's machine or a merged pull request. `deploy.sh` is only needed to reseed (`SEED=1 bash infra/aws/deploy.sh`, from an up-to-date `main`).
+
+To save money between demos: `bash infra/aws/ops.sh stop`, and `start` before the next one; the URL stays the same.
 
 Notes:
 - No SSH port is open. Use `bash infra/aws/ops.sh shell` (needs the Session Manager plugin) or `ops.sh logs`.

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Runs on the host (through SSM Run Command) from an unpacked release directory. Writes infra/.env
 # from SSM Parameter Store, builds and starts the stack, migrates, and seeds on the first deploy
-# or when SEED=1. Installs the nightly database backup timer.
+# or when SEED=1. Installs the nightly database backup timer and, once enable-autodeploy.sh has
+# set the host up, the timer that deploys new commits on main.
 #   bash infra/aws/remote-deploy.sh <release-dir> <bucket> <region> [seed]
 set -euo pipefail
 REL=$1
@@ -10,6 +11,9 @@ REGION=$3
 SEED=${4:-0}
 NAME=pramaan
 cd "$REL"
+# One deploy at a time, whether started by hand or by the auto-deploy timer.
+exec 9>/run/pramaan-deploy.lock
+flock 9
 
 for _ in $(seq 60); do [ -f /opt/pramaan/.bootstrapped ] && break; sleep 5; done
 [ -f /opt/pramaan/.bootstrapped ] || { echo "host bootstrap did not finish"; exit 1; }
@@ -45,8 +49,16 @@ install -m 0755 infra/aws/backup.sh /usr/local/bin/pramaan-backup
 printf 'BUCKET=%s\n' "$BUCKET" > /etc/pramaan-backup.env
 install -m 0644 infra/aws/pramaan-backup.service infra/aws/pramaan-backup.timer \
   /etc/systemd/system/
+if [ -f /etc/pramaan-autodeploy.env ]; then
+  install -m 0755 infra/aws/autodeploy.sh /usr/local/bin/pramaan-autodeploy
+  install -m 0644 infra/aws/pramaan-autodeploy.service infra/aws/pramaan-autodeploy.timer \
+    /etc/systemd/system/
+fi
 systemctl daemon-reload
 systemctl enable --now pramaan-backup.timer
+if [ -f /etc/pramaan-autodeploy.env ]; then
+  systemctl enable --now pramaan-autodeploy.timer
+fi
 
 # Keep the three newest releases and clear old images and build cache.
 find /opt/pramaan/releases -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' \

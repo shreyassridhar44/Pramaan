@@ -1,0 +1,8 @@
+[Unit]
+Description=Deploy the newest commit on main
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pramaan-autodeploy
+TimeoutStartSec=3600
