@@ -129,7 +129,7 @@ export function ProvenanceGrid({
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[820px] table-fixed text-left">
+      <table className="w-full min-w-[700px] table-fixed text-left">
         <colgroup>
           <col className="w-[180px]" />
           <col />

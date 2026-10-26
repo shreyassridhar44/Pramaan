@@ -3,17 +3,12 @@ import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Inbox } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { RosetteMark } from '@/components/security/guilloche'
+import { SplitFlap } from '@/components/security/split-flap'
 import { AssuranceRing } from '@/components/signature/assurance'
 import { type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, StatusChip } from '@/components/signature/chips'
-import {
-  EmptyState,
-  ErrorState,
-  Kbd,
-  Panel,
-  PanelHeader,
-  Skeleton,
-} from '@/components/ui/primitives'
+import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import {
   ActionBar,
   CorrectableProvenance,
@@ -59,16 +54,30 @@ export function QueuePage() {
   return (
     <div data-tour="queue" className="grid gap-5 xl:grid-cols-[400px_minmax(0,1fr)] [&>*]:min-w-0">
       <Panel className="overflow-hidden xl:sticky xl:top-20 xl:max-h-[calc(100dvh-110px)] xl:overflow-y-auto">
-        <PanelHeader
-          title="Waiting for scrutiny"
-          caption={list.data ? `${list.data.total} items · signals first` : 'Loading'}
-          actions={
-            <span className="flex items-center gap-1 text-[0.6875rem] text-ink-3">
-              <Kbd>J</Kbd>
-              <Kbd>K</Kbd> move
+        <header className="relative overflow-hidden bg-board px-5 pt-4 pb-4 text-board-ink">
+          <RosetteMark
+            seed="queue"
+            className="pointer-events-none absolute -top-16 -right-12 size-[200px]"
+            color="rgb(255 255 255 / 0.06)"
+          />
+          <h2 className="relative text-[0.6875rem] font-semibold tracking-[0.14em] text-board-ink/70 uppercase">
+            Waiting for scrutiny
+          </h2>
+          <div className="relative mt-2 flex items-end justify-between gap-3">
+            <p className="flex items-baseline gap-3">
+              <span className="text-[1.75rem]">
+                <SplitFlap value={list.data ? String(list.data.total).padStart(2, '0') : '--'} />
+              </span>
+              <span className="text-[0.75rem] text-board-ink/70">
+                {items.filter((i) => i.open_signals).length} with signals, shown first
+              </span>
+            </p>
+            <span className="flex items-center gap-1 text-[0.6875rem] text-board-ink/70">
+              <kbd className="rounded border border-white/20 px-1.5 font-mono">J</kbd>
+              <kbd className="rounded border border-white/20 px-1.5 font-mono">K</kbd> move
             </span>
-          }
-        />
+          </div>
+        </header>
         {list.isError ? (
           <ErrorState error={list.error} onRetry={() => void list.refetch()} compact />
         ) : list.isPending ? (
@@ -93,10 +102,21 @@ export function QueuePage() {
                   aria-selected={i.id === current}
                   onClick={() => setSelected(i.id)}
                   className={cn(
-                    'flex w-full items-start gap-3 border-t border-line px-5 py-3 text-left hover:bg-sunken/60',
-                    i.id === current && 'bg-accent-soft/60 shadow-[inset_3px_0_0_var(--accent)]',
+                    'relative flex w-full items-start gap-3 border-t border-line px-5 py-3 text-left transition-colors hover:bg-sunken/60',
+                    i.id === current && 'bg-accent-soft/60',
                   )}
                 >
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'absolute inset-y-0 left-0 w-1',
+                      i.id === current
+                        ? 'bg-accent'
+                        : i.open_signals
+                          ? 'bg-overdue/70'
+                          : 'bg-a1/40',
+                    )}
+                  />
                   <AssuranceRing level={i.assurance as AssuranceLevel} size={22} showTip={false} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[0.8125rem] font-medium text-ink">
