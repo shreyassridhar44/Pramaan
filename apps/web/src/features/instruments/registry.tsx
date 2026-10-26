@@ -20,6 +20,7 @@ import { useMe } from '@/lib/session'
 
 import { AskBar } from './ask-bar'
 import { FilterMenu } from './filter-menu'
+import { PortfolioRibbon } from './portfolio-ribbon'
 import { useMeta } from './queries'
 import { BulkBar, ColumnMenu, SavedViews, type Column, type SavedView } from './registry-tools'
 
@@ -263,6 +264,12 @@ export function Registry({
 
   return (
     <div className="grid gap-4">
+      {institutionId ? null : (
+        <PortfolioRibbon
+          active={search.status}
+          onPick={(status) => setSearch({ ...search, status: status ? [status] : undefined })}
+        />
+      )}
       {institutionId ? null : <AskBar search={search} onApply={setSearch} />}
       <div className={cn('flex flex-wrap items-center gap-2', institutionId && 'hidden')}>
         <label className="relative flex h-9 w-[320px] items-center">

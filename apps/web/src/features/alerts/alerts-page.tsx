@@ -10,6 +10,7 @@ import { api, unwrap } from '@/lib/api/client'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate } from '@/lib/format'
 
+import { Stairs } from './ladders'
 import { MessagePreview } from './message-preview'
 
 export type AlertsSearch = { tab?: 'reminders' | 'escalations'; rule?: string; region?: string }
@@ -192,58 +193,81 @@ function Reminders({ rule, region }: { rule?: string; region?: string }) {
       ) : q.data.length === 0 ? (
         <EmptyState icon={<BellRing />} title="No reminders match these filters" />
       ) : (
-        <Table
-          label="Reminders sent"
-          head={
-            <>
-              <th>Instrument</th>
-              <th>Institution</th>
-              <th>Region</th>
-              <th>Alert</th>
-              <th>Channel</th>
-              <th>Due</th>
-              <th>Sent</th>
-              <th>
-                <span className="sr-only">Message</span>
-              </th>
-            </>
-          }
-        >
-          {q.data.map((r) => (
-            <tr key={r.id} className="hover:bg-sunken/50">
-              <td>
-                <InstrumentLink id={r.instrument_id} number={r.number} />
-              </td>
-              <td className="max-w-[280px] truncate text-ink">{r.institution}</td>
-              <td className="text-ink-2">{r.region}</td>
-              <td className="text-ink">
-                {r.rule}
-                {r.rule === 'Maturity reminder' ? (
-                  <span className="text-ink-3">
-                    {' '}
-                    · {r.offset_days ? `${r.offset_days} d before` : 'on the maturity date'}
-                  </span>
-                ) : null}
-              </td>
-              <td className="text-ink-2">{CHANNEL_LABEL[r.channel] ?? r.channel}</td>
-              <td className="font-mono whitespace-nowrap">{formatDate(r.due_on)}</td>
-              <td className="font-mono whitespace-nowrap text-ink-2">
-                {r.sent_on ? formatDate(r.sent_on) : 'Queued'}
-              </td>
-              <td className="text-right">
-                {r.rule === 'Maturity reminder' ? (
-                  <button
-                    type="button"
-                    onClick={() => setPreview(r.id)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-line-strong px-2.5 py-1 text-[0.75rem] font-medium whitespace-nowrap text-ink-2 hover:border-ink-3 hover:text-ink"
-                  >
-                    <Smartphone className="size-3.5" /> See message
-                  </button>
-                ) : null}
-              </td>
-            </tr>
-          ))}
-        </Table>
+        <>
+          <div className="px-5 pb-4">
+            <Stairs
+              title="Reminder ladder"
+              caption="Maturity reminders sent at each step before the date, from the configured rule"
+              steps={[90, 60, 30, 15, 7, 0].map((o, i) => ({
+                key: String(o),
+                label: o ? `T-${o}` : 'T-0',
+                sub: o ? `${o} days before` : 'on the date',
+                count: q.data.filter((r) => r.rule === 'Maturity reminder' && r.offset_days === o)
+                  .length,
+                tone: [
+                  'bg-board-a2',
+                  'bg-board-a2',
+                  'bg-board-due',
+                  'bg-board-due',
+                  'bg-saffron',
+                  'bg-board-overdue',
+                ][i]!,
+              }))}
+            />
+          </div>
+          <Table
+            label="Reminders sent"
+            head={
+              <>
+                <th>Instrument</th>
+                <th>Institution</th>
+                <th>Region</th>
+                <th>Alert</th>
+                <th>Channel</th>
+                <th>Due</th>
+                <th>Sent</th>
+                <th>
+                  <span className="sr-only">Message</span>
+                </th>
+              </>
+            }
+          >
+            {q.data.map((r) => (
+              <tr key={r.id} className="hover:bg-sunken/50">
+                <td>
+                  <InstrumentLink id={r.instrument_id} number={r.number} />
+                </td>
+                <td className="max-w-[280px] truncate text-ink">{r.institution}</td>
+                <td className="text-ink-2">{r.region}</td>
+                <td className="text-ink">
+                  {r.rule}
+                  {r.rule === 'Maturity reminder' ? (
+                    <span className="text-ink-3">
+                      {' '}
+                      · {r.offset_days ? `${r.offset_days} d before` : 'on the maturity date'}
+                    </span>
+                  ) : null}
+                </td>
+                <td className="text-ink-2">{CHANNEL_LABEL[r.channel] ?? r.channel}</td>
+                <td className="font-mono whitespace-nowrap">{formatDate(r.due_on)}</td>
+                <td className="font-mono whitespace-nowrap text-ink-2">
+                  {r.sent_on ? formatDate(r.sent_on) : 'Queued'}
+                </td>
+                <td className="text-right">
+                  {r.rule === 'Maturity reminder' ? (
+                    <button
+                      type="button"
+                      onClick={() => setPreview(r.id)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-line-strong px-2.5 py-1 text-[0.75rem] font-medium whitespace-nowrap text-ink-2 hover:border-ink-3 hover:text-ink"
+                    >
+                      <Smartphone className="size-3.5" /> See message
+                    </button>
+                  ) : null}
+                </td>
+              </tr>
+            ))}
+          </Table>
+        </>
       )}
     </Panel>
   )
@@ -273,46 +297,68 @@ function Escalations({ region }: { region?: string }) {
       ) : q.data.length === 0 ? (
         <EmptyState icon={<Siren />} title="Nothing is escalated" />
       ) : (
-        <Table
-          label="Open escalations"
-          head={
-            <>
-              <th>Instrument</th>
-              <th>Institution</th>
-              <th>Region</th>
-              <th className="text-right">Amount</th>
-              <th className="text-right">Overdue</th>
-              <th>Now with</th>
-              <th>Next</th>
-            </>
-          }
-        >
-          {q.data.map((e) => (
-            <tr key={e.instrument_id} className="hover:bg-sunken/50">
-              <td>
-                <InstrumentLink id={e.instrument_id} number={e.number} />
-              </td>
-              <td className="max-w-[280px] truncate text-ink">{e.institution}</td>
-              <td className="text-ink-2">{e.region}</td>
-              <td className="text-right">
-                <Amount paise={e.amount_paise} />
-              </td>
-              <td className="text-right font-mono whitespace-nowrap text-overdue">
-                {e.days_overdue} d
-              </td>
-              <td>
-                <Chip tone={e.level === 'director' ? 'overdue' : 'due'} dot>
-                  {LEVEL_LABEL[e.level] ?? e.level}
-                </Chip>
-              </td>
-              <td className="whitespace-nowrap text-ink-2">
-                {e.next_level && e.next_level_on
-                  ? `${LEVEL_LABEL[e.next_level] ?? e.next_level} on ${formatDate(e.next_level_on)}`
-                  : 'Top of the ladder'}
-              </td>
-            </tr>
-          ))}
-        </Table>
+        <>
+          <div className="px-5 pb-4">
+            <Stairs
+              title="Escalation ladder"
+              caption="Where each overdue deposit sits now; it climbs a step when nobody acts by the next date"
+              steps={['dealing_officer', 'section_head', 'deputy_director', 'director'].map(
+                (lv, i) => ({
+                  key: lv,
+                  label: lv
+                    .split('_')
+                    .map((w) => w[0]!.toUpperCase() + w.slice(1))
+                    .join(' '),
+                  sub: ['first owner', 'second step', 'third step', 'final step'][i]!,
+                  count: q.data.filter((e) => e.level === lv).length,
+                  tone: ['bg-board-due', 'bg-saffron', 'bg-board-overdue', 'bg-[var(--band-red)]'][
+                    i
+                  ]!,
+                }),
+              )}
+            />
+          </div>
+          <Table
+            label="Open escalations"
+            head={
+              <>
+                <th>Instrument</th>
+                <th>Institution</th>
+                <th>Region</th>
+                <th className="text-right">Amount</th>
+                <th className="text-right">Overdue</th>
+                <th>Now with</th>
+                <th>Next</th>
+              </>
+            }
+          >
+            {q.data.map((e) => (
+              <tr key={e.instrument_id} className="hover:bg-sunken/50">
+                <td>
+                  <InstrumentLink id={e.instrument_id} number={e.number} />
+                </td>
+                <td className="max-w-[280px] truncate text-ink">{e.institution}</td>
+                <td className="text-ink-2">{e.region}</td>
+                <td className="text-right">
+                  <Amount paise={e.amount_paise} />
+                </td>
+                <td className="text-right font-mono whitespace-nowrap text-overdue">
+                  {e.days_overdue} d
+                </td>
+                <td>
+                  <Chip tone={e.level === 'director' ? 'overdue' : 'due'} dot>
+                    {LEVEL_LABEL[e.level] ?? e.level}
+                  </Chip>
+                </td>
+                <td className="whitespace-nowrap text-ink-2">
+                  {e.next_level && e.next_level_on
+                    ? `${LEVEL_LABEL[e.next_level] ?? e.next_level} on ${formatDate(e.next_level_on)}`
+                    : 'Top of the ladder'}
+                </td>
+              </tr>
+            ))}
+          </Table>
+        </>
       )}
     </Panel>
   )
