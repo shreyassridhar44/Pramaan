@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Creates the Pramaan deployment in one AWS account and region (DEPLOYMENT.md Section 2). Every
 # step looks for an existing resource first, so the script can be rerun safely. Needs the AWS CLI
-# with credentials that can manage S3, IAM, SSM, EC2 and CloudFront. Prints the public URL.
-#   bash infra/aws/provision.sh
+# with credentials that can manage S3, IAM, SSM, EC2 (and CloudFront). Prints the public URL.
+#   bash infra/aws/provision.sh                  # Caddy and Let's Encrypt on the instance
+#   EDGE=cloudfront bash infra/aws/provision.sh  # CloudFront in front (account must be verified)
 set -euo pipefail
 export MSYS_NO_PATHCONV=1 AWS_PAGER=""
 cd "$(dirname "$0")"
@@ -12,7 +13,7 @@ log() { echo "[provision] $*"; }
 gen() { openssl rand -base64 48 | tr -d '\n/+=' | cut -c1-"${1:-40}"; }
 
 # 1. Bucket for release bundles and backups.
-if ! aws s3api head-bucket --bucket "$BUCKET" 2>/dev/null; then
+if ! aws s3api head-bucket --bucket "$BUCKET" >/dev/null 2>&1; then
   log "creating bucket $BUCKET"
   aws s3api create-bucket --bucket "$BUCKET" --region "$REGION" \
     --create-bucket-configuration LocationConstraint="$REGION" >/dev/null
@@ -74,8 +75,8 @@ put_secret MAIL_UI_AUTH "demo:$(gen 16)"
 put_secret LETTER_SIGNING_KEY_B64 \
   "$(openssl genpkey -algorithm ed25519 -outform DER | tail -c 32 | base64 | tr -d '\n')"
 
-# 4. Security group: port 80 only from CloudFront's origin-facing addresses. No SSH; Session
-#    Manager is used instead.
+# 4. Security group: port 80 from CloudFront's origin-facing addresses (step 7 opens 80 and 443 to
+#    everyone when Caddy is the edge). No SSH; Session Manager is used instead.
 VPC=$(aws ec2 describe-vpcs --region "$REGION" --filters Name=isDefault,Values=true \
   --query 'Vpcs[0].VpcId' --output text)
 SG=$(aws ec2 describe-security-groups --region "$REGION" \
@@ -84,7 +85,7 @@ SG=$(aws ec2 describe-security-groups --region "$REGION" \
 if [ "$SG" = "None" ]; then
   log "creating security group $NAME-web"
   SG=$(aws ec2 create-security-group --region "$REGION" --group-name "$NAME-web" --vpc-id "$VPC" \
-    --description "Pramaan web: HTTP from CloudFront only" --query GroupId --output text)
+    --description "Pramaan web" --query GroupId --output text)
   PL=$(aws ec2 describe-managed-prefix-lists --region "$REGION" \
     --filters Name=prefix-list-name,Values=com.amazonaws.global.cloudfront.origin-facing \
     --query 'PrefixLists[0].PrefixListId' --output text)
@@ -114,7 +115,7 @@ if [ "$INSTANCE" = "None" ]; then
 fi
 log "instance $INSTANCE"
 
-# 6. Elastic IP so the CloudFront origin survives a stop and start.
+# 6. Elastic IP so the address (and the URL) survives a stop and start.
 ALLOC=$(aws ec2 describe-addresses --region "$REGION" --filters Name=tag:Name,Values="$NAME" \
   --query 'Addresses[0].AllocationId' --output text)
 if [ "$ALLOC" = "None" ]; then
@@ -129,14 +130,30 @@ IP=$(aws ec2 describe-addresses --region "$REGION" --allocation-ids "$ALLOC" \
 ORIGIN="ec2-${IP//./-}.$REGION.compute.amazonaws.com"
 log "origin $ORIGIN"
 
-# 7. CloudFront: HTTPS for viewers, the secret header to the origin, nothing cached except the
-#    hashed web assets.
+# 7a. Default edge: Caddy on the instance with a Let's Encrypt certificate for an sslip.io name
+#     that resolves to the Elastic IP. Ports 80 (certificate challenge, redirect) and 443 open.
+if [ "$EDGE" = "caddy" ]; then
+  for port in 80 443; do
+    aws ec2 authorize-security-group-ingress --region "$REGION" --group-id "$SG"       --ip-permissions "IpProtocol=tcp,FromPort=$port,ToPort=$port,IpRanges=[{CidrIp=0.0.0.0/0}]"       >/dev/null 2>&1 || true
+  done
+  SITE="${IP//./-}.sslip.io"
+  aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String     --value "$SITE" --overwrite >/dev/null
+  aws ssm put-parameter --region "$REGION" --name "/$NAME/PUBLIC_BASE_URL" --type String     --value "https://$SITE" --overwrite >/dev/null
+  log "done: instance $INSTANCE"
+  log "public URL: https://$SITE (the certificate is issued on the first deploy)"
+  log "next: bash infra/aws/deploy.sh"
+  exit 0
+fi
+
+# 7b. EDGE=cloudfront: HTTPS at CloudFront, the secret header to the origin, nothing cached except
+#     the hashed web assets. Needs an account that AWS has verified for CloudFront.
+aws ssm put-parameter --region "$REGION" --name "/$NAME/SITE_ADDRESS" --type String   --value ":80" --overwrite >/dev/null
 DIST=$(aws cloudfront list-distributions \
   --query "DistributionList.Items[?Comment=='$NAME'].Id | [0]" --output text)
 if [ "$DIST" = "None" ] || [ -z "$DIST" ]; then
   ORIGIN_SECRET=$(aws ssm get-parameter --region "$REGION" --name "/$NAME/ORIGIN_SECRET" \
     --with-decryption --query Parameter.Value --output text)
-  CFG=$(mktemp)
+  CFG=$(mktemp .cloudfront.XXXXXX)
   cat >"$CFG" <<EOF
 {
   "CallerReference": "$NAME-$(date +%s)",

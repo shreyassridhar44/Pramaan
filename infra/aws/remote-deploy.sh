@@ -21,7 +21,7 @@ param() {
 umask 077
 {
   for k in POSTGRES_PASSWORD SESSION_SECRET LETTER_SIGNING_KEY_B64 ORIGIN_SECRET MAIL_UI_AUTH \
-    PUBLIC_BASE_URL; do
+    PUBLIC_BASE_URL SITE_ADDRESS; do
     echo "$k=$(param "$k")"
   done
   echo "STORAGE_BACKEND=local"
@@ -56,5 +56,6 @@ docker builder prune -f --filter until=72h >/dev/null
 
 sleep 10
 compose ps
-echo "readyz: $(curl -s -H "X-Pramaan-Origin: $(param ORIGIN_SECRET)" \
-  http://127.0.0.1/api/v1/readyz)"
+# Through the public URL, so this also proves the certificate and the edge.
+echo "readyz: $(curl -s --retry 12 --retry-delay 10 --retry-all-errors \
+  "$(param PUBLIC_BASE_URL)/api/v1/readyz")"

@@ -1,0 +1,10 @@
+# Entry point of the deployment. SITE_ADDRESS is a host name (Caddy then obtains and renews a
+# Let's Encrypt certificate and redirects HTTP to HTTPS) or ":80" for plain HTTP behind CloudFront
+# or on a laptop. Caddy adds the origin header that nginx requires.
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+	header Strict-Transport-Security "max-age=31536000"
+	reverse_proxy web:80 {
+		header_up X-Pramaan-Origin "{$ORIGIN_SECRET}"
+	}
+}

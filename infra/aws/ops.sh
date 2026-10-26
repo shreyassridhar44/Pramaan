@@ -11,7 +11,7 @@ INSTANCE=$(instance_id)
 
 run() {
   local id params
-  params=$(mktemp)
+  params=$(mktemp .params.XXXXXX)
   printf '{"commands":["%s"]}' "$1" > "$params"
   id=$(aws ssm send-command --region "$REGION" --instance-ids "$INSTANCE" \
     --document-name AWS-RunShellScript --parameters "file://$params" \

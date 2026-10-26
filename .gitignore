@@ -53,3 +53,8 @@ ml/logs/
 .tanstack/
 e2e-report/
 test-results/
+
+# Temporary files of the AWS scripts
+infra/aws/.release.*
+infra/aws/.params.*
+infra/aws/.cloudfront.*

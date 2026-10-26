@@ -5,6 +5,8 @@ INSTANCE_TYPE=${INSTANCE_TYPE:-t4g.small}
 ACCOUNT=${ACCOUNT:-$(aws sts get-caller-identity --query Account --output text)}
 BUCKET=${BUCKET:-$NAME-$ACCOUNT-$REGION}
 ROLE=${ROLE:-$NAME-ec2}
+# caddy: TLS on the instance with an sslip.io name; cloudfront: CloudFront in front.
+EDGE=${EDGE:-caddy}
 
 instance_id() {
   aws ec2 describe-instances --region "$REGION" \
