@@ -20,6 +20,7 @@ import {
   Unlock,
   type LucideIcon,
 } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState, type ReactNode } from 'react'
 
 import { AsOfControl } from '@/components/signature/as-of-control'
@@ -105,7 +106,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: Rea
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar title={title} onSearch={() => setPaletteOpen(true)} />
           <main id="main" className="mx-auto w-full max-w-[1600px] flex-1 px-6 pt-5 pb-10">
-            {children}
+            <PageFade>{children}</PageFade>
           </main>
         </div>
       </div>
@@ -301,5 +302,21 @@ function TopBar({ title, onSearch }: { title?: ReactNode; onSearch: () => void }
         <ShieldCheck className="size-4 text-ink-3" aria-label="Synthetic data" />
       </Tip>
     </header>
+  )
+}
+
+/** A short fade and lift on every page change; instant under reduced motion. */
+function PageFade({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const reduce = useReducedMotion()
+  return (
+    <motion.div
+      key={pathname}
+      initial={reduce ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: [0.2, 0, 0, 1] }}
+    >
+      {children}
+    </motion.div>
   )
 }

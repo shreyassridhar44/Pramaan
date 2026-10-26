@@ -17,6 +17,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 
 import { GovStrip } from '@/components/shell/gov-strip'
+import { EntryGate } from '@/components/security/entry-gate'
 import { Foil } from '@/components/security/foil'
 import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
 import { Microprint } from '@/components/security/print'
@@ -93,9 +94,15 @@ function SignIn() {
   // The route guards read the cached user without refetching, and a visitor usually arrives with
   // "signed out" cached, so the new session is written into the cache before navigating. Anything
   // cached under an earlier session is dropped.
+  const reduce = useReducedMotion()
+  const [entering, setEntering] = useState<Me | null>(null)
   const after = async (me: Me) => {
     qc.removeQueries()
     qc.setQueryData(meQuery.queryKey, me)
+    if (!reduce) {
+      setEntering(me)
+      await new Promise((r) => setTimeout(r, 1100))
+    }
     await navigate({ to: homeFor(me.role) })
   }
   const login = useMutation({
@@ -120,6 +127,7 @@ function SignIn() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-canvas">
+      {entering ? <EntryGate me={entering} /> : null}
       <GovStrip compact />
       <div className="grid flex-1 lg:grid-cols-[minmax(440px,40%)_1fr]">
         <aside className="relative flex flex-col justify-between overflow-hidden bg-board px-10 py-10 text-board-ink lg:px-14">
