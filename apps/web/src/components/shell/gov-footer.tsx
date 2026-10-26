@@ -12,14 +12,14 @@ const BUILT = new Date(import.meta.env.VITE_BUILD_DATE ?? Date.now()).toLocaleDa
 export function GovFooter() {
   return (
     <footer className="relative mt-auto overflow-hidden bg-board text-board-ink">
-      <GuillocheBand height={28} color="rgb(255 255 255 / 0.08)" />
+      <GuillocheBand height={28} color="rgb(var(--board-ink-rgb) / 0.08)" />
       <div className="mx-auto grid max-w-[1280px] gap-10 px-6 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
             <PramaanMark size={40} />
             <div>
               <p className="font-display text-[1.5rem] leading-none">Pramaan</p>
-              <p lang="hi" className="font-deva text-[0.8125rem] text-board-ink/60">
+              <p lang="hi" className="font-deva text-[0.8125rem] text-board-ink/70">
                 प्रमाण
               </p>
             </div>
@@ -54,14 +54,14 @@ export function GovFooter() {
           ]}
         />
       </div>
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[0.6875rem] text-board-ink/50">
+      <div className="border-t border-board-ink/10">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[0.6875rem] text-board-ink/70">
           <p>Content owned and maintained by the Pramaan team for SIH 2026.</p>
           <p>
             Ministry of Education, Government of India is the problem statement owner through AICTE.
           </p>
         </div>
-        <Microprint className="pb-2 text-white/15" />
+        <Microprint className="pb-2 text-board-ink/15" />
       </div>
       <div className="tricolour h-1" aria-hidden />
     </footer>
@@ -71,7 +71,7 @@ export function GovFooter() {
 function FooterList({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h2 className="text-[0.6875rem] font-semibold tracking-[0.14em] text-board-ink/50 uppercase">
+      <h2 className="text-[0.6875rem] font-semibold tracking-[0.14em] text-board-ink/70 uppercase">
         {title}
       </h2>
       <ul className="mt-3 grid gap-2 text-[0.8125rem] text-board-ink/80">

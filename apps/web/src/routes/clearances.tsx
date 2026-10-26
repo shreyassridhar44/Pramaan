@@ -57,7 +57,7 @@ function ClearancesLayout() {
         <RosetteMark
           seed={me?.cell ?? 'cell'}
           className="pointer-events-none absolute -top-36 right-40 size-[340px]"
-          color="rgb(255 255 255 / 0.06)"
+          color="rgb(var(--board-ink-rgb) / 0.06)"
         />
         <div className="relative mx-auto flex h-[72px] max-w-[1480px] items-center gap-4 px-6">
           <PramaanMark size={38} />
@@ -65,19 +65,19 @@ function ClearancesLayout() {
             <span className="block font-display text-[1.375rem] leading-none">
               {CELL_NAME[me?.cell ?? ''] ?? 'Clearance cell'}
             </span>
-            <span className="mt-0.5 block text-[0.75rem] text-board-ink/60">
+            <span className="mt-0.5 block text-[0.75rem] text-board-ink/70">
               Clearance queue for release of security deposits
             </span>
           </span>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-right text-[0.8125rem] leading-tight">
               <span className="block font-medium">{me?.name}</span>
-              <span className="block text-[0.75rem] text-board-ink/60">{me?.designation}</span>
+              <span className="block text-[0.75rem] text-board-ink/70">{me?.designation}</span>
             </span>
             <button
               type="button"
               onClick={signOut}
-              className="grid size-9 place-items-center rounded-full text-board-ink/70 hover:bg-white/10 hover:text-white"
+              className="grid size-9 place-items-center rounded-full text-board-ink/70 hover:bg-board-ink/10 hover:text-board-ink"
               aria-label="Sign out"
             >
               <LogOut className="size-4" />

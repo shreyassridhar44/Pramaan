@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { Ban, Copy, ExternalLink, FileText, Search } from 'lucide-react'
+import { Ban, Copy, ExternalLink, FileDown, FileText, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -204,6 +204,11 @@ export function LettersPage() {
               <Button size="sm" asChild>
                 <a href={current.verify_url} target="_blank" rel="noreferrer">
                   <ExternalLink /> Verify
+                </a>
+              </Button>
+              <Button size="sm" asChild>
+                <a href={`/api/v1/letters/${current.id}/pdf`} target="_blank" rel="noreferrer">
+                  <FileDown /> Open PDF
                 </a>
               </Button>
               {canRevoke && current.status === 'issued' ? (

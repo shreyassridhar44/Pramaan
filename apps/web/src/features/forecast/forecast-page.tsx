@@ -15,7 +15,6 @@ import type { components } from '@/lib/api/schema'
 import { todayIso } from '@/lib/asof'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate, formatINRCompact } from '@/lib/format'
-import { setTheme, useTheme } from '@/lib/theme'
 
 type Step = components['schemas']['TimelineStepOut']
 
@@ -71,16 +70,6 @@ export function ForecastPage() {
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1)
   const [full, setFull] = useState(false)
   const root = useRef<HTMLDivElement>(null)
-
-  // Command theme by default for the forecast, restored on leaving (not saved).
-  const { theme } = useTheme()
-  useEffect(() => {
-    const before = theme
-    setTheme('command', false)
-    return () => setTheme(before, false)
-    // Only on entering and leaving the page.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const data = steps.data ?? []
   const last = Math.max(0, data.length - 1)
@@ -138,7 +127,7 @@ export function ForecastPage() {
         <RosetteMark
           seed="time-machine"
           className="spin-slow pointer-events-none absolute -top-56 -right-40 size-[620px]"
-          color="rgb(255 255 255 / 0.05)"
+          color="rgb(var(--board-ink-rgb) / 0.05)"
         />
         <GuillocheBand height={12} color="rgb(255 153 51 / 0.4)" />
         <div className="relative flex flex-wrap items-center gap-x-8 gap-y-5 px-6 py-5">
@@ -169,21 +158,21 @@ export function ForecastPage() {
                 setIndex(0)
               }}
               aria-label="Back to today"
-              className="grid size-10 place-items-center rounded-full bg-white/10 hover:bg-white/20"
+              className="grid size-10 place-items-center rounded-full bg-board-ink/10 hover:bg-board-ink/20"
             >
               <RotateCcw className="size-4" />
             </button>
           </div>
           <div>
-            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/60 uppercase">
+            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/70 uppercase">
               Forecast week of
             </p>
-            <p className="mt-1 text-[1.75rem] text-saffron">
+            <p className="mt-1 text-[1.75rem] text-board-accent">
               <SplitFlap value={step ? boardDate(step.start) : '-- --- ----'} stagger={20} />
             </p>
           </div>
           <div>
-            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/60 uppercase">
+            <p className="text-[0.625rem] font-semibold tracking-[0.18em] text-board-ink/70 uppercase">
               Ahead of today
             </p>
             <p className="mt-1 text-[1.75rem]">
@@ -208,7 +197,7 @@ export function ForecastPage() {
               />
             </label>
             <div
-              className="mt-1 flex justify-between font-mono text-[0.625rem] text-board-ink/60"
+              className="mt-1 flex justify-between font-mono text-[0.625rem] text-board-ink/70"
               aria-hidden
             >
               {data
@@ -225,7 +214,7 @@ export function ForecastPage() {
           </div>
           <div className="flex items-center gap-2">
             <div
-              className="flex gap-1 rounded-full bg-white/10 p-1"
+              className="flex gap-1 rounded-full bg-board-ink/10 p-1"
               role="group"
               aria-label="Speed"
             >
@@ -237,7 +226,9 @@ export function ForecastPage() {
                   aria-pressed={speed === sp}
                   className={cn(
                     'rounded-full px-3 py-1 font-mono text-[0.75rem]',
-                    speed === sp ? 'bg-board-ink text-board' : 'text-board-ink/70 hover:text-white',
+                    speed === sp
+                      ? 'bg-board-ink text-board'
+                      : 'text-board-ink/70 hover:text-board-ink',
                   )}
                 >
                   {sp}x
@@ -251,14 +242,14 @@ export function ForecastPage() {
                   ? void document.exitFullscreen()
                   : void root.current?.requestFullscreen()
               }
-              className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[0.75rem] hover:bg-white/20"
+              className="flex items-center gap-1.5 rounded-full bg-board-ink/10 px-3 py-1.5 text-[0.75rem] hover:bg-board-ink/20"
             >
               {full ? <Shrink className="size-3.5" /> : <Expand className="size-3.5" />}
               {full ? 'Exit full screen' : 'Full screen'}
             </button>
           </div>
         </div>
-        <div className="relative grid grid-cols-2 border-t border-white/10 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
+        <div className="relative grid grid-cols-2 border-t border-board-ink/10 lg:grid-cols-4 lg:divide-x lg:divide-board-ink/10">
           <BoardFigure label="Value held" value={formatINRCompact(Math.round(held))} />
           <BoardFigure
             label="Bank-confirmed"
@@ -276,7 +267,7 @@ export function ForecastPage() {
             tone="text-board-due"
           />
         </div>
-        <p className="relative border-t border-white/10 px-6 py-2 text-[0.6875rem] text-board-ink/65">
+        <p className="relative border-t border-board-ink/10 px-6 py-2 text-[0.6875rem] text-board-ink/65">
           Forecast from current rules and data, one week per second at 1x. Nothing is saved.
         </p>
       </section>

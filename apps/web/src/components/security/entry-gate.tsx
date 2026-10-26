@@ -36,7 +36,7 @@ export function EntryGate({ me }: { me: Me }) {
         className="relative text-center"
       >
         <PramaanMark size={64} className="mx-auto" />
-        <p lang="hi" className="mt-5 font-deva text-[1.125rem] text-saffron">
+        <p lang="hi" className="mt-5 font-deva text-[1.125rem] text-board-accent">
           प्रवेश स्वीकृत
         </p>
         <p className="mt-1 font-display text-[3rem] leading-none">{me.name}</p>

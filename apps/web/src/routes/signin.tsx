@@ -134,7 +134,7 @@ function SignIn() {
           <RosetteMark
             seed="signin"
             className="spin-slow absolute -right-64 -bottom-64 size-[760px]"
-            color="rgb(255 255 255 / 0.07)"
+            color="rgb(var(--board-ink-rgb) / 0.07)"
           />
           <RosetteMark
             seed="signin-2"
@@ -149,12 +149,12 @@ function SignIn() {
                 <p className="text-[0.8125rem] font-medium">
                   All India Council for Technical Education
                 </p>
-                <p className="text-[0.75rem] text-board-ink/60">Regulation Bureau</p>
+                <p className="text-[0.75rem] text-board-ink/70">Regulation Bureau</p>
               </div>
             </div>
             <Link
               to="/home"
-              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] text-board-ink/70 hover:bg-white/10 hover:text-board-ink"
+              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] text-board-ink/70 hover:bg-board-ink/10 hover:text-board-ink"
             >
               <ArrowLeft className="size-3.5" /> Home
             </Link>
@@ -168,7 +168,10 @@ function SignIn() {
               className="font-display text-[4.75rem] leading-[0.92] tracking-[-0.015em]"
             >
               Pramaan
-              <span lang="hi" className="ml-3 align-middle font-deva text-[1.75rem] text-saffron">
+              <span
+                lang="hi"
+                className="ml-3 align-middle font-deva text-[1.75rem] text-board-accent"
+              >
                 प्रमाण
               </span>
             </motion.h1>
@@ -177,21 +180,21 @@ function SignIn() {
               holds, every value traced to the institution, the document or the bank.
             </p>
 
-            <div className="mt-10 max-w-md overflow-hidden rounded-[14px] border border-white/10 bg-black/25">
+            <div className="mt-10 max-w-md overflow-hidden rounded-[14px] border border-board-ink/10 bg-board-ink/[0.04]">
               <BoardRow label="Held in trust" value={s ? formatINRCompact(s.held_paise) : '-'} />
               <BoardRow
                 label="Bank-confirmed"
                 value={s ? formatPercent(s.bank_confirmed_share) : '-'}
               />
               <BoardRow label="Institutions" value={s ? formatCount(s.institutions) : '-'} />
-              <p className="px-4 py-2 text-[0.625rem] tracking-[0.06em] text-board-ink/60 uppercase">
+              <p className="px-4 py-2 text-[0.625rem] tracking-[0.06em] text-board-ink/70 uppercase">
                 Live, synthetic data
               </p>
             </div>
           </div>
 
           <div className="relative">
-            <Microprint className="mb-3 text-white/15" />
+            <Microprint className="mb-3 text-board-ink/15" />
             <p className="max-w-md text-[0.75rem] leading-relaxed text-board-ink/70">
               Smart India Hackathon 2026, problem statement SIH26265. All institutions, deposits,
               banks and documents shown are synthetic. Simulated components are labelled where they
@@ -281,7 +284,7 @@ function SignIn() {
 
 function BoardRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-white/5 px-4 py-3">
+    <div className="flex items-center justify-between gap-4 border-b border-board-ink/5 px-4 py-3">
       <span className="text-[0.75rem] font-medium tracking-[0.1em] text-board-ink/70 uppercase">
         {label}
       </span>

@@ -179,11 +179,11 @@ export function MessagePreview({ id, onClose }: { id: number | null; onClose: ()
 
 function Phone({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto w-[280px] rounded-[40px] border-[10px] border-board bg-board shadow-[0_40px_70px_-30px_rgb(18_23_38/0.6)]">
+    <div className="mx-auto w-[280px] rounded-[40px] border-[10px] border-device bg-device shadow-[0_40px_70px_-30px_rgb(18_23_38/0.6)]">
       <div className="flex h-[480px] flex-col overflow-hidden rounded-[30px] bg-canvas">
         <div className="flex h-7 items-center justify-between px-5 text-[0.625rem] font-medium text-ink-2">
           <span>09:41</span>
-          <span className="h-4 w-16 rounded-full bg-board" aria-hidden />
+          <span className="h-4 w-16 rounded-full bg-device" aria-hidden />
           <span>5G</span>
         </div>
         <div className="flex-1 overflow-y-auto">{children}</div>

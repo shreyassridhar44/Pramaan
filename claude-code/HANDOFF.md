@@ -20,6 +20,13 @@ Update this file at the end of every working session and every completed step.
 
 ## Session log
 
+### 27 October 2026: one theme everywhere, maturity runway, rail and letter preview (DECISION D39)
+- The board tokens are per theme, so the light theme is light throughout and the dark theme dark throughout; the forecast no longer forces dark. Physical objects (phone frame, UV lamp, camera viewfinder) keep their own colours.
+- The pulse trace under the command board is replaced by a 13-week maturity runway (`features/command/runway.tsx`, from `/portfolio/river`); `/portfolio/pulse` still feeds the brief.
+- The government strip is sticky, and the rail sits under it at the remaining height (`--strip-h`), with item heights shared out so it never scrolls.
+- nginx: web pages allow same-origin framing and the camera for the page itself; `/api/` uses `infra/nginx-api-headers.conf`. This fixed "refused to connect" in the letter preview and camera QR scan on the deployment.
+- New end-to-end tests: runway to registry, theme holds across pages, rail fits at 1366 by 680.
+
 ### 26 October 2026 (evening): dashboards as instruments (DECISION D38)
 - Owner rated the first redesign 7 out of 10 and asked for the dashboards to change most. Built the command centre (brief, pulse, maturity clock, proof meter, isometric towers, docket, signal cards, dials), the forecast console, the institution certificate dashboard, the release line, registry ribbon, alert stairs, audit chain strip, bank terminal, entry gate and page transitions.
 - New endpoint `/portfolio/pulse`. Tests updated for the clock (the river view is still tested).

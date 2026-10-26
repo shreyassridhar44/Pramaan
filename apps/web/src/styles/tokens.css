@@ -7,6 +7,8 @@
 :root,
 [data-theme='ledger'] {
   color-scheme: light;
+  /* Height of the government strip: tricolour (3px) plus the strip (32px). */
+  --strip-h: 35px;
   --canvas: #f5f3ee;
   --surface: #ffffff;
   --surface-sunken: #efece5;
@@ -63,11 +65,15 @@
   --thread-2: #2f5bd3;
   --thread-3: #6b4fa0;
   --seal: #8f1d1d;
-  --board: #121726;
-  --board-ink: #f5f3ee;
-  --board-a2: #35c58f;
-  --board-due: #f2b54b;
-  --board-overdue: #ff7a6e;
+  /* The board surface follows the theme: security paper in Ledger, a dark board in Command. */
+  --board: #fffdf7;
+  --board-ink: #121726;
+  --board-ink-rgb: 18 23 38;
+  --board-accent: #a84c1a;
+  --board-a2: #0f7a55;
+  --board-due: #8f5305;
+  --board-overdue: #b42318;
+  --device: #121726;
   --uv-ground: #12062b;
   --uv-glow: #7dffb0;
   --wa-ground: #efe7dd;
@@ -125,6 +131,9 @@
   --seal: #ff7a6e;
   --board: #05080f;
   --board-ink: #f5f3ee;
+  --board-ink-rgb: 245 243 238;
+  --board-accent: #ff9933;
+  --device: #05080f;
   --board-a2: #35c58f;
   --board-due: #f2b54b;
   --board-overdue: #ff7a6e;
@@ -172,6 +181,8 @@
   --color-seal: var(--seal);
   --color-board: var(--board);
   --color-board-ink: var(--board-ink);
+  --color-board-accent: var(--board-accent);
+  --color-device: var(--device);
   --color-board-a2: var(--board-a2);
   --color-board-due: var(--board-due);
   --color-board-overdue: var(--board-overdue);

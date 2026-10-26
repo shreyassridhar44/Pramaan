@@ -134,15 +134,15 @@ export function TourOverlay() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.25 }}
-          className="fixed bottom-6 left-1/2 z-[80] w-[min(640px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[18px] bg-board text-board-ink shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7)] ring-1 ring-white/10"
+          className="fixed bottom-6 left-1/2 z-[80] w-[min(640px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[18px] bg-board text-board-ink shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7)] ring-1 ring-board-ink/10"
         >
           <GuillocheBand height={10} color="rgb(255 153 51 / 0.45)" />
           <div className="px-6 pt-4 pb-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-saffron uppercase">
+              <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-board-accent uppercase">
                 {current.kicker}
               </p>
-              <p className="font-mono text-[0.6875rem] text-board-ink/50">
+              <p className="font-mono text-[0.6875rem] text-board-ink/70">
                 {step + 1} / {STEPS.length}
               </p>
             </div>
@@ -155,7 +155,7 @@ export function TourOverlay() {
                 type="button"
                 onClick={() => tour.go(step - 1)}
                 disabled={step === 0}
-                className="grid size-9 place-items-center rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30"
+                className="grid size-9 place-items-center rounded-full bg-board-ink/10 hover:bg-board-ink/20 disabled:opacity-30"
                 aria-label="Previous step"
               >
                 <ChevronLeft className="size-4" />
@@ -163,7 +163,7 @@ export function TourOverlay() {
               <button
                 type="button"
                 onClick={tour.toggle}
-                className="grid size-9 place-items-center rounded-full bg-white/10 hover:bg-white/20"
+                className="grid size-9 place-items-center rounded-full bg-board-ink/10 hover:bg-board-ink/20"
                 aria-label={playing ? 'Pause the tour' : 'Play the tour'}
               >
                 {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
@@ -175,7 +175,10 @@ export function TourOverlay() {
               >
                 {step + 1 < STEPS.length ? 'Next' : 'Finish'} <ChevronRight className="size-4" />
               </button>
-              <div className="mx-3 h-1 flex-1 overflow-hidden rounded-full bg-white/10" aria-hidden>
+              <div
+                className="mx-3 h-1 flex-1 overflow-hidden rounded-full bg-board-ink/10"
+                aria-hidden
+              >
                 {playing && ready === step ? (
                   <motion.div
                     key={`${step}-${playing}`}
@@ -189,7 +192,7 @@ export function TourOverlay() {
               <button
                 type="button"
                 onClick={tour.stop}
-                className="grid size-9 place-items-center rounded-full text-board-ink/60 hover:bg-white/10 hover:text-white"
+                className="grid size-9 place-items-center rounded-full text-board-ink/70 hover:bg-board-ink/10 hover:text-board-ink"
                 aria-label="End the tour"
               >
                 <X className="size-4" />

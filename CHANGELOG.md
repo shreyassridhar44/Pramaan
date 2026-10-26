@@ -4,6 +4,15 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 
 ## [Unreleased]
 
+### Changed
+- The board surface, rail, government strip and footer follow the chosen theme; the forecast no longer switches to dark (DECISION D39).
+- The command board shows a 13-week maturity runway with the matured backlog in place of the 90-day pulse trace.
+- The rail and the government strip stay pinned, and the rail fits the screen without scrolling.
+
+### Fixed
+- Letter preview on the deployment: same-origin framing is now allowed, API responses carry their own header set, and the panel offers Open PDF.
+- QR scanning by camera on the deployment (the Permissions-Policy blocked the camera).
+
 ### Added
 - Dashboards as instruments (DECISION D38): command view brief, 90-day pulse monitor (`/portfolio/pulse`), maturity clock, proof meter, isometric regional towers, case-file docket, signal cards and impact dials; a time-machine forecast console; the institution dashboard as a certificate band, challan and sealed deposit cards; a release line; a registry status ribbon; reminder and escalation stairs; a lighting audit chain; a bank terminal strip; an entry gate after sign-in; page transitions; a search board for Ctrl K.
 - Security-print visual language (DECISION D36): seeded guilloche rosettes, embossed assurance seals that gain features as proof grows, holographic foil, rubber stamps, split-flap figures, microprint, a GIGW strip with text size and contrast, bilingual titles and an official-style footer.

@@ -45,7 +45,7 @@ export function HeadlineFigure({
   return (
     <div className="relative flex min-w-0 items-start justify-between gap-4 px-6 py-5">
       <div className="min-w-0">
-        <p className="flex items-center gap-2 text-[0.6875rem] font-medium tracking-[0.1em] text-board-ink/60 uppercase">
+        <p className="flex items-center gap-2 text-[0.6875rem] font-medium tracking-[0.1em] text-board-ink/70 uppercase">
           <span
             aria-hidden
             className={cn(

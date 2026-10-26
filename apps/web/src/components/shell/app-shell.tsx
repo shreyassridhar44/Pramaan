@@ -100,7 +100,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: Rea
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <GovStrip compact />
+      <GovStrip compact className="sticky top-0" />
       <div className="flex">
         <Rail />
         <div className="flex min-w-0 flex-1 flex-col">
@@ -125,34 +125,39 @@ function Rail() {
   // screens show it open with labels; narrower ones show icons with their names as tooltips.
   return (
     <div className="w-16 shrink-0 xl:w-[232px]">
+      {/* Pinned under the government strip and sized to the rest of the screen, so the rail never
+          scrolls; items share the height left after the mark and the theme switch. */}
       <nav
         aria-label="Primary"
-        className="sticky top-0 z-30 flex h-dvh w-16 flex-col overflow-hidden bg-board text-board-ink xl:w-[232px]"
+        className="sticky top-[var(--strip-h)] z-30 flex h-[calc(100dvh-var(--strip-h))] w-16 flex-col overflow-hidden bg-board text-board-ink xl:w-[232px]"
+        style={{
+          ['--rail-item' as string]: `min(40px, calc((100dvh - var(--strip-h) - 170px) / ${items.length}))`,
+        }}
       >
         <RosetteMark
           seed="rail"
           className="spin-slower pointer-events-none absolute -bottom-40 -left-32 size-[420px]"
-          color="rgb(255 255 255 / 0.05)"
+          color="rgb(var(--board-ink-rgb) / 0.05)"
         />
         <Link
           to="/"
           search={isToday ? {} : { asOf }}
-          className="relative flex h-16 items-center gap-3 overflow-hidden border-b border-white/10 px-[14px]"
+          className="relative flex h-16 items-center gap-3 overflow-hidden border-b border-board-ink/10 px-[14px]"
         >
           <PramaanMark size={36} />
           <span className="hidden flex-col xl:flex">
             <span className="flex items-baseline gap-2">
               <span className="font-display text-[1.375rem] leading-none">Pramaan</span>
-              <span lang="hi" className="font-deva text-[0.75rem] text-saffron">
+              <span lang="hi" className="font-deva text-[0.75rem] text-board-accent">
                 प्रमाण
               </span>
             </span>
-            <span className="mt-1 text-[0.5625rem] font-medium tracking-[0.14em] text-board-ink/50 uppercase">
+            <span className="mt-1 text-[0.5625rem] font-medium tracking-[0.14em] text-board-ink/70 uppercase">
               Regulation Bureau
             </span>
           </span>
         </Link>
-        <ul className="relative mt-3 flex flex-1 flex-col gap-0.5 px-2.5">
+        <ul className="relative mt-3 flex min-h-0 flex-1 flex-col gap-0.5 px-2.5">
           {items.map((item) => {
             const active = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
             return (
@@ -163,24 +168,24 @@ function Rail() {
                   aria-current={active ? 'page' : undefined}
                   title={item.label}
                   className={cn(
-                    'relative flex h-10 items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium whitespace-nowrap transition-colors',
+                    'relative flex h-[var(--rail-item)] items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium whitespace-nowrap transition-colors',
                     active
-                      ? 'bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]'
-                      : 'text-board-ink/65 hover:bg-white/[0.06] hover:text-white',
+                      ? 'bg-board-ink/[0.09] text-board-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]'
+                      : 'text-board-ink/65 hover:bg-board-ink/[0.06] hover:text-board-ink',
                   )}
                 >
                   {active ? (
                     <SecurityThread className="absolute top-1.5 bottom-1.5 left-0" />
                   ) : null}
                   <item.icon
-                    className={cn('size-[18px] shrink-0', active && 'text-saffron')}
+                    className={cn('size-[18px] shrink-0', active && 'text-board-accent')}
                     aria-hidden
                   />
                   <span className="sr-only xl:not-sr-only">{item.label}</span>
                   <span
                     lang="hi"
                     aria-hidden
-                    className="ml-auto hidden font-deva text-[0.6875rem] text-board-ink/60 xl:inline"
+                    className="ml-auto hidden font-deva text-[0.6875rem] text-board-ink/70 xl:inline"
                   >
                     {item.hi}
                   </span>
@@ -189,7 +194,7 @@ function Rail() {
             )
           })}
         </ul>
-        <div className="relative border-t border-white/10 px-2.5 pt-2 pb-3">
+        <div className="relative border-t border-board-ink/10 px-2.5 pt-2 pb-3">
           <ThemeToggle />
         </div>
       </nav>
@@ -204,7 +209,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       title={theme === 'command' ? 'Ledger theme' : 'Command theme'}
-      className="flex h-10 w-full items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium text-board-ink/65 hover:bg-white/[0.06] hover:text-white"
+      className="flex h-10 w-full items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium text-board-ink/65 hover:bg-board-ink/[0.06] hover:text-board-ink"
     >
       {theme === 'command' ? (
         <Sun className="size-[18px] shrink-0" />
@@ -225,7 +230,7 @@ function TopBar({ title, onSearch }: { title?: ReactNode; onSearch: () => void }
   return (
     <header
       className={cn(
-        'sticky top-0 z-20 flex h-16 items-center gap-4 border-b bg-canvas/85 px-6 backdrop-blur-md',
+        'sticky top-[var(--strip-h)] z-20 flex h-16 items-center gap-4 border-b bg-canvas/85 px-6 backdrop-blur-md',
         isToday ? 'border-line' : 'border-accent',
       )}
     >

@@ -72,3 +72,38 @@ test('a reminder shows the message the institution received', async ({ page }) =
   await dialog.getByRole('button', { name: 'English' }).click()
   await expect(dialog).toContainText('Security deposit')
 })
+
+test('the chosen theme holds on every page, the forecast included', async ({ page }) => {
+  await signInAs(page, 'bureau')
+  await page.goto('/')
+  await page.evaluate(() => localStorage.setItem('pramaan.theme', 'ledger'))
+  for (const path of ['/forecast', '/', '/letters', '/home']) {
+    await page.goto(path)
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'ledger')
+  }
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+  for (const path of ['/forecast', '/signin', '/']) {
+    await page.goto(path)
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'command')
+  }
+})
+
+test('the side rail fits the screen and stays put while the page scrolls', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 680 })
+  await signInAs(page, 'admin')
+  await page.goto('/')
+  const rail = page.getByRole('navigation', { name: 'Primary' })
+  await expect(rail.getByRole('button', { name: /theme/ })).toBeInViewport()
+  // Every link and button sits inside the rail, so nothing is left to scroll to.
+  const fits = await rail.evaluate((el) => {
+    const box = el.getBoundingClientRect()
+    return [...el.querySelectorAll('a, button')].every(
+      (a) => a.getBoundingClientRect().bottom <= box.bottom + 0.5,
+    )
+  })
+  expect(fits).toBe(true)
+  const before = (await rail.boundingBox())!.y
+  await page.mouse.wheel(0, 1200)
+  await page.waitForTimeout(300)
+  expect((await rail.boundingBox())!.y).toBe(before)
+})

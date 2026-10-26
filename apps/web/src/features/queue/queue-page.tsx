@@ -58,7 +58,7 @@ export function QueuePage() {
           <RosetteMark
             seed="queue"
             className="pointer-events-none absolute -top-16 -right-12 size-[200px]"
-            color="rgb(255 255 255 / 0.06)"
+            color="rgb(var(--board-ink-rgb) / 0.06)"
           />
           <h2 className="relative text-[0.6875rem] font-semibold tracking-[0.14em] text-board-ink/70 uppercase">
             Waiting for scrutiny
@@ -73,8 +73,8 @@ export function QueuePage() {
               </span>
             </p>
             <span className="flex items-center gap-1 text-[0.6875rem] text-board-ink/70">
-              <kbd className="rounded border border-white/20 px-1.5 font-mono">J</kbd>
-              <kbd className="rounded border border-white/20 px-1.5 font-mono">K</kbd> move
+              <kbd className="rounded border border-board-ink/20 px-1.5 font-mono">J</kbd>
+              <kbd className="rounded border border-board-ink/20 px-1.5 font-mono">K</kbd> move
             </span>
           </div>
         </header>

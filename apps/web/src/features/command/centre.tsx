@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from 'motion/react'
 
 import { Dial } from '@/components/charts/dial'
 import { PULSE_SERIES } from '@/components/charts/pulse-series'
-import { PulseTrace } from '@/components/charts/pulse-trace'
 import { Sparkline } from '@/components/charts/sparkline'
 import { RubberStamp, type StampInk } from '@/components/security/stamp'
 import { Amount } from '@/components/signature/chips'
@@ -120,55 +119,6 @@ export function Brief() {
       ) : (
         <Skeleton className="h-12 w-[520px]" />
       )}
-    </div>
-  )
-}
-
-/** The activity monitor under the headline board. */
-export function PulseMonitor() {
-  const { asOf } = useAsOf()
-  const q = usePulse(asOf)
-  const days = q.data ?? []
-  return (
-    <div className="relative border-t border-white/10 px-6 pt-4 pb-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-board-ink/70 uppercase">
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-board-a2/70 motion-reduce:animate-none" />
-            <span className="relative inline-flex size-2 rounded-full bg-board-a2" />
-          </span>
-          Portfolio pulse, last 90 days
-        </p>
-        <ul className="flex flex-wrap gap-x-4 gap-y-1">
-          {PULSE_SERIES.map((s) => (
-            <li
-              key={s.key}
-              className="flex items-center gap-1.5 text-[0.6875rem] text-board-ink/70"
-            >
-              <span
-                className="h-0.5 w-3 rounded-full"
-                style={{ background: s.color }}
-                aria-hidden
-              />
-              {s.label}
-              <span className="font-mono text-board-ink">
-                {formatCount(days.reduce((a, d) => a + d[s.key], 0))}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mt-2">
-        {q.isError ? (
-          <p className="py-10 text-center text-[0.8125rem] text-board-ink/60">
-            The activity trace could not be loaded.
-          </p>
-        ) : days.length ? (
-          <PulseTrace days={days} />
-        ) : (
-          <div className="h-[150px] animate-pulse rounded bg-white/[0.03]" />
-        )}
-      </div>
     </div>
   )
 }

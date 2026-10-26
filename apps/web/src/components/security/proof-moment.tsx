@@ -111,16 +111,11 @@ function ProofCard({ done, fields, keyId, bank, conflicts, onClose }: Omit<Props
           </ul>
 
           <div className="mt-5 rounded-[var(--radius-control)] bg-board px-4 py-3 font-mono text-[0.6875rem] text-board-ink/80">
-            <p className="flex justify-between gap-3 text-board-ink/50">
+            <p className="flex justify-between gap-3 text-board-ink/70">
               <span>Ed25519</span>
               <span>key {keyId}</span>
             </p>
-            <p
-              className={cn(
-                'mt-1.5 break-all leading-relaxed',
-                done ? 'text-board-a2' : 'text-saffron',
-              )}
-            >
+            <p className={cn('mt-1.5 break-all leading-relaxed', done ? 'text-a2' : 'text-accent')}>
               {digest}
             </p>
             <p className="mt-1 text-[0.5625rem] text-board-ink/35">Digest shown for illustration</p>

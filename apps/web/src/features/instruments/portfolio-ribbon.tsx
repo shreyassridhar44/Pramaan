@@ -54,7 +54,7 @@ export function PortfolioRibbon({
           <button
             type="button"
             onClick={() => onPick(null)}
-            className="rounded-full bg-white/10 px-3 py-1 text-[0.75rem] hover:bg-white/20"
+            className="rounded-full bg-board-ink/10 px-3 py-1 text-[0.75rem] hover:bg-board-ink/20"
           >
             Show every status
           </button>
@@ -102,7 +102,7 @@ export function PortfolioRibbon({
             />
             {STATUS[key]?.label ?? key}
             <span className="font-mono text-board-ink">{formatCount(n)}</span>
-            <span className="text-board-ink/50">{Math.round((n / total) * 100)}%</span>
+            <span className="text-board-ink/70">{Math.round((n / total) * 100)}%</span>
           </li>
         ))}
       </ul>

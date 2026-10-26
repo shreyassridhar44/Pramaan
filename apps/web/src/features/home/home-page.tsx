@@ -309,16 +309,16 @@ function Board({ summary }: { summary?: Summary }) {
         </div>
         <p className="text-[0.75rem] text-ink-3">Synthetic data</p>
       </div>
-      <div className="mt-8 overflow-hidden rounded-[18px] border border-black/40 bg-board p-2 shadow-[0_40px_80px_-40px_rgb(18_23_38/0.7)]">
-        <div className="flex items-center justify-between gap-4 rounded-t-[12px] bg-black/30 px-5 py-3">
+      <div className="mt-8 overflow-hidden rounded-[18px] border border-board-ink/15 bg-board p-2 shadow-[0_40px_80px_-40px_rgb(18_23_38/0.7)]">
+        <div className="flex items-center justify-between gap-4 rounded-t-[12px] bg-board-ink/[0.05] px-5 py-3">
           <p className="flex items-center gap-3 text-[0.75rem] font-semibold tracking-[0.16em] text-board-ink/80 uppercase">
             <PramaanMark size={22} /> Pramaan, AICTE Regulation Bureau
           </p>
-          <p className="flex items-center gap-2 text-[0.6875rem] text-board-ink/60">
-            IST <SplitFlap value={time} className="text-[1.125rem] text-saffron" stagger={0} />
+          <p className="flex items-center gap-2 text-[0.6875rem] text-board-ink/70">
+            IST <SplitFlap value={time} className="text-[1.125rem] text-board-accent" stagger={0} />
           </p>
         </div>
-        <div role="table" aria-label="Portfolio board" className="divide-y divide-white/5">
+        <div role="table" aria-label="Portfolio board" className="divide-y divide-board-ink/5">
           <div
             role="row"
             className="grid grid-cols-[1fr_auto] gap-3 px-4 sm:grid-cols-[1.4fr_1fr_auto] sm:gap-4 sm:px-5 py-2 text-[0.625rem] font-semibold tracking-[0.16em] text-board-ink/65 uppercase"
@@ -355,14 +355,14 @@ function Board({ summary }: { summary?: Summary }) {
                   </span>
                   <span
                     role="cell"
-                    className="hidden w-[7.5rem] text-right font-mono sm:block text-[0.8125rem] tracking-[0.12em] text-saffron"
+                    className="hidden w-[7.5rem] text-right font-mono sm:block text-[0.8125rem] tracking-[0.12em] text-board-accent"
                   >
                     {state}
                   </span>
                 </div>
               ))
             : Array.from({ length: 7 }, (_, i) => (
-                <div key={i} className="h-[52px] animate-pulse bg-white/[0.02]" />
+                <div key={i} className="h-[52px] animate-pulse bg-board-ink/[0.02]" />
               ))}
         </div>
       </div>

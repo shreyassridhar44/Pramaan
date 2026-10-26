@@ -44,7 +44,7 @@ export function GovStrip({
               : 'All India Council for Technical Education, Ministry of Education, Government of India'}
           </span>
         </p>
-        <span className="hidden shrink-0 rounded-full border border-white/20 px-2 py-px text-[0.625rem] tracking-[0.04em] text-white/75 lg:inline">
+        <span className="hidden shrink-0 rounded-full border border-board-ink/20 px-2 py-px text-[0.625rem] tracking-[0.04em] text-board-ink/75 lg:inline">
           SIH 2026 prototype, not an official AICTE website
         </span>
         <div className="ml-auto flex shrink-0 items-center gap-1">
@@ -59,21 +59,21 @@ export function GovStrip({
                 className={cn(
                   'grid h-6 min-w-6 place-items-center rounded px-1 font-semibold leading-none',
                   size === s.size
-                    ? 'bg-white/15 text-white'
-                    : 'text-white/70 hover:bg-white/10 hover:text-white',
+                    ? 'bg-board-ink/15 text-board-ink'
+                    : 'text-board-ink/70 hover:bg-board-ink/10 hover:text-board-ink',
                 )}
               >
                 {s.label}
               </button>
             ))}
           </div>
-          <span className="mx-1 h-3.5 w-px bg-white/20" aria-hidden />
+          <span className="mx-1 h-3.5 w-px bg-board-ink/20" aria-hidden />
           <button
             type="button"
             onClick={toggle}
             aria-label={theme === 'command' ? 'Switch to light theme' : 'Switch to dark theme'}
             title={theme === 'command' ? 'Light theme' : 'Dark theme'}
-            className="grid size-6 place-items-center rounded text-white/70 hover:bg-white/10 hover:text-white"
+            className="grid size-6 place-items-center rounded text-board-ink/70 hover:bg-board-ink/10 hover:text-board-ink"
           >
             <Contrast className="size-3.5" />
           </button>

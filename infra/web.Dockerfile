@@ -9,5 +9,6 @@ RUN npx vite build
 
 FROM nginx:1.29-alpine
 COPY infra/nginx-security-headers.conf /etc/nginx/snippets/security-headers.conf
+COPY infra/nginx-api-headers.conf /etc/nginx/snippets/api-headers.conf
 COPY infra/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /web/dist /usr/share/nginx/html

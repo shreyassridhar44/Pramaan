@@ -53,6 +53,19 @@ test.describe('Management layer (Step 9)', () => {
     await expect(page).toHaveURL(/\/instruments\?.*maturity_from=\d{4}-\d{2}-01/)
   })
 
+  test('the maturity runway lists a week, and the backlog, in the registry', async ({ page }) => {
+    await signInAs(page, 'bureau')
+    await page.goto('/')
+    const week = page.getByRole('button', { name: /^Week of .* bank-confirmed$/ })
+    await expect(week.first()).toBeVisible()
+    await week.and(page.locator(':enabled')).first().click()
+    await expect(page).toHaveURL(/\/instruments\?.*maturity_from=\d{4}-\d{2}-\d{2}.*maturity_to=/)
+    await page.goto('/')
+    await page.getByRole('button', { name: /^Already matured without action/ }).click()
+    await expect(page).toHaveURL(/\/instruments\?.*status=/)
+    await expect(page.getByRole('row').filter({ hasText: /₹/ }).first()).toBeVisible()
+  })
+
   test('the river view still lists a month on click', async ({ page }) => {
     await signInAs(page, 'bureau')
     await page.goto('/')

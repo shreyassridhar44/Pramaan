@@ -26,7 +26,7 @@ This is a hackathon prototype with synthetic data. To report a vulnerability, op
 - **Authorisation:** role plus scope, enforced server-side for every endpoint; tests for denials.
 - **Transport:** HTTPS via CloudFront; HSTS; origin accepts traffic only from CloudFront.
 - **Data at rest:** S3 server-side encryption; EBS volume encryption; database credentials in SSM SecureString.
-- **Headers:** Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, frame-ancestors none.
+- **Headers:** Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (camera for the page itself only, for QR scanning). Framing is limited to the same origin (frame-ancestors 'self', X-Frame-Options SAMEORIGIN) so the app can preview its own PDF letters. API responses carry a stricter policy (default-src 'none').
 - **Audit:** append-only hash chain; verification endpoint; exports audited.
 - **Dependencies:** pinned versions; `pip-audit` and `npm audit` in CI; Dependabot alerts.
 - **Backups:** nightly database dump to S3 with lifecycle expiry; restore drill in Step 10.

@@ -2,7 +2,7 @@
 
 Summary for anyone picking up the project. The detailed, step-level log is `claude-code/HANDOFF.md`.
 
-## Current state (26 October 2026)
+## Current state (27 October 2026)
 
 - Steps 1 to 9 built and re-audited; Step 10 in progress.
 - Trained models (edit localiser, field extractor) are in the repository and active in the API; results in `EVALUATION.md` and `MODEL_CARD.md`.
@@ -10,7 +10,7 @@ Summary for anyone picking up the project. The detailed, step-level log is `clau
 - Auto-deploy is on: the server deploys every new commit on `main` within about 2 minutes plus build time, whoever pushes it, and rolls back a release that fails `/readyz` (DECISION D35). `bash infra/aws/ops.sh autodeploy-log` shows the runs and the live release.
 - Tests: API 151 plus 5 slow tests, web 23, Playwright 91 locally across Chrome, Firefox and WebKit.
 
-- Redesign in progress on the `redesign` branch (DECISION D36): security-print visual language, public home page, guided tour, UV lamp, tamper drill, legacy import (D37), reminder previews, deposit passport. Merged to `main` (and so deployed) only after the full test suite passes.
+- Redesign live (DECISION D36 to D39): security-print visual language, public home page, guided tour, UV lamp, tamper drill, legacy import (D37), reminder previews, deposit passport, dashboards drawn as instruments (D38). Under D39 one theme now holds everywhere, the command board shows a 13-week maturity runway, the rail never scrolls, and the letter preview works on the deployment. UI freeze 27 Oct, 23:00 IST.
 
 ## Key decisions so far
 

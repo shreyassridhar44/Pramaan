@@ -172,7 +172,7 @@ function ChainCheck({
     <Panel
       data-tour="chain"
       className={cn(
-        'sticky top-20 transition-colors duration-500',
+        'sticky top-[calc(var(--strip-h)+80px)] transition-colors duration-500',
         done && result && !result.valid && 'border-overdue shadow-[0_0_0_4px_var(--overdue-soft)]',
       )}
     >
@@ -314,7 +314,7 @@ function ChainStrip({ lit, breakAt }: { lit: number; breakAt: number | null }) {
                   ? 'border-board-overdue bg-board-overdue shadow-[0_0_8px_var(--board-overdue)]'
                   : on
                     ? 'border-board-a2 bg-board-a2/80 shadow-[0_0_6px_var(--board-a2)]'
-                    : 'border-white/15 bg-white/5',
+                    : 'border-board-ink/15 bg-board-ink/5',
               )}
             />
           )

@@ -43,7 +43,7 @@ export function ReleaseList({ state }: { state: State }) {
               label: 'Authorised, awaiting bank',
               hi: 'बैंक की प्रतीक्षा',
               rows: authorised,
-              tone: 'text-saffron',
+              tone: 'text-board-accent',
             },
           ]}
           blocked={blocked}
@@ -245,7 +245,7 @@ function Pipeline({
       <RosetteMark
         seed="release-line"
         className="spin-slower pointer-events-none absolute -top-40 -right-32 size-[460px]"
-        color="rgb(255 255 255 / 0.05)"
+        color="rgb(var(--board-ink-rgb) / 0.05)"
       />
       <GuillocheBand height={10} color="rgb(53 197 143 / 0.4)" />
       <div className="relative px-6 pt-4 pb-6">
@@ -265,7 +265,7 @@ function Pipeline({
               y1="1"
               x2="100"
               y2="1"
-              stroke="rgb(255 255 255 / 0.18)"
+              stroke="rgb(var(--board-ink-rgb) / 0.18)"
               strokeWidth="2"
               vectorEffect="non-scaling-stroke"
             />
@@ -293,7 +293,7 @@ function Pipeline({
                 <SplitFlap value={formatCount(st.rows.length)} variant="inline" />
               </p>
               <p className="mt-1 text-[0.8125rem] font-semibold">{st.label}</p>
-              <p lang="hi" className="font-deva text-[0.75rem] text-board-ink/60">
+              <p lang="hi" className="font-deva text-[0.75rem] text-board-ink/70">
                 {st.hi}
               </p>
               <p className="mt-1 font-mono text-[0.75rem] text-board-ink/70">

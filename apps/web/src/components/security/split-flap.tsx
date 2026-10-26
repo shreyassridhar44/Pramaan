@@ -100,7 +100,7 @@ function FlapCell({ ch, delay, board }: { ch: string; delay: number; board: bool
             {shown}
           </span>
           <span className="absolute inset-x-0 top-1/2 h-px bg-black/60" />
-          <span className="absolute inset-x-0 top-0 h-1/2 bg-white/[0.04]" />
+          <span className="absolute inset-x-0 top-0 h-1/2 bg-board-ink/[0.04]" />
         </>
       )}
     </span>

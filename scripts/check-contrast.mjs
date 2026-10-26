@@ -43,6 +43,9 @@ const pairs = [
   ['a1', 'a1-soft', 4.5], ['a2', 'a2-soft', 4.5], ['a0', 'a0-soft', 3],
   ['due', 'surface', 4.5], ['due', 'due-soft', 4.5], ['overdue', 'surface', 4.5],
   ['overdue', 'overdue-soft', 4.5], ['simulated', 'surface', 4.5], ['simulated', 'simulated-soft', 4.5],
+  // The board surface follows the theme (DECISION D39), so its text pairs are checked in both.
+  ['board-ink', 'board', 4.5], ['board-accent', 'board', 4.5], ['board-a2', 'board', 4.5],
+  ['board-due', 'board', 4.5], ['board-overdue', 'board', 4.5],
 ]
 
 let failures = 0

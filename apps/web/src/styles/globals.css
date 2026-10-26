@@ -243,7 +243,7 @@
   background: linear-gradient(
     to right,
     var(--saffron) 0 var(--pct, 0%),
-    rgb(255 255 255 / 0.15) var(--pct, 0%) 100%
+    rgb(var(--board-ink-rgb) / 0.15) var(--pct, 0%) 100%
   );
   cursor: pointer;
 }
@@ -273,4 +273,10 @@
   to {
     stroke-dashoffset: -14;
   }
+}
+
+/* In the light theme the board is security paper on a paper canvas, so it carries a hairline edge. */
+[data-theme='ledger'] .bg-board {
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
 }

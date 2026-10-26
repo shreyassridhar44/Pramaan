@@ -152,7 +152,7 @@ function Terminal() {
       />
       <div className="grid gap-x-8 gap-y-2 px-5 py-4 sm:grid-cols-[1fr_auto_auto_auto] sm:items-center">
         <p>
-          <span className="text-board-ink/60">CBS&gt;</span> link to AICTE Pramaan{' '}
+          <span className="text-board-ink/70">CBS&gt;</span> link to AICTE Pramaan{' '}
           <span className="inline-flex items-center gap-1.5 text-board-ink">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-board-a2/70 motion-reduce:animate-none" />
@@ -160,15 +160,15 @@ function Terminal() {
             </span>
             CONNECTED
           </span>
-          <span className="ml-2 text-board-ink/50">(simulated bank, signed with Ed25519)</span>
+          <span className="ml-2 text-board-ink/70">(simulated bank, signed with Ed25519)</span>
         </p>
         <p className="text-board-ink">
-          WAITING <span className="text-[1.25rem] text-saffron">{waiting ?? '-'}</span>
+          WAITING <span className="text-[1.25rem] text-board-accent">{waiting ?? '-'}</span>
         </p>
         <p className="text-board-ink">
           ANSWERED <span className="text-[1.25rem] text-board-a2">{answered ?? '-'}</span>
         </p>
-        <p className="text-board-ink/60">SYNC {now} IST</p>
+        <p className="text-board-ink/70">SYNC {now} IST</p>
       </div>
     </section>
   )

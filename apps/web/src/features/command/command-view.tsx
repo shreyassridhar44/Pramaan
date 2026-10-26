@@ -7,12 +7,13 @@ import { ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primit
 import { addDays, useAsOf } from '@/lib/asof'
 import { formatCount, formatINRCompact } from '@/lib/format'
 
-import { ActionDocket, Brief, ImpactDials, PulseMonitor, SignalCards } from './centre'
+import { ActionDocket, Brief, ImpactDials, SignalCards } from './centre'
 import { HeadlineFigure, RollingNumber } from './headline'
 import { InstrumentSheet } from './instrument-sheet'
 import { ExposuresList, RegionPanel } from './overview-panels'
 import { useSummary } from './queries'
 import { RiverPanel } from './river-panel'
+import { MaturityRunway } from './runway'
 
 /** The Regulation Bureau's command centre (PROTOTYPE.md 5.2, redrawn under DECISION D36). */
 export function CommandView() {
@@ -96,10 +97,10 @@ function HeadlineBand() {
       <RosetteMark
         seed="command-board"
         className="spin-slower pointer-events-none absolute -top-48 right-[18%] size-[520px]"
-        color="rgb(255 255 255 / 0.05)"
+        color="rgb(var(--board-ink-rgb) / 0.05)"
       />
       <GuillocheBand height={14} color="rgb(255 153 51 / 0.35)" />
-      <div className="relative grid grid-cols-1 divide-white/10 md:grid-cols-2 xl:grid-cols-4 xl:divide-x">
+      <div className="relative grid grid-cols-1 divide-board-ink/10 md:grid-cols-2 xl:grid-cols-4 xl:divide-x">
         <HeadlineFigure
           label="Value held in trust"
           figure={<RollingNumber value={held} format={(n) => formatINRCompact(Math.round(n))} />}
@@ -150,7 +151,7 @@ function HeadlineBand() {
           )}
         />
       </div>
-      <PulseMonitor />
+      <MaturityRunway />
     </div>
   )
 }
