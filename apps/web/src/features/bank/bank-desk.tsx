@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Amount } from '@/components/signature/chips'
+import { RosetteMark } from '@/components/security/guilloche'
 import { ProofMoment } from '@/components/security/proof-moment'
+import { Seal } from '@/components/security/seal'
 import { BankMessage } from '@/components/signature/bank-message'
 import { Button } from '@/components/ui/button'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
@@ -23,75 +25,152 @@ export function BankDesk() {
   const [selected, setSelected] = useState<number | null>(null)
   const current = selected ?? inbox.data?.[0]?.id ?? null
   return (
-    <div className="grid gap-5 lg:grid-cols-[380px_1fr]">
-      <Panel className="overflow-hidden">
-        <div className="flex gap-1 border-b border-line p-2">
-          {(['sent', 'answered'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => {
-                setTab(t)
-                setSelected(null)
-              }}
-              className={cn(
-                'flex-1 rounded-md px-3 py-1.5 text-[0.8125rem] font-medium',
-                tab === t ? 'bg-sunken text-ink' : 'text-ink-3 hover:text-ink',
-              )}
-            >
-              {t === 'sent' ? 'Waiting for answer' : 'Answered'}
-            </button>
-          ))}
-        </div>
-        {inbox.isError ? (
-          <ErrorState error={inbox.error} compact />
-        ) : inbox.isPending ? (
-          <div className="grid gap-2 p-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-14" />
+    <div className="grid gap-5">
+      <Terminal />
+      <div className="grid gap-5 lg:grid-cols-[380px_1fr]">
+        <Panel className="overflow-hidden">
+          <div className="flex gap-1 border-b border-line p-2">
+            {(['sent', 'answered'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setTab(t)
+                  setSelected(null)
+                }}
+                className={cn(
+                  'flex-1 rounded-md px-3 py-1.5 text-[0.8125rem] font-medium',
+                  tab === t ? 'bg-sunken text-ink' : 'text-ink-3 hover:text-ink',
+                )}
+              >
+                {t === 'sent' ? 'Waiting for answer' : 'Answered'}
+              </button>
             ))}
           </div>
-        ) : inbox.data.length === 0 ? (
-          <EmptyState
-            icon={<Inbox />}
-            title={tab === 'sent' ? 'No requests waiting' : 'Nothing answered yet'}
-            body="Requests from AICTE appear here when an officer asks the bank to confirm a deposit."
-          />
-        ) : (
-          <ul>
-            {inbox.data.map((r) => (
-              <li key={r.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelected(r.id)}
-                  className={cn(
-                    'flex w-full items-start justify-between gap-3 border-b border-line px-4 py-3 text-left hover:bg-sunken/60',
-                    r.id === current && 'bg-sunken shadow-[inset_3px_0_0_var(--simulated)]',
-                  )}
-                >
-                  <span className="min-w-0">
-                    <span className="block font-mono text-[0.8125rem] text-ink">{r.number}</span>
-                    <span className="block truncate text-[0.75rem] text-ink-3">
-                      {r.institution}
+          {inbox.isError ? (
+            <ErrorState error={inbox.error} compact />
+          ) : inbox.isPending ? (
+            <div className="grid gap-2 p-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-14" />
+              ))}
+            </div>
+          ) : inbox.data.length === 0 ? (
+            <EmptyState
+              icon={<Inbox />}
+              title={tab === 'sent' ? 'No requests waiting' : 'Nothing answered yet'}
+              body="Requests from AICTE appear here when an officer asks the bank to confirm a deposit."
+            />
+          ) : (
+            <ul>
+              {inbox.data.map((r) => (
+                <li key={r.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(r.id)}
+                    className={cn(
+                      'flex w-full items-start justify-between gap-3 border-b border-line px-4 py-3 text-left hover:bg-sunken/60',
+                      r.id === current && 'bg-sunken shadow-[inset_3px_0_0_var(--simulated)]',
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block font-mono text-[0.8125rem] text-ink">{r.number}</span>
+                      <span className="block truncate text-[0.75rem] text-ink-3">
+                        {r.institution}
+                      </span>
+                      <span className="block text-[0.6875rem] text-ink-3">
+                        {r.kind === 'discharge'
+                          ? 'Lien discharge'
+                          : r.kind === 'reconfirm'
+                            ? 'Re-confirmation'
+                            : 'Confirmation'}{' '}
+                        · {formatDate(r.requested_on)}
+                      </span>
                     </span>
-                    <span className="block text-[0.6875rem] text-ink-3">
-                      {r.kind === 'discharge'
-                        ? 'Lien discharge'
-                        : r.kind === 'reconfirm'
-                          ? 'Re-confirmation'
-                          : 'Confirmation'}{' '}
-                      · {formatDate(r.requested_on)}
-                    </span>
-                  </span>
-                  <Amount paise={r.amount_paise} compact className="text-[0.8125rem]" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Panel>
-      <div>{current ? <DeskDetail id={current} /> : null}</div>
+                    <Amount paise={r.amount_paise} compact className="text-[0.8125rem]" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+        <div>
+          {current ? (
+            <DeskDetail id={current} />
+          ) : (
+            <Panel className="relative grid min-h-[320px] place-items-center overflow-hidden p-8 text-center">
+              <RosetteMark
+                seed="bank-idle"
+                className="spin-slower absolute size-[420px] opacity-70"
+              />
+              <div className="relative">
+                <Seal
+                  size={120}
+                  tone="muted"
+                  seed="bank-idle"
+                  mark="tick"
+                  legend="Nothing to sign  •  Bank desk  •  "
+                />
+                <p className="mt-4 font-display text-[1.75rem] leading-none text-ink">
+                  Nothing to sign
+                </p>
+                <p className="mt-2 max-w-sm text-[0.875rem] text-ink-3">
+                  When an AICTE officer asks this bank to confirm a deposit, the request appears on
+                  the left with the bank's own record beside it.
+                </p>
+              </div>
+            </Panel>
+          )}
+        </div>
+      </div>
     </div>
+  )
+}
+
+/** The desk's link to AICTE, drawn as a core-banking terminal. The bank is simulated. */
+function Terminal() {
+  const sent = useQuery({
+    queryKey: ['bank', 'inbox', 'sent'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/v1/bank/requests', { params: { query: { status: 'sent' } } })),
+    refetchInterval: 5000,
+  })
+  const done = useQuery({
+    queryKey: ['bank', 'inbox', 'answered'],
+    queryFn: async () =>
+      unwrap(await api.GET('/api/v1/bank/requests', { params: { query: { status: 'answered' } } })),
+    refetchInterval: 5000,
+  })
+  const waiting = sent.data?.length
+  const answered = done.data?.length
+  const now = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour12: false })
+  return (
+    <section className="relative overflow-hidden rounded-[16px] bg-board font-mono text-[0.75rem] text-board-a2">
+      <div
+        className="h-1.5 bg-[repeating-linear-gradient(135deg,var(--simulated)_0_10px,transparent_10px_20px)]"
+        aria-hidden
+      />
+      <div className="grid gap-x-8 gap-y-2 px-5 py-4 sm:grid-cols-[1fr_auto_auto_auto] sm:items-center">
+        <p>
+          <span className="text-board-ink/60">CBS&gt;</span> link to AICTE Pramaan{' '}
+          <span className="inline-flex items-center gap-1.5 text-board-ink">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-board-a2/70 motion-reduce:animate-none" />
+              <span className="relative inline-flex size-2 rounded-full bg-board-a2" />
+            </span>
+            CONNECTED
+          </span>
+          <span className="ml-2 text-board-ink/50">(simulated bank, signed with Ed25519)</span>
+        </p>
+        <p className="text-board-ink">
+          WAITING <span className="text-[1.25rem] text-saffron">{waiting ?? '-'}</span>
+        </p>
+        <p className="text-board-ink">
+          ANSWERED <span className="text-[1.25rem] text-board-a2">{answered ?? '-'}</span>
+        </p>
+        <p className="text-board-ink/60">SYNC {now} IST</p>
+      </div>
+    </section>
   )
 }
 

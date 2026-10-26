@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowLeft, Building2, Search, SearchX } from 'lucide-rea
 import { useEffect, useState } from 'react'
 
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
+import { RosetteMark } from '@/components/security/guilloche'
 import { Amount, Chip, StatusChip } from '@/components/signature/chips'
 import { Button } from '@/components/ui/button'
 import {
@@ -113,22 +114,32 @@ export function InstitutionsList() {
               <tbody>
                 {list.data.items.map((i) => (
                   <tr key={i.id} className="border-b border-line last:border-0 hover:bg-sunken/50">
-                    <td className="max-w-[340px] px-5 py-2.5">
-                      <Link
-                        to="/institutions/$institutionId"
-                        params={{ institutionId: String(i.id) }}
-                        search={isToday ? {} : { asOf }}
-                        className="block truncate font-medium text-ink hover:text-brand"
-                      >
-                        {i.name}
-                      </Link>
-                      <span className="text-[0.6875rem] text-ink-3">
-                        {i.ownership === 'private'
-                          ? 'Private'
-                          : i.ownership === 'government'
-                            ? 'Government'
-                            : 'Government-aided'}{' '}
-                        · {i.premises === 'leased' ? 'Leased premises' : 'Own premises'}
+                    <td className="max-w-[380px] px-5 py-2.5">
+                      <span className="flex items-center gap-3">
+                        <RosetteMark
+                          seed={i.aicte_id}
+                          layers={2}
+                          className="size-8 shrink-0"
+                          color="color-mix(in srgb, var(--brand) 55%, transparent)"
+                        />
+                        <span className="min-w-0">
+                          <Link
+                            to="/institutions/$institutionId"
+                            params={{ institutionId: String(i.id) }}
+                            search={isToday ? {} : { asOf }}
+                            className="block truncate font-medium text-ink hover:text-brand"
+                          >
+                            {i.name}
+                          </Link>
+                          <span className="text-[0.6875rem] text-ink-3">
+                            {i.ownership === 'private'
+                              ? 'Private'
+                              : i.ownership === 'government'
+                                ? 'Government'
+                                : 'Government-aided'}{' '}
+                            · {i.premises === 'leased' ? 'Leased premises' : 'Own premises'}
+                          </span>
+                        </span>
                       </span>
                     </td>
                     <td className="px-3 py-2.5 font-mono text-ink-2">{i.aicte_id}</td>
@@ -214,14 +225,25 @@ export function InstitutionProfile({ id }: { id: number }) {
       >
         <ArrowLeft className="size-4" /> Institutions
       </Link>
-      <Panel className="p-6">
-        <div className="flex flex-wrap items-start justify-between gap-6">
+      <Panel className="relative overflow-hidden bg-paper p-6">
+        <div className="paper-grain pointer-events-none absolute inset-0" aria-hidden />
+        <RosetteMark
+          seed={d.aicte_id}
+          className="spin-slower pointer-events-none absolute -top-28 -right-20 size-[340px]"
+        />
+        <div className="relative flex flex-wrap items-start justify-between gap-6">
           <div className="flex items-start gap-4">
-            <span className="grid size-12 place-items-center rounded-xl bg-sunken text-ink-2">
-              <Building2 className="size-6" />
+            <span className="relative grid size-16 place-items-center rounded-full bg-surface ring-1 ring-line-strong">
+              <RosetteMark
+                seed={d.aicte_id}
+                layers={2}
+                className="absolute inset-1"
+                color="color-mix(in srgb, var(--brand) 55%, transparent)"
+              />
+              <Building2 className="relative size-6 text-ink-2" />
             </span>
             <div>
-              <h1 className="text-[1.375rem] font-semibold text-ink">{d.name}</h1>
+              <h1 className="font-display text-[2.25rem] leading-none text-ink">{d.name}</h1>
               <p className="mt-0.5 text-[0.875rem] text-ink-2">
                 {d.trust_name} · {d.city}, {d.state} · {d.region_name}
               </p>

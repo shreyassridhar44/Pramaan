@@ -8,6 +8,7 @@ import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/componen
 import { api, unwrap } from '@/lib/api/client'
 import type { components } from '@/lib/api/schema'
 import { useAsOf } from '@/lib/asof'
+import { RosetteMark } from '@/components/security/guilloche'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate, formatINR, formatINRCompact, formatPercent } from '@/lib/format'
 
@@ -82,17 +83,35 @@ export function ReportsPage({ name, onPick }: { name?: string; onPick: (n: strin
               type="button"
               onClick={() => onPick(c.name)}
               aria-pressed={c.name === current}
-              className={cn(
-                'rounded-[var(--radius-panel)] border bg-surface p-4 text-left hover:border-ink-3',
-                c.name === current
-                  ? 'border-accent shadow-[inset_3px_0_0_var(--accent)]'
-                  : 'border-line',
-              )}
+              className="group relative pt-2.5 text-left"
             >
-              <span className="flex items-center gap-2 text-[0.875rem] font-semibold text-ink">
-                <FileBarChart className="size-4 text-ink-3" aria-hidden /> {c.title}
+              <span
+                aria-hidden
+                className={cn(
+                  'absolute top-0 left-4 h-3 w-16 rounded-t-md transition-colors',
+                  c.name === current ? 'bg-accent' : 'bg-line-strong group-hover:bg-ink-3',
+                )}
+              />
+              <span
+                className={cn(
+                  'relative block overflow-hidden rounded-[12px] rounded-tl-none border bg-paper p-4 transition-[box-shadow,border-color,transform] group-hover:-translate-y-0.5',
+                  c.name === current
+                    ? 'border-accent shadow-[var(--shadow-lift)]'
+                    : 'border-line group-hover:border-ink-3',
+                )}
+              >
+                <RosetteMark
+                  seed={c.name}
+                  layers={2}
+                  className="pointer-events-none absolute -right-6 -bottom-8 size-[110px] opacity-70"
+                />
+                <span className="relative flex items-center gap-2 text-[0.875rem] font-semibold text-ink">
+                  <FileBarChart className="size-4 text-accent" aria-hidden /> {c.title}
+                </span>
+                <span className="relative mt-1 block text-[0.75rem] text-ink-3">
+                  {c.description}
+                </span>
               </span>
-              <span className="mt-1 block text-[0.75rem] text-ink-3">{c.description}</span>
             </button>
           ))
         )}

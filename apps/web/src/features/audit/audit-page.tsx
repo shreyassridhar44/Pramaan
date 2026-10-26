@@ -1,6 +1,13 @@
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
 import { Link2, Link2Off, RotateCcw, ShieldCheck, ShieldX, Skull } from 'lucide-react'
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useTransform,
+} from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -142,6 +149,11 @@ function ChainCheck({
   const drillActive = drill.data?.active === true
   const progress = useMotionValue(0)
   const counted = useTransform(progress, (v) => formatCount(Math.round(v)))
+  const [lit, setLit] = useState(0)
+  useMotionValueEvent(progress, 'change', (v) => {
+    const total = verify.data?.checked || 1
+    setLit(Math.round((v / total) * LINKS))
+  })
   const [doneFor, setDoneFor] = useState<unknown>(null)
   const done = verify.data !== undefined && doneFor === verify.data
   useEffect(() => {
@@ -169,7 +181,15 @@ function ChainCheck({
         caption="Recomputes every hash from the first entry. Any edit made outside the application breaks a link and is reported with the first bad entry."
       />
       <div className="px-5 pb-5">
-        <ol className="grid gap-0">
+        <ChainStrip
+          lit={result ? lit : 0}
+          breakAt={
+            done && result && !result.valid && result.first_bad_id && latest[0]
+              ? Math.min(LINKS - 1, Math.floor((result.first_bad_id / latest[0].id) * LINKS))
+              : null
+          }
+        />
+        <ol className="mt-4 grid gap-0">
           {[...latest].reverse().map((e, i, arr) => (
             <li key={e.id} className="relative">
               <div
@@ -272,5 +292,37 @@ function ChainCheck({
         ) : null}
       </div>
     </Panel>
+  )
+}
+
+const LINKS = 48
+
+/** The chain as links that light up as each hash is recomputed; a break shows where it fails. */
+function ChainStrip({ lit, breakAt }: { lit: number; breakAt: number | null }) {
+  return (
+    <div className="mb-1 rounded-[12px] bg-board p-3" aria-hidden>
+      <div className="grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1">
+        {Array.from({ length: LINKS }, (_, i) => {
+          const broken = breakAt !== null && i >= breakAt
+          const on = i < lit
+          return (
+            <span
+              key={i}
+              className={cn(
+                'h-3 rounded-[3px] border transition-colors duration-150',
+                broken && on
+                  ? 'border-board-overdue bg-board-overdue shadow-[0_0_8px_var(--board-overdue)]'
+                  : on
+                    ? 'border-board-a2 bg-board-a2/80 shadow-[0_0_6px_var(--board-a2)]'
+                    : 'border-white/15 bg-white/5',
+              )}
+            />
+          )
+        })}
+      </div>
+      <p className="mt-2 font-mono text-[0.625rem] tracking-[0.12em] text-board-ink/65 uppercase">
+        SHA-256 links, first entry to last
+      </p>
+    </div>
   )
 }
