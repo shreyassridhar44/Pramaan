@@ -6,8 +6,9 @@ Summary for anyone picking up the project. The detailed, step-level log is `clau
 
 - Steps 1 to 9 built and re-audited; Step 10 in progress.
 - Trained models (edit localiser, field extractor) are in the repository and active in the API; results in `EVALUATION.md` and `MODEL_CARD.md`.
-- Deployment set (`infra/compose.yml`, production images) and AWS scripts (`infra/aws/`) built and tested locally.
-- Tests: API 151 plus 4 slow OCR tests, web 23, Playwright 64.
+- Live at https://pramaan.duckdns.org (one t4g.small in ap-south-1, Docker Compose, Caddy with Let's Encrypt).
+- Auto-deploy is on: the server deploys every new commit on `main` within about 2 minutes plus build time, whoever pushes it, and rolls back a release that fails `/readyz` (DECISION D35). `bash infra/aws/ops.sh autodeploy-log` shows the runs and the live release.
+- Tests: API 151 plus 5 slow tests, web 23, Playwright 91 locally across Chrome, Firefox and WebKit.
 
 ## Key decisions so far
 
@@ -19,5 +20,5 @@ Summary for anyone picking up the project. The detailed, step-level log is `clau
 
 ## Next steps
 
-1. Deploy to AWS with `infra/aws/provision.sh` and `infra/aws/deploy.sh`; smoke test the public URL.
-2. Demo script and recording; release tag `v1.0.0-sih`.
+1. Record the demo video (`docs/DEMO_SCRIPT.md`) and scan the QR code from a phone on mobile data.
+2. Quality gates run, README quick start on a clean machine, release tag `v1.0.0-sih`.
