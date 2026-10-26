@@ -32,10 +32,10 @@ export function CommandView() {
         </div>
       </div>
       <div className="grid gap-5 xl:grid-cols-12">
-        <div className="xl:col-span-5">
+        <div className="xl:col-span-6">
           <RegionPanel />
         </div>
-        <div className="xl:col-span-7">
+        <div className="xl:col-span-6">
           <ActionDocket onOpen={setSheet} />
         </div>
       </div>

@@ -57,7 +57,14 @@ export function IsoIndia({
           {/* The ground plate */}
           <div
             className="absolute -inset-4 rounded-[18px] border border-line-strong bg-sunken/70"
-            style={{ transform: 'translateZ(-1px)' }}
+            style={{
+              transform: 'translateZ(-1px)',
+              backgroundImage:
+                'linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px)',
+              backgroundSize: `${TILE}px ${TILE}px`,
+              backgroundPosition: '16px 16px',
+              boxShadow: '0 40px 60px -30px rgb(0 0 0 / 0.35)',
+            }}
             aria-hidden
           />
           {sorted.map((r, i) => {
@@ -92,6 +99,14 @@ export function IsoIndia({
                 >
                   {SHORT[r.code] ?? r.name.split(' Region')[0]}
                 </span>
+                <span
+                  aria-hidden
+                  className="absolute block rounded-[4px] bg-black/25 blur-[6px]"
+                  style={{
+                    inset: 2,
+                    transform: `translate(${height * 0.18}px, ${height * 0.18}px)`,
+                  }}
+                />
                 <motion.span
                   className="absolute inset-0 block"
                   style={{ transformStyle: 'preserve-3d' }}
@@ -186,7 +201,7 @@ function Tower({ height, conf, active }: { height: number; conf: number; active:
       <span
         className="absolute block"
         style={{
-          left: w,
+          left: 0,
           top: 0,
           width: height,
           height: w,
