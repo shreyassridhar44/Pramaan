@@ -1,31 +1,35 @@
+import { rosetteLayerPaths } from '@/lib/guilloche'
 import { cn } from '@/lib/cn'
 
-/** The Pramaan mark: a proof ring closing around a tick. */
+// The mark's rosette is fixed, so it is computed once.
+const ROSETTE = rosetteLayerPaths(
+  { radius: 58, petals: 12, counter: 4, depth: 10, ripple: 4, strands: 7 },
+  0.5,
+)
+
+/** The Pramaan mark: an office seal with a guilloche rosette closing around a tick. */
 export function PramaanMark({ size = 28, className }: { size?: number; className?: string }) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 200 200"
       aria-hidden
       className={cn('shrink-0', className)}
     >
-      <rect width="32" height="32" rx="8" fill="var(--brand)" />
-      <circle
-        cx="16"
-        cy="16"
-        r="9"
-        fill="none"
-        stroke="var(--brand-contrast)"
-        strokeWidth="2.2"
-        strokeDasharray="14 2.6"
-        transform="rotate(-90 16 16)"
-      />
+      <circle cx="100" cy="100" r="98" fill="var(--brand)" />
+      <circle cx="100" cy="100" r="90" fill="none" stroke="var(--saffron)" strokeWidth="5" />
+      <circle cx="100" cy="100" r="82" fill="none" stroke="var(--brand-contrast)" strokeOpacity="0.35" strokeWidth="2" />
+      <g fill="none" stroke="var(--brand-contrast)" strokeOpacity="0.55" strokeWidth={size < 40 ? 3 : 1.4}>
+        {ROSETTE.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </g>
       <path
-        d="M11.8 16.3l2.9 2.9 5.6-6"
+        d="M70 102 L92 124 L134 78"
         fill="none"
-        stroke="var(--accent)"
-        strokeWidth="2.4"
+        stroke="var(--saffron)"
+        strokeWidth="17"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -33,15 +37,22 @@ export function PramaanMark({ size = 28, className }: { size?: number; className
   )
 }
 
-export function Wordmark({ className }: { className?: string }) {
+export function Wordmark({ className, sub }: { className?: string; sub?: boolean }) {
   return (
-    <span className={cn('inline-flex items-baseline gap-2', className)}>
-      <span className="font-display text-[1.375rem] leading-none tracking-[-0.01em] text-ink">
-        Pramaan
+    <span className={cn('inline-flex flex-col', className)}>
+      <span className="inline-flex items-baseline gap-2">
+        <span className="font-display text-[1.375rem] leading-none tracking-[-0.01em] text-ink">
+          Pramaan
+        </span>
+        <span lang="hi" className="font-deva text-[0.8125rem] leading-none text-ink-3">
+          प्रमाण
+        </span>
       </span>
-      <span lang="hi" className="font-deva text-[0.8125rem] leading-none text-ink-3">
-        प्रमाण
-      </span>
+      {sub ? (
+        <span className="mt-1 text-[0.625rem] font-medium tracking-[0.08em] text-ink-3 uppercase">
+          AICTE Regulation Bureau
+        </span>
+      ) : null}
     </span>
   )
 }

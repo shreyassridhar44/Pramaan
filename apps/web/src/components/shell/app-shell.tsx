@@ -22,7 +22,9 @@ import {
 import { useEffect, useState, type ReactNode } from 'react'
 
 import { AsOfControl } from '@/components/signature/as-of-control'
-import { PramaanMark, Wordmark } from '@/components/signature/mark'
+import { RosetteMark } from '@/components/security/guilloche'
+import { SecurityThread } from '@/components/security/print'
+import { PramaanMark } from '@/components/signature/mark'
 import { Kbd, Tip } from '@/components/ui/primitives'
 import { useAsOf } from '@/lib/asof'
 import { cn } from '@/lib/cn'
@@ -30,23 +32,48 @@ import { ROLE_LABEL, useMe, useSignOut } from '@/lib/session'
 import { useTheme } from '@/lib/theme'
 
 import { CommandPalette } from './command-palette'
+import { GovStrip } from './gov-strip'
 import { NotificationsBell } from './notifications'
 
-type NavItem = { to: string; label: string; icon: LucideIcon; roles?: string[] }
+type NavItem = { to: string; label: string; hi: string; icon: LucideIcon; roles?: string[] }
 
 const NAV: NavItem[] = [
-  { to: '/', label: 'Command', icon: Gauge },
-  { to: '/queue', label: 'Verification queue', icon: ClipboardCheck },
-  { to: '/instruments', label: 'Instruments', icon: TableProperties },
-  { to: '/institutions', label: 'Institutions', icon: Landmark },
-  { to: '/releases', label: 'Releases', icon: Unlock },
-  { to: '/alerts', label: 'Alerts', icon: BellRing },
-  { to: '/forecast', label: 'Forecast', icon: Orbit },
-  { to: '/reports', label: 'Reports', icon: FileBarChart },
-  { to: '/letters', label: 'Letters', icon: FileText },
-  { to: '/audit', label: 'Audit', icon: ScrollText },
-  { to: '/admin/rules', label: 'Rules', icon: Settings2, roles: ['admin', 'section_head'] },
+  { to: '/', label: 'Command', hi: 'कमान', icon: Gauge },
+  { to: '/queue', label: 'Verification queue', hi: 'सत्यापन', icon: ClipboardCheck },
+  { to: '/instruments', label: 'Instruments', hi: 'प्रपत्र', icon: TableProperties },
+  { to: '/institutions', label: 'Institutions', hi: 'संस्थान', icon: Landmark },
+  { to: '/releases', label: 'Releases', hi: 'मुक्ति', icon: Unlock },
+  { to: '/alerts', label: 'Alerts', hi: 'चेतावनी', icon: BellRing },
+  { to: '/forecast', label: 'Forecast', hi: 'पूर्वानुमान', icon: Orbit },
+  { to: '/reports', label: 'Reports', hi: 'रिपोर्ट', icon: FileBarChart },
+  { to: '/letters', label: 'Letters', hi: 'पत्र', icon: FileText },
+  { to: '/audit', label: 'Audit', hi: 'लेखापरीक्षा', icon: ScrollText },
+  {
+    to: '/admin/rules',
+    label: 'Rules',
+    hi: 'नियम',
+    icon: Settings2,
+    roles: ['admin', 'section_head'],
+  },
 ]
+
+/** Hindi page titles shown beside the English ones, as on government portals. */
+const TITLE_HI: Record<string, string> = {
+  Command: 'कमान केंद्र',
+  'Verification queue': 'सत्यापन कतार',
+  Instruments: 'प्रपत्र पंजी',
+  Instrument: 'प्रपत्र',
+  Institutions: 'संस्थान',
+  Institution: 'संस्थान',
+  Releases: 'मुक्ति प्रकरण',
+  'Release case': 'मुक्ति प्रकरण',
+  Alerts: 'चेतावनी',
+  Forecast: 'पूर्वानुमान',
+  Reports: 'रिपोर्ट',
+  Letters: 'पत्र',
+  Audit: 'लेखापरीक्षा',
+  Rules: 'नियम',
+}
 
 export function AppShell({ children, title }: { children: ReactNode; title?: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false)
@@ -62,11 +89,16 @@ export function AppShell({ children, title }: { children: ReactNode; title?: Rea
   }, [])
 
   return (
-    <div className="flex min-h-dvh bg-canvas">
-      <Rail />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar title={title} onSearch={() => setPaletteOpen(true)} />
-        <main className="mx-auto w-full max-w-[1600px] flex-1 px-6 pt-5 pb-10">{children}</main>
+    <div className="min-h-dvh bg-canvas">
+      <GovStrip compact />
+      <div className="flex">
+        <Rail />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopBar title={title} onSearch={() => setPaletteOpen(true)} />
+          <main id="main" className="mx-auto w-full max-w-[1600px] flex-1 px-6 pt-5 pb-10">
+            {children}
+          </main>
+        </div>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
@@ -85,17 +117,32 @@ function Rail() {
     <div className="w-16 shrink-0 xl:w-[232px]">
       <nav
         aria-label="Primary"
-        className="sticky top-0 z-30 flex h-dvh w-16 flex-col border-r border-line bg-surface xl:w-[232px]"
+        className="sticky top-0 z-30 flex h-dvh w-16 flex-col overflow-hidden bg-board text-board-ink xl:w-[232px]"
       >
+        <RosetteMark
+          seed="rail"
+          className="spin-slower pointer-events-none absolute -bottom-40 -left-32 size-[420px]"
+          color="rgb(255 255 255 / 0.05)"
+        />
         <Link
           to="/"
           search={isToday ? {} : { asOf }}
-          className="flex h-14 items-center gap-3 overflow-hidden px-[18px]"
+          className="relative flex h-16 items-center gap-3 overflow-hidden border-b border-white/10 px-[14px]"
         >
-          <PramaanMark size={28} />
-          <Wordmark className="hidden xl:block" />
+          <PramaanMark size={36} />
+          <span className="hidden flex-col xl:flex">
+            <span className="flex items-baseline gap-2">
+              <span className="font-display text-[1.375rem] leading-none">Pramaan</span>
+              <span lang="hi" className="font-deva text-[0.75rem] text-saffron">
+                प्रमाण
+              </span>
+            </span>
+            <span className="mt-1 text-[0.5625rem] font-medium tracking-[0.14em] text-board-ink/50 uppercase">
+              Regulation Bureau
+            </span>
+          </span>
         </Link>
-        <ul className="mt-2 flex flex-1 flex-col gap-0.5 px-2.5">
+        <ul className="relative mt-3 flex flex-1 flex-col gap-0.5 px-2.5">
           {items.map((item) => {
             const active = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
             return (
@@ -107,23 +154,30 @@ function Rail() {
                   title={item.label}
                   className={cn(
                     'relative flex h-10 items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium whitespace-nowrap transition-colors',
-                    active ? 'bg-sunken text-ink' : 'text-ink-2 hover:bg-sunken hover:text-ink',
+                    active
+                      ? 'bg-white/[0.09] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]'
+                      : 'text-board-ink/65 hover:bg-white/[0.06] hover:text-white',
                   )}
                 >
-                  {active ? (
-                    <span
-                      aria-hidden
-                      className="absolute top-2 bottom-2 left-0 w-[3px] rounded-r bg-accent"
-                    />
-                  ) : null}
-                  <item.icon className="size-[18px] shrink-0" aria-hidden />
+                  {active ? <SecurityThread className="absolute top-1.5 bottom-1.5 left-0" /> : null}
+                  <item.icon
+                    className={cn('size-[18px] shrink-0', active && 'text-saffron')}
+                    aria-hidden
+                  />
                   <span className="sr-only xl:not-sr-only">{item.label}</span>
+                  <span
+                    lang="hi"
+                    aria-hidden
+                    className="ml-auto hidden font-deva text-[0.6875rem] text-board-ink/30 xl:inline"
+                  >
+                    {item.hi}
+                  </span>
                 </Link>
               </li>
             )
           })}
         </ul>
-        <div className="px-2.5 pb-3">
+        <div className="relative border-t border-white/10 px-2.5 pt-2 pb-3">
           <ThemeToggle />
         </div>
       </nav>
@@ -138,7 +192,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggle}
       title={theme === 'command' ? 'Ledger theme' : 'Command theme'}
-      className="flex h-10 w-full items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium text-ink-2 hover:bg-sunken hover:text-ink"
+      className="flex h-10 w-full items-center gap-3 overflow-hidden rounded-[var(--radius-control)] px-[11px] text-[0.8125rem] font-medium text-board-ink/65 hover:bg-white/[0.06] hover:text-white"
     >
       {theme === 'command' ? (
         <Sun className="size-[18px] shrink-0" />
@@ -159,11 +213,18 @@ function TopBar({ title, onSearch }: { title?: ReactNode; onSearch: () => void }
   return (
     <header
       className={cn(
-        'sticky top-0 z-20 flex h-14 items-center gap-4 border-b bg-canvas/90 px-6 backdrop-blur',
+        'sticky top-0 z-20 flex h-16 items-center gap-4 border-b bg-canvas/85 px-6 backdrop-blur-md',
         isToday ? 'border-line' : 'border-accent',
       )}
     >
-      <div className="min-w-0 flex-1 truncate text-[0.9375rem] font-semibold text-ink">{title}</div>
+      <div className="flex min-w-0 flex-1 items-baseline gap-3 truncate">
+        <span className="truncate font-display text-[1.625rem] leading-none text-ink">{title}</span>
+        {typeof title === 'string' && TITLE_HI[title] ? (
+          <span lang="hi" className="hidden font-deva text-[0.875rem] text-ink-3 sm:inline">
+            {TITLE_HI[title]}
+          </span>
+        ) : null}
+      </div>
       <button
         type="button"
         onClick={onSearch}

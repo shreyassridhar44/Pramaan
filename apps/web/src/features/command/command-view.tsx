@@ -5,6 +5,8 @@ import { useState } from 'react'
 
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
+import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
+import { Seal } from '@/components/security/seal'
 import { Amount, SeverityChip, StatusChip } from '@/components/signature/chips'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { api, unwrap } from '@/lib/api/client'
@@ -77,9 +79,9 @@ function HeadlineBand() {
     )
   if (isPending || !data)
     return (
-      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 overflow-hidden rounded-[14px] bg-board md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-surface px-6 py-5">
+          <div key={i} className="px-6 py-5 opacity-30">
             <Skeleton className="h-3 w-24" />
             <Skeleton className="mt-3 h-12 w-40" />
             <Skeleton className="mt-3 h-3 w-48" />
@@ -98,48 +100,64 @@ function HeadlineBand() {
       : undefined
   const money = (n: number) => formatINRCompact(Math.round(n))
   return (
-    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
-      <HeadlineFigure
-        label="Value held in trust"
-        figure={<RollingNumber value={held} format={(n) => formatINRCompact(Math.round(n))} />}
-        caption={`${formatCount(data.held_count)} instruments across ${Object.keys(data.by_bank_paise).length} banks`}
-        delta={delta(held, bHeld, money)}
+    <div className="relative overflow-hidden rounded-[14px] bg-board text-board-ink shadow-[0_30px_60px_-40px_rgb(18_23_38/0.8)]">
+      <RosetteMark
+        seed="command-board"
+        className="spin-slower pointer-events-none absolute -top-48 right-[18%] size-[520px]"
+        color="rgb(255 255 255 / 0.05)"
       />
-      <HeadlineFigure
-        label="Bank-confirmed"
-        tone="a2"
-        figure={<RollingNumber value={share * 100} format={(n) => `${n.toFixed(0)}%`} />}
-        caption={`${formatINRCompact(confirmed)} proven by the issuing bank`}
-        delta={delta(
-          share * 100,
-          bShare === undefined ? undefined : bShare * 100,
-          (n) => `${n.toFixed(1)} points`,
-        )}
-        aside={<AssuranceRing level={share >= 0.5 ? 2 : 1} size={40} />}
-      />
-      <HeadlineFigure
-        label="Needs action"
-        tone={data.needs_action_count ? 'overdue' : 'default'}
-        figure={<RollingNumber value={data.needs_action_count} format={(n) => formatCount(n)} />}
-        caption={`${data.overdue_count} matured without action, ${data.discrepancy_count} discrepancies, ${data.pending_verification_count} awaiting scrutiny`}
-        delta={delta(data.needs_action_count, before?.needs_action_count, (n) => formatCount(n))}
-      />
-      <HeadlineFigure
-        label="Maturing in 90 days"
-        tone="due"
-        figure={
-          <RollingNumber
-            value={Number(data.maturing_90_paise)}
-            format={(n) => formatINRCompact(Math.round(n))}
-          />
-        }
-        caption={`${data.maturing_90_count} instruments need a renewal or release plan`}
-        delta={delta(
-          Number(data.maturing_90_paise),
-          before ? Number(before.maturing_90_paise) : undefined,
-          money,
-        )}
-      />
+      <GuillocheBand height={14} color="rgb(255 153 51 / 0.35)" />
+      <div className="relative grid grid-cols-1 divide-white/10 md:grid-cols-2 xl:grid-cols-4 xl:divide-x">
+        <HeadlineFigure
+          label="Value held in trust"
+          figure={<RollingNumber value={held} format={(n) => formatINRCompact(Math.round(n))} />}
+          caption={`${formatCount(data.held_count)} instruments across ${Object.keys(data.by_bank_paise).length} banks`}
+          delta={delta(held, bHeld, money)}
+        />
+        <HeadlineFigure
+          label="Bank-confirmed"
+          tone="a2"
+          figure={<RollingNumber value={share * 100} format={(n) => `${n.toFixed(0)}%`} />}
+          caption={`${formatINRCompact(confirmed)} proven by the issuing bank`}
+          delta={delta(
+            share * 100,
+            bShare === undefined ? undefined : bShare * 100,
+            (n) => `${n.toFixed(1)} points`,
+          )}
+          aside={
+            <Seal
+              size={78}
+              tone="board"
+              seed="bank-confirmed"
+              legend="Bank-confirmed  •  Signed  •  "
+              label={`Assurance ${share >= 0.5 ? 'A2' : 'A1'} across the portfolio`}
+            />
+          }
+        />
+        <HeadlineFigure
+          label="Needs action"
+          tone={data.needs_action_count ? 'overdue' : 'default'}
+          figure={<RollingNumber value={data.needs_action_count} format={(n) => formatCount(n)} />}
+          caption={`${data.overdue_count} matured without action, ${data.discrepancy_count} discrepancies, ${data.pending_verification_count} awaiting scrutiny`}
+          delta={delta(data.needs_action_count, before?.needs_action_count, (n) => formatCount(n))}
+        />
+        <HeadlineFigure
+          label="Maturing in 90 days"
+          tone="due"
+          figure={
+            <RollingNumber
+              value={Number(data.maturing_90_paise)}
+              format={(n) => formatINRCompact(Math.round(n))}
+            />
+          }
+          caption={`${data.maturing_90_count} instruments need a renewal or release plan`}
+          delta={delta(
+            Number(data.maturing_90_paise),
+            before ? Number(before.maturing_90_paise) : undefined,
+            money,
+          )}
+        />
+      </div>
     </div>
   )
 }

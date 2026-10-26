@@ -135,7 +135,7 @@ export interface paths {
         };
         /**
          * Public Summary
-         * @description Aggregate figures for the sign-in page. No institution-level data.
+         * @description Aggregate figures for the public home and sign-in pages. No institution-level data.
          */
         get: operations["public_summary_api_v1_public_summary_get"];
         put?: never;
@@ -2441,6 +2441,19 @@ export interface components {
              */
             correctable: boolean;
         };
+        /** PublicRegion */
+        PublicRegion: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Held Paise */
+            held_paise: string;
+            /** Held Count */
+            held_count: number;
+            /** Confirmed Share */
+            confirmed_share: number;
+        };
         /** PublicSummary */
         PublicSummary: {
             /** As Of */
@@ -2451,6 +2464,24 @@ export interface components {
             held_count: number;
             /** Bank Confirmed Share */
             bank_confirmed_share: number;
+            /** Institutions */
+            institutions: number;
+            /** Banks */
+            banks: number;
+            /** Maturing 90 Paise */
+            maturing_90_paise: string;
+            /** Maturing 90 Count */
+            maturing_90_count: number;
+            /** Pending Verification Count */
+            pending_verification_count: number;
+            /** Reminders 7D */
+            reminders_7d: number;
+            /** Open Signals */
+            open_signals: number;
+            /** Letters Issued */
+            letters_issued: number;
+            /** Regions */
+            regions: components["schemas"]["PublicRegion"][];
             /** Data Source */
             data_source: string;
             /** Demo Mode */

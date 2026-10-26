@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as BankRouteImport } from './routes/bank'
 import { Route as ClearancesRouteImport } from './routes/clearances'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
@@ -47,6 +48,11 @@ const BankRoute = BankRouteImport.update({
 const ClearancesRoute = ClearancesRouteImport.update({
   id: '/clearances',
   path: '/clearances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
+  '/home': typeof HomeRoute
   '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
   '/alerts': typeof AppAlertsRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
+  '/home': typeof HomeRoute
   '/signin': typeof SigninRoute
   '/alerts': typeof AppAlertsRoute
   '/audit': typeof AppAuditRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/bank': typeof BankRoute
   '/clearances': typeof ClearancesRoute
+  '/home': typeof HomeRoute
   '/portal': typeof PortalRouteWithChildren
   '/signin': typeof SigninRoute
   '/_app/alerts': typeof AppAlertsRoute
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/'
     | '/bank'
     | '/clearances'
+    | '/home'
     | '/portal'
     | '/signin'
     | '/alerts'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
   to:
     | '/bank'
     | '/clearances'
+    | '/home'
     | '/signin'
     | '/alerts'
     | '/audit'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/bank'
     | '/clearances'
+    | '/home'
     | '/portal'
     | '/signin'
     | '/_app/alerts'
@@ -326,6 +338,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   BankRoute: typeof BankRoute
   ClearancesRoute: typeof ClearancesRoute
+  HomeRoute: typeof HomeRoute
   PortalRoute: typeof PortalRouteWithChildren
   SigninRoute: typeof SigninRoute
   DevComponentsRoute: typeof DevComponentsRoute
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/clearances'
       fullPath: '/clearances'
       preLoaderRoute: typeof ClearancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -569,6 +589,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   BankRoute: BankRoute,
   ClearancesRoute: ClearancesRoute,
+  HomeRoute: HomeRoute,
   PortalRoute: PortalRouteWithChildren,
   SigninRoute: SigninRoute,
   DevComponentsRoute: DevComponentsRoute,

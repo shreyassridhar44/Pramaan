@@ -4,6 +4,8 @@ import { forwardRef, type HTMLAttributes, type InputHTMLAttributes, type ReactNo
 
 import { cn } from '@/lib/cn'
 
+import { RosetteMark } from '@/components/security/guilloche'
+
 import { Button } from './button'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
@@ -23,7 +25,10 @@ Input.displayName = 'Input'
 export function Panel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <section
-      className={cn('rounded-[var(--radius-panel)] border border-line bg-surface', className)}
+      className={cn(
+        'rounded-[var(--radius-panel)] border border-line bg-surface shadow-[0_1px_0_rgb(18_23_38/0.03),0_12px_32px_-28px_rgb(18_23_38/0.45)]',
+        className,
+      )}
       {...props}
     />
   )
@@ -41,12 +46,25 @@ export function PanelHeader({
   className?: string
 }) {
   return (
-    <header className={cn('flex items-start justify-between gap-4 px-5 pt-4 pb-3', className)}>
-      <div className="min-w-0">
+    <header
+      className={cn(
+        'relative flex items-start justify-between gap-4 overflow-hidden rounded-t-[var(--radius-panel)] px-5 pt-4 pb-3',
+        className,
+      )}
+    >
+      {typeof title === 'string' ? (
+        <RosetteMark
+          seed={title}
+          layers={2}
+          className="absolute -top-16 -right-12 size-[150px]"
+          color="var(--guilloche-soft)"
+        />
+      ) : null}
+      <div className="relative min-w-0">
         <h2 className="text-[0.9375rem] font-semibold text-ink">{title}</h2>
         {caption ? <p className="mt-0.5 text-[0.8125rem] text-ink-3">{caption}</p> : null}
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="relative flex shrink-0 items-center gap-2">{actions}</div> : null}
     </header>
   )
 }

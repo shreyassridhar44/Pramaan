@@ -5,12 +5,14 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
 const button = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] font-medium transition-[color,background-color,box-shadow,transform] duration-150 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        primary: 'bg-brand text-brand-contrast hover:bg-brand-hover',
-        secondary: 'border border-line-strong bg-surface text-ink hover:bg-sunken',
+        primary:
+          'bg-brand text-brand-contrast shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_1px_2px_rgb(18_23_38/0.3),0_6px_16px_-8px_var(--brand)] hover:bg-brand-hover',
+        secondary:
+          'border border-line-strong bg-surface text-ink shadow-[0_1px_0_rgb(18_23_38/0.04)] hover:border-ink-3 hover:bg-sunken',
         ghost: 'text-ink-2 hover:bg-sunken hover:text-ink',
         danger: 'bg-overdue text-white hover:opacity-90',
         link: 'text-brand underline-offset-4 hover:underline',

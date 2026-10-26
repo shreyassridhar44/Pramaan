@@ -10,7 +10,7 @@ type Region = components['schemas']['RegionRow']
 
 /** Approximate geographic placement on a 5 by 6 grid (column, row). A cartogram, not a map:
  * no boundaries are drawn (DECISION D13). */
-const PLACE: Record<string, [number, number]> = {
+export const PLACE: Record<string, [number, number]> = {
   north_western: [2, 1],
   northern: [3, 2],
   north_east: [5, 2],
@@ -23,7 +23,7 @@ const PLACE: Record<string, [number, number]> = {
   southern: [3, 5],
   kerala: [2, 6],
 }
-const SHORT: Record<string, string> = {
+export const SHORT: Record<string, string> = {
   north_western: 'North-West',
   north_east: 'North-East',
   south_central: 'South-Central',

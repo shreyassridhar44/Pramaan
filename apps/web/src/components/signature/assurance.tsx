@@ -1,5 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react'
 
+import { Rosette } from '@/components/security/guilloche'
+import { Seal } from '@/components/security/seal'
 import { Tip } from '@/components/ui/primitives'
 import { cn } from '@/lib/cn'
 
@@ -25,6 +27,24 @@ export function AssuranceRing({
 }) {
   const reduce = useReducedMotion()
   const meta = ASSURANCE[level]
+  if (size >= 40) {
+    const seal = <AssuranceSeal level={level} size={size} animate={animate} className={className} />
+    if (!showTip) return seal
+    return (
+      <Tip
+        content={
+          <span>
+            <strong className="font-semibold">
+              {meta.short} {meta.name}.
+            </strong>{' '}
+            {meta.explain}
+          </span>
+        }
+      >
+        <span className="inline-flex">{seal}</span>
+      </Tip>
+    )
+  }
   const stroke = Math.max(2, size / 9)
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
@@ -109,6 +129,83 @@ export function AssuranceLabel({
     <span className={cn('inline-flex items-center gap-1.5 text-[0.8125rem]', className)}>
       <AssuranceRing level={level} size={16} showTip={false} />
       <span className={cn('font-medium', meta.text)}>{meta.name}</span>
+    </span>
+  )
+}
+
+/**
+ * The large form of the assurance mark (DECISION D36): proof drawn as security print. Declared
+ * is an empty dashed outline, document-checked adds a watermark rosette, bank-confirmed is a full
+ * embossed seal, and re-confirmed adds holographic foil. The level is always in the label.
+ */
+function AssuranceSeal({
+  level,
+  size,
+  animate,
+  className,
+}: {
+  level: AssuranceLevel
+  size: number
+  animate: boolean
+  className?: string
+}) {
+  const meta = ASSURANCE[level]
+  const label = `Assurance ${meta.short}: ${meta.name}`
+  if (level <= 1)
+    return (
+      <span
+        role="img"
+        aria-label={label}
+        className={cn('relative grid shrink-0 place-items-center rounded-full', className)}
+        style={{ width: size, height: size }}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            'absolute inset-0 rounded-full border-2 border-dashed',
+            level === 0 ? 'border-a0/60' : 'border-a1/50',
+          )}
+        />
+        {level === 1 ? (
+          <Rosette
+            seed="assurance-a1"
+            size={size}
+            layers={2}
+            color="color-mix(in srgb, var(--a1) 45%, transparent)"
+            draw={animate}
+            className="absolute"
+          />
+        ) : null}
+        <span
+          aria-hidden
+          className={cn('relative font-display leading-none', meta.text)}
+          style={{ fontSize: size * 0.3 }}
+        >
+          {meta.short}
+        </span>
+      </span>
+    )
+  return (
+    <span
+      role="img"
+      aria-label={label}
+      className={cn('relative inline-grid shrink-0 place-items-center', className)}
+      style={{ width: size, height: size }}
+    >
+      <Seal
+        size={size}
+        tone="green"
+        stamp={animate}
+        seed={`assurance-${level}`}
+        legend={level === 3 ? 'Re-confirmed  •  Bank signed  •  ' : 'Bank-confirmed  •  Signed  •  '}
+        rotate={-6}
+      />
+      {level === 3 ? (
+        <span
+          aria-hidden
+          className="foil pointer-events-none absolute inset-[8%] rounded-full opacity-60"
+        />
+      ) : null}
     </span>
   )
 }

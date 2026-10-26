@@ -44,6 +44,23 @@
   --simulated-soft: #eee8f8;
 
   --shadow-overlay: 0 12px 32px -8px rgb(18 23 38 / 0.18), 0 2px 6px rgb(18 23 38 / 0.06);
+
+  /* Security print (DECISION D36). Decorative only: never used for text or status. */
+  --saffron: #ff9933;
+  --india-green: #138808;
+  --paper: #fbf9f3;
+  --guilloche: color-mix(in srgb, var(--brand) 26%, transparent);
+  --guilloche-soft: color-mix(in srgb, var(--brand) 9%, transparent);
+  --thread-1: #1d6f5c;
+  --thread-2: #2f5bd3;
+  --thread-3: #6b4fa0;
+  --seal: #8f1d1d;
+  --board: #121726;
+  --board-ink: #f5f3ee;
+  --board-a2: #35c58f;
+  --board-due: #f2b54b;
+  --board-overdue: #ff7a6e;
+  --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 18px 40px -22px rgb(18 23 38 / 0.35);
 }
 
 [data-theme='command'] {
@@ -84,6 +101,22 @@
   --simulated-soft: #261d3d;
 
   --shadow-overlay: 0 16px 40px -8px rgb(0 0 0 / 0.55), 0 2px 8px rgb(0 0 0 / 0.35);
+
+  --saffron: #ff9933;
+  --india-green: #2fae48;
+  --paper: #0e1422;
+  --guilloche: color-mix(in srgb, var(--brand) 30%, transparent);
+  --guilloche-soft: color-mix(in srgb, var(--brand) 11%, transparent);
+  --thread-1: #35c58f;
+  --thread-2: #6e93ff;
+  --thread-3: #b69cff;
+  --seal: #ff7a6e;
+  --board: #05080f;
+  --board-ink: #f5f3ee;
+  --board-a2: #35c58f;
+  --board-due: #f2b54b;
+  --board-overdue: #ff7a6e;
+  --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -22px rgb(0 0 0 / 0.7);
 }
 
 @theme inline {
@@ -115,6 +148,17 @@
   --color-info: var(--info);
   --color-simulated: var(--simulated);
   --color-simulated-soft: var(--simulated-soft);
+  --color-saffron: var(--saffron);
+  --color-india-green: var(--india-green);
+  --color-paper: var(--paper);
+  --color-guilloche: var(--guilloche);
+  --color-guilloche-soft: var(--guilloche-soft);
+  --color-seal: var(--seal);
+  --color-board: var(--board);
+  --color-board-ink: var(--board-ink);
+  --color-board-a2: var(--board-a2);
+  --color-board-due: var(--board-due);
+  --color-board-overdue: var(--board-overdue);
 
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
@@ -125,6 +169,7 @@
   --radius-panel: 10px;
 
   --shadow-overlay: var(--shadow-overlay);
+  --shadow-lift: var(--shadow-lift);
 
   --ease-enter: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
