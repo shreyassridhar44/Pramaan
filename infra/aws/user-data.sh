@@ -1,6 +1,6 @@
 #!/bin/bash
 # First boot of the Pramaan host (Amazon Linux 2023, arm64): Docker with Compose and Buildx, and
-# 2 GB of swap for image builds on a 4 GB instance.
+# 3 GB of swap for image builds on a 2 GB instance.
 set -euxo pipefail
 dnf install -y docker
 mkdir -p /usr/local/lib/docker/cli-plugins
@@ -11,7 +11,7 @@ curl -fsSL -o /usr/local/lib/docker/cli-plugins/docker-buildx \
 chmod +x /usr/local/lib/docker/cli-plugins/*
 systemctl enable --now docker
 if [ ! -f /swapfile ]; then
-  dd if=/dev/zero of=/swapfile bs=1M count=2048
+  dd if=/dev/zero of=/swapfile bs=1M count=3072
   chmod 600 /swapfile
   mkswap /swapfile
   swapon /swapfile

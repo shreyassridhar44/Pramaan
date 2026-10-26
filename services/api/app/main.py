@@ -1,3 +1,7 @@
+import asyncio
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,11 +32,27 @@ from app.observability import RequestContextMiddleware, configure_logging
 from app.readiness import register_default_checks
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """In production, load the OCR and the trained models in the background at start-up, so the
+    first upload does not pay for loading them."""
+    if get_settings().environment == "production":
+        from app.services.documents.pipeline import _ocr, models
+
+        def warm() -> None:
+            models()
+            _ocr()
+
+        app.state.warmup = asyncio.create_task(asyncio.to_thread(warm))
+    yield
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.log_level)
 
     app = FastAPI(
+        lifespan=lifespan,
         title="Pramaan API",
         version="0.1.0",
         description="Security deposit and FDR management for the AICTE Regulation Bureau.",

@@ -6,7 +6,7 @@ Run from Git Bash or any Unix shell with the AWS CLI v2, `git` and `openssl`. De
 
 | Script | What it does |
 |---|---|
-| `provision.sh` | Creates or reuses: the S3 bucket (releases and backups, private, encrypted, lifecycle), the instance role (Session Manager, its bucket, `/pramaan/*` parameters), generated secrets in SSM Parameter Store, a security group open on port 80 to CloudFront only, the t4g.medium instance, an Elastic IP, and the CloudFront distribution with a secret origin header. Prints the public URL. Safe to rerun. |
+| `provision.sh` | Creates or reuses: the S3 bucket (releases and backups, private, encrypted, lifecycle), the instance role (Session Manager, its bucket, `/pramaan/*` parameters), generated secrets in SSM Parameter Store, a security group open on port 80 to CloudFront only, the t4g.small instance (the account's Free plan allows only free-tier types), an Elastic IP, and the CloudFront distribution with a secret origin header. Prints the public URL. Safe to rerun. |
 | `deploy.sh` | Packs the committed `HEAD` with `git archive`, uploads it, and runs `remote-deploy.sh` on the instance through SSM Run Command: writes `infra/.env` from SSM, builds the images, migrates, seeds on the first deploy (`SEED=1` reseeds), starts everything and installs the nightly backup timer. |
 | `ops.sh` | `status`, `start`, `stop`, `logs [service]`, `shell` (Session Manager), `backup`, `inbox-login`. |
 

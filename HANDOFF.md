@@ -13,7 +13,7 @@ Summary for anyone picking up the project. The detailed, step-level log is `clau
 
 - Problem statement SIH26265, product name Pramaan.
 - React SPA plus FastAPI monolith with workers; PostgreSQL and Redis; ONNX Runtime for ML inference.
-- AWS: one t4g.medium in ap-south-1 with Docker Compose serving the web app and API, CloudFront in front (DECISION D33); about $23 per month while running.
+- AWS: one t4g.small in ap-south-1 with Docker Compose serving the web app and API, CloudFront in front (DECISION D33); about $15 per month.
 - Bedrock (India-resident Claude Haiku 4.5) for plain-language search only.
 - Edit-localisation model trained on the team's GPU machine using synthetic data.
 

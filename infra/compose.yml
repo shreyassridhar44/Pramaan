@@ -24,6 +24,7 @@ x-api-env: &api-env
   SMTP_PORT: "1025"
   EMAIL_FROM: Pramaan <no-reply@pramaan.local>
   BEDROCK_ENABLED: ${BEDROCK_ENABLED:-false}
+  WEB_CONCURRENCY: ${API_WORKERS:-1}
 
 services:
   postgres:
@@ -39,18 +40,19 @@ services:
       interval: 10s
       timeout: 3s
       retries: 20
-    mem_limit: 640m
+    command: ["postgres", "-c", "shared_buffers=96MB", "-c", "max_connections=60"]
+    mem_limit: 320m
 
   valkey:
     image: valkey/valkey:8-alpine
     restart: unless-stopped
-    command: ["valkey-server", "--save", "", "--maxmemory", "96mb"]
+    command: ["valkey-server", "--save", "", "--maxmemory", "48mb"]
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
       interval: 10s
       timeout: 3s
       retries: 20
-    mem_limit: 128m
+    mem_limit: 64m
 
   # Captured inbox: the portfolio's recipients are synthetic, so email is delivered here and shown
   # at /mail/ behind a password instead of being sent to real addresses (DECISION D33).
@@ -61,7 +63,7 @@ services:
       MP_WEBROOT: mail
       MP_UI_AUTH: ${MAIL_UI_AUTH:?}
       MP_MAX_MESSAGES: "2000"
-    mem_limit: 128m
+    mem_limit: 96m
 
   api:
     build: { context: .., dockerfile: services/api/Dockerfile }
@@ -72,7 +74,7 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
       valkey: { condition: service_healthy }
-    mem_limit: 1600m
+    mem_limit: 1300m
 
   worker:
     image: pramaan-api
@@ -83,7 +85,7 @@ services:
     healthcheck: { disable: true }
     depends_on:
       api: { condition: service_started }
-    mem_limit: 512m
+    mem_limit: 320m
 
   web:
     build: { context: .., dockerfile: infra/web.Dockerfile }
@@ -100,7 +102,7 @@ services:
       retries: 3
     depends_on:
       api: { condition: service_started }
-    mem_limit: 96m
+    mem_limit: 64m
 
 volumes:
   pgdata:
