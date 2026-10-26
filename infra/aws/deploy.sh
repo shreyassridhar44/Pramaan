@@ -12,9 +12,9 @@ INSTANCE=$(instance_id)
 SHA=$(git rev-parse --short HEAD)
 [ -z "$(git status --porcelain)" ] || echo "[deploy] note: uncommitted changes are not shipped"
 
-TMP=$PWD/$(mktemp -d .release.XXXXXX)
-git -C ../.. archive --format=tar.gz -o "$TMP/$SHA.tar.gz" HEAD
-aws s3 cp --only-show-errors "$(basename "$TMP")/$SHA.tar.gz" "s3://$BUCKET/releases/$SHA.tar.gz"
+TMP=$(mktemp -d .release.XXXXXX)
+git -C ../.. archive --format=tar.gz -o "infra/aws/$TMP/$SHA.tar.gz" HEAD
+aws s3 cp --only-show-errors "$TMP/$SHA.tar.gz" "s3://$BUCKET/releases/$SHA.tar.gz"
 rm -rf "$TMP"
 echo "[deploy] uploaded release $SHA"
 
