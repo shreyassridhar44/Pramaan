@@ -9,9 +9,10 @@ import {
   Link2,
   ShieldAlert,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 import { GuillocheBand, RosetteMark } from '@/components/security/guilloche'
+import { Button } from '@/components/ui/button'
 import { AssuranceRing } from '@/components/signature/assurance'
 import { ASSURANCE, type AssuranceLevel } from '@/components/signature/assurance-meta'
 import { Amount, Chip, SimulatedBadge, StatusChip } from '@/components/signature/chips'
@@ -38,6 +39,7 @@ import {
   ObservationsPanel,
   SignalsPanel,
 } from './officer-actions'
+import { Passport } from './passport'
 import { useInstrument } from './queries'
 
 type Detail = components['schemas']['InstrumentDetail']
@@ -385,12 +387,40 @@ function DemandPanel({ demand }: { demand: NonNullable<Detail['demand']> }) {
 }
 
 function TimelinePanel({ d }: { d: Detail }) {
+  const [view, setView] = useState<'passport' | 'list'>('passport')
   if (!d.timeline.length)
     return (
       <Panel>
         <EmptyState icon={<CalendarDays />} title="No events on or before this date" />
       </Panel>
     )
+  return (
+    <div className="grid gap-4">
+      <div role="group" aria-label="Timeline view" className="flex gap-2">
+        {(
+          [
+            ['passport', 'Passport'],
+            ['list', 'List'],
+          ] as const
+        ).map(([k, label]) => (
+          <Button
+            key={k}
+            size="sm"
+            variant={view === k ? 'primary' : 'secondary'}
+            aria-pressed={view === k}
+            onClick={() => setView(k)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
+      {view === 'passport' ? <Passport number={d.number} events={d.timeline} /> : null}
+      {view === 'list' ? <TimelineList d={d} /> : null}
+    </div>
+  )
+}
+
+function TimelineList({ d }: { d: Detail }) {
   return (
     <Panel>
       <PanelHeader title="Lifecycle" caption="Every recorded event, oldest first" />

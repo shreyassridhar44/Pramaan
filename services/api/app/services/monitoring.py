@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.domain.asof import state_on
+from app.domain.messages import maturity_reminder
 from app.domain.provenance import rupees
 from app.domain.rules.deadlines import furnishing_status
 from app.domain.rules.maturity import reminders_between
@@ -127,22 +128,10 @@ async def run_monitoring(
                 continue
             inst = inst or await db.get(Instrument, f.id)
             assert inst is not None
-            when = (
-                "today"
-                if r.offset_days == 0
-                else (
-                    f"in {r.offset_days} days"
-                    if r.offset_days > 0
-                    else f"{-r.offset_days} days ago"
-                )
+            msg = maturity_reminder(
+                inst.number, inst.amount_paise, inst.maturity_date, r.offset_days
             )
-            subject = f"Security deposit {inst.number} matures {when}"
-            body = (
-                f"Your security deposit {inst.number} of {rupees(inst.amount_paise // 100)}"
-                f" with AICTE matures on "
-                f"{inst.maturity_date:%d %b %Y}. Submit a renewal or apply for release"
-                " on the Pramaan portal."
-            )
+            subject, body = msg.subject_en, msg.body_en
             user = institution_users.get(inst.institution_id)
             recipient = user.email if user else f"accounts+{inst.institution_id}@institution.demo"
             db.add(

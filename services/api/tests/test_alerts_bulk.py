@@ -182,3 +182,13 @@ async def test_penalty_must_be_settled_before_release(client: AsyncClient) -> No
         f"/api/v1/releases/{case_id}/penalty/settle", json={"reference": "again"}
     )
     assert twice.status_code == 409
+
+
+async def test_reminder_preview_matches_sent_wording(client: AsyncClient) -> None:
+    await sign_in(client, "bureau")
+    rows = (await client.get("/api/v1/alerts/reminders", params={"limit": 1})).json()
+    assert rows, "seed has reminders"
+    p = (await client.get(f"/api/v1/alerts/reminders/{rows[0]['id']}/preview")).json()
+    assert rows[0]["number"] in p["subject_en"] and rows[0]["number"] in p["subject_hi"]
+    assert "Pramaan" in p["body_en"] and "सुरक्षा जमा" in p["body_hi"]
+    assert p["simulated_channels"] == ["sms", "whatsapp"]

@@ -62,6 +62,8 @@
   --board-overdue: #ff7a6e;
   --uv-ground: #12062b;
   --uv-glow: #7dffb0;
+  --wa-ground: #efe7dd;
+  --wa-bubble: #ffffff;
   --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 18px 40px -22px rgb(18 23 38 / 0.35);
 }
 
@@ -120,6 +122,8 @@
   --board-overdue: #ff7a6e;
   --uv-ground: #12062b;
   --uv-glow: #7dffb0;
+  --wa-ground: #0b141a;
+  --wa-bubble: #1f2c34;
   --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -22px rgb(0 0 0 / 0.7);
 }
 

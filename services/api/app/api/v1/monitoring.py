@@ -1,7 +1,7 @@
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
@@ -13,6 +13,7 @@ from app.api.deps import (
     instrument_scope,
     require_roles,
 )
+from app.domain.messages import maturity_reminder
 from app.domain.types import Role
 from app.models import Institution, Instrument, Notification, Region, Reminder
 from app.services import portfolio as psvc
@@ -233,3 +234,44 @@ async def alert_escalations(
         )
     out.sort(key=lambda e: -e.days_overdue)
     return out
+
+
+class ReminderPreview(BaseModel):
+    channel: str
+    recipient: str
+    sent_on: str | None
+    subject_en: str
+    body_en: str
+    subject_hi: str
+    body_hi: str
+    simulated_channels: list[str]
+
+
+@router.get("/alerts/reminders/{reminder_id}/preview", response_model=ReminderPreview)
+async def reminder_preview(
+    reminder_id: int, principal: AlertReader, db: DbSession
+) -> ReminderPreview:
+    """The message the institution received for a reminder, in both languages."""
+    row = (
+        await db.execute(
+            select(Reminder, Instrument)
+            .join(Instrument, Instrument.id == Reminder.instrument_id)
+            .join(Institution, Institution.id == Instrument.institution_id)
+            .join(Region, Region.id == Institution.region_id)
+            .where(Reminder.id == reminder_id, instrument_scope(principal))
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(404, "Reminder not found.")
+    r, inst = row
+    msg = maturity_reminder(inst.number, inst.amount_paise, inst.maturity_date, r.offset_days)
+    return ReminderPreview(
+        channel=r.channel,
+        recipient=r.recipient,
+        sent_on=r.sent_on.isoformat() if r.sent_on else None,
+        subject_en=msg.subject_en,
+        body_en=msg.body_en,
+        subject_hi=msg.subject_hi,
+        body_hi=msg.body_hi,
+        simulated_channels=["sms", "whatsapp"],
+    )

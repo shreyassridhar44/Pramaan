@@ -254,6 +254,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/alerts/reminders/{reminder_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reminder Preview
+         * @description The message the institution received for a reminder, in both languages.
+         */
+        get: operations["reminder_preview_api_v1_alerts_reminders__reminder_id__preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/summary": {
         parameters: {
             query?: never;
@@ -2822,6 +2842,25 @@ export interface components {
             /** Overdue */
             overdue: boolean;
         };
+        /** ReminderPreview */
+        ReminderPreview: {
+            /** Channel */
+            channel: string;
+            /** Recipient */
+            recipient: string;
+            /** Sent On */
+            sent_on: string | null;
+            /** Subject En */
+            subject_en: string;
+            /** Body En */
+            body_en: string;
+            /** Subject Hi */
+            subject_hi: string;
+            /** Body Hi */
+            body_hi: string;
+            /** Simulated Channels */
+            simulated_channels: string[];
+        };
         /** ReportInfo */
         ReportInfo: {
             /** Name */
@@ -3601,6 +3640,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EscalationOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reminder_preview_api_v1_alerts_reminders__reminder_id__preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reminder_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderPreview"];
                 };
             };
             /** @description Validation Error */

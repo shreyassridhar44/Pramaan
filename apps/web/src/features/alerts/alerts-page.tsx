@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { BellRing, Siren } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { BellRing, Siren, Smartphone } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
 
 import { Amount, Chip } from '@/components/signature/chips'
 import { EmptyState, ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
@@ -9,6 +9,8 @@ import { useMeta } from '@/features/instruments/queries'
 import { api, unwrap } from '@/lib/api/client'
 import { cn } from '@/lib/cn'
 import { formatCount, formatDate } from '@/lib/format'
+
+import { MessagePreview } from './message-preview'
 
 export type AlertsSearch = { tab?: 'reminders' | 'escalations'; rule?: string; region?: string }
 
@@ -171,8 +173,10 @@ function Reminders({ rule, region }: { rule?: string; region?: string }) {
       ),
     placeholderData: (prev) => prev,
   })
+  const [preview, setPreview] = useState<number | null>(null)
   return (
     <Panel className="overflow-hidden">
+      <MessagePreview id={preview} onClose={() => setPreview(null)} />
       <PanelHeader
         title="Reminders sent"
         caption={
@@ -199,6 +203,9 @@ function Reminders({ rule, region }: { rule?: string; region?: string }) {
               <th>Channel</th>
               <th>Due</th>
               <th>Sent</th>
+              <th>
+                <span className="sr-only">Message</span>
+              </th>
             </>
           }
         >
@@ -222,6 +229,17 @@ function Reminders({ rule, region }: { rule?: string; region?: string }) {
               <td className="font-mono whitespace-nowrap">{formatDate(r.due_on)}</td>
               <td className="font-mono whitespace-nowrap text-ink-2">
                 {r.sent_on ? formatDate(r.sent_on) : 'Queued'}
+              </td>
+              <td className="text-right">
+                {r.rule === 'Maturity reminder' ? (
+                  <button
+                    type="button"
+                    onClick={() => setPreview(r.id)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-line-strong px-2.5 py-1 text-[0.75rem] font-medium whitespace-nowrap text-ink-2 hover:border-ink-3 hover:text-ink"
+                  >
+                    <Smartphone className="size-3.5" /> See message
+                  </button>
+                ) : null}
               </td>
             </tr>
           ))}
