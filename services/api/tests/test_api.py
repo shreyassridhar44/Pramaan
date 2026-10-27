@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from httpx import AsyncClient
 from sqlalchemy import select, update
 
@@ -171,3 +173,26 @@ async def test_pulse_counts_daily_activity_in_scope(client: AsyncClient) -> None
     assert sum(d["bank"] + d["submitted"] + d["checked"] + d["reminders"] for d in days) > 0
     await sign_in(client, "institution")
     assert (await client.get("/api/v1/portfolio/pulse")).status_code == 403
+
+
+async def test_seeded_history_includes_overdue_reminders(client: AsyncClient) -> None:
+    from app.db import SessionLocal
+    from app.models import Instrument
+
+    async with SessionLocal() as db:
+        matured = (
+            await db.scalars(
+                select(Instrument.id).where(
+                    Instrument.status == "matured",
+                    Instrument.maturity_date.between(
+                        ANCHOR - timedelta(days=100), ANCHOR - timedelta(days=7)
+                    ),
+                )
+            )
+        ).all()
+    assert matured
+    await sign_in(client, "bureau")
+    for instrument_id in matured[:5]:
+        d = (await client.get(f"/api/v1/instruments/{instrument_id}", params=AS_OF)).json()
+        overdue = [r for r in d["reminders"] if r["overdue"]]
+        assert overdue and all(r["status"] == "sent" for r in overdue)

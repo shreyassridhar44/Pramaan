@@ -196,9 +196,8 @@ function SignIn() {
           <div className="relative">
             <Microprint className="mb-3 text-board-ink/15" />
             <p className="max-w-md text-[0.75rem] leading-relaxed text-board-ink/70">
-              Smart India Hackathon 2026, problem statement SIH26265. All institutions, deposits,
-              banks and documents shown are synthetic. Simulated components are labelled where they
-              appear.
+              All institutions, deposits, banks and documents shown are synthetic. Simulated
+              components are labelled where they appear.
             </p>
           </div>
         </aside>
@@ -248,7 +247,7 @@ function SignIn() {
               <section className="mt-12" aria-labelledby="personas-heading">
                 <div className="flex items-baseline justify-between gap-4">
                   <h3 id="personas-heading" className="text-[0.9375rem] font-semibold text-ink">
-                    Explore the prototype as
+                    Explore Pramaan as
                   </h3>
                   <span className="text-[0.75rem] text-ink-3">
                     Demo mode: one click, no password

@@ -303,7 +303,7 @@ function TopBar({ title, onSearch }: { title?: ReactNode; onSearch: () => void }
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
       ) : null}
-      <Tip content="All amounts and records on this prototype are synthetic">
+      <Tip content="All amounts and records here are synthetic">
         <ShieldCheck className="size-4 text-ink-3" aria-label="Synthetic data" />
       </Tip>
     </header>

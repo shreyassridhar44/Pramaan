@@ -20,6 +20,14 @@ Update this file at the end of every working session and every completed step.
 
 ## Session log
 
+### 27 October 2026 (early morning): full check on a clean Linux machine
+- Fresh clone on Fedora 44 (Node 22, uv, Docker), following the README quick start exactly: it works as written (copy `.env.example` to `.env`, compose up, migrate, seed in about 8 s, run API and web).
+- All checks pass: ruff, ruff format, mypy, 169 API tests, `alembic check` (migrations match the models), web lint, typecheck, 23 unit tests, contrast, build, ML 19 tests, `npm audit` and `pip-audit` clean, regenerated API types identical to `schema.d.ts`; Playwright 84 of 84 in Chrome and 15 of 15 in Firefox. WebKit cannot run on Fedora (Playwright needs Ubuntu libraries), so run it on another machine.
+- Fixed: the seed recorded only the reminders before maturity, so every matured deposit's ladder showed its overdue steps as "Before records" next to an "Escalated" chip. The seed now uses `reminders_between`, as the nightly run does. Overdue reminders also read "matured ... ago" and the Alerts page shows "N d overdue" instead of "-N d before". The live site picks up the seed change on its next demo reset.
+- G5 (initial JS under 350 KB gzip) failed on the command view at 445 KB: the default clock view pulled in ECharts through the river panel's static import. The river is now lazy and `RiverLegend` has its own module; the officer's first page is 274 KB, and the public, sign-in, verify, portal and forecast pages are unchanged.
+- Untracked `apps/web/.tanstack/tmp/` (router scaffolding committed by accident; already in `.gitignore`).
+- Docs: README status, `VERSIONS.md` (rapidocr-onnxruntime 1.4.4), `THIRD_PARTY.md` (openapi-fetch, Zod, React Hook Form, date-fns, clsx, tailwind-merge, class-variance-authority, Uvicorn, pydantic-settings, orjson, python-multipart).
+
 ### 27 October 2026: one theme everywhere, maturity runway, rail and letter preview (DECISION D39)
 - The board tokens are per theme, so the light theme is light throughout and the dark theme dark throughout; the forecast no longer forces dark. Physical objects (phone frame, UV lamp, camera viewfinder) keep their own colours.
 - The pulse trace under the command board is replaced by a 13-week maturity runway (`features/command/runway.tsx`, from `/portfolio/river`); `/portfolio/pulse` still feeds the brief.

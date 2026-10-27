@@ -1,15 +1,20 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Clock3, Table2, Waves } from 'lucide-react'
-import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 
 import { MaturityClock } from '@/components/charts/maturity-clock'
-import { MaturityRiver, RiverLegend } from '@/components/charts/maturity-river'
 import { RIVER_BANDS, bandValue, byMonth } from '@/components/charts/river-bands'
+import { RiverLegend } from '@/components/charts/river-legend'
 import { ErrorState, Panel, PanelHeader, Skeleton } from '@/components/ui/primitives'
 import { useAsOf } from '@/lib/asof'
 import { formatINRCompact } from '@/lib/format'
 
 import { useRiver } from './queries'
+
+// ECharts is only needed for the river view; the default clock view loads without it.
+const MaturityRiver = lazy(() =>
+  import('@/components/charts/maturity-river').then((m) => ({ default: m.MaturityRiver })),
+)
 
 function monthEnd(first: string) {
   const d = new Date(`${first}T00:00:00Z`)
@@ -123,23 +128,25 @@ export function RiverPanel() {
             }
           />
         ) : (
-          <MaturityRiver
-            weeks={months}
-            asOf={asOf}
-            period="month"
-            height={420}
-            label="Value maturing each month by proof level"
-            onWeekClick={(month) =>
-              void navigate({
-                to: '/instruments',
-                search: {
-                  maturity_from: month,
-                  maturity_to: monthEnd(month),
-                  ...(isToday ? {} : { asOf }),
-                },
-              })
-            }
-          />
+          <Suspense fallback={<Skeleton className="h-[420px] w-full" />}>
+            <MaturityRiver
+              weeks={months}
+              asOf={asOf}
+              period="month"
+              height={420}
+              label="Value maturing each month by proof level"
+              onWeekClick={(month) =>
+                void navigate({
+                  to: '/instruments',
+                  search: {
+                    maturity_from: month,
+                    maturity_to: monthEnd(month),
+                    ...(isToday ? {} : { asOf }),
+                  },
+                })
+              }
+            />
+          </Suspense>
         )}
       </div>
     </Panel>

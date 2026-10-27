@@ -250,7 +250,7 @@ Components live in `apps/web/src/components/security/`; the pattern maths in `sr
 | Rubber stamp | Home lifecycle, deposit passport | A recorded event, with its date |
 | Split-flap figures | Home board, sign-in, legacy import | Live figures; they riffle when the value changes |
 | Security thread | Active rail item, re-confirmed specimen | Where you are; continuity |
-| Microprint, tricolour hairline, GIGW strip | Every shell | Official identity; the strip says it is a prototype |
+| Microprint, tricolour hairline, GIGW strip | Every shell | Official identity; the footer says it is not an official AICTE website |
 | UV lamp | Document viewer (U key) | The forensic heatmap, magnified, as a note checker shows it |
 | Foil | A3 seals, verify page, identity cards on hover | Highest assurance; a genuine letter |
 

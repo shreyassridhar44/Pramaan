@@ -20,7 +20,7 @@ for (const [label, home] of PERSONAS) {
     await page.getByRole('banner').getByRole('link', { name: 'Sign in' }).click()
     await expect(page).toHaveURL(/\/signin/)
     const button = page
-      .getByRole('region', { name: 'Explore the prototype as' })
+      .getByRole('region', { name: 'Explore Pramaan as' })
       .getByRole('button', { name: new RegExp(label) })
     await button.click()
     await expect(page).toHaveURL(home)
@@ -31,14 +31,14 @@ for (const [label, home] of PERSONAS) {
 test('signing out and choosing another persona lands on its home page', async ({ page }) => {
   await page.goto('/signin')
   await page
-    .getByRole('region', { name: 'Explore the prototype as' })
+    .getByRole('region', { name: 'Explore Pramaan as' })
     .getByRole('button', { name: /Vikram Deshmukh/ })
     .click()
   await expect(page).toHaveURL(/\/portal$/)
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/signin/)
   await page
-    .getByRole('region', { name: 'Explore the prototype as' })
+    .getByRole('region', { name: 'Explore Pramaan as' })
     .getByRole('button', { name: /Sanjay Bhat/ })
     .click()
   await expect(page).toHaveURL(/\/bank$/)

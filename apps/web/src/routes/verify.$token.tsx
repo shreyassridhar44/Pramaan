@@ -205,7 +205,7 @@ function VerifyPage() {
           </>
         )}
         <p className="mt-8 text-center text-[0.75rem] text-ink-3">
-          Pramaan prototype for the AICTE Regulation Bureau. Synthetic data.
+          Pramaan for the AICTE Regulation Bureau. Synthetic data.
         </p>
       </div>
     </div>

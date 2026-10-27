@@ -59,6 +59,10 @@ All notable changes are recorded here. Format follows Keep a Changelog; versions
 - CI: the test setup now normalises the database URL, which had made every API job fail since the domain step.
 - The institution letters page, registry links with an all-digit search, release changes not refreshing cached statuses, and several accessibility issues (registry table semantics, listbox structure, a keyboard-scrollable table, accent contrast).
 - Seeded institutions no longer collide with the release story by name prefix, and seeded letters are numbered in order of issue.
+- The demo history now includes the weekly overdue reminders the nightly run sends after maturity, so a matured deposit's reminder ladder no longer shows its overdue steps as "Before records".
+- Overdue reminders read "matured 7 days ago" instead of "matures 7 days ago", and the Alerts page labels them "7 d overdue" instead of "-7 d before".
+- The command view loads ECharts only when the River view is chosen, so an officer's first page needs 274 KB of JavaScript (gzip) instead of 445 KB, within the 350 KB gate (`QUALITY_GATES.md` G5).
+- The "SIH 2026 prototype" badge is gone from the top strip, sign-in, verify page and footer; the footer keeps a short "Not an official AICTE website" line, and simulated parts keep their labels.
 - Empty successful responses (204) no longer show as failed requests in the web app.
 - The submission confirmation no longer disappears when the portal refreshes after a demand is met.
 - Late-furnishing penalty slabs use the next 31 May and 31 July on or after the due date.

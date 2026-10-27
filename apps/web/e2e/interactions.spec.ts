@@ -7,7 +7,7 @@ import { type Page, expect, test } from '@playwright/test'
 async function signInWithPersona(page: Page, name: string) {
   await page.goto('/signin')
   await page
-    .getByRole('region', { name: 'Explore the prototype as' })
+    .getByRole('region', { name: 'Explore Pramaan as' })
     .getByRole('button', { name: new RegExp(name) })
     .click()
   await expect(page.getByRole('heading', { name: 'Sign in' })).toHaveCount(0)

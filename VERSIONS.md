@@ -60,7 +60,7 @@ Latest versions checked on 24 October 2026 with `npm view` and `pip index versio
 | email-validator | 2.3.0 |
 | arq | 0.28.0 |
 | onnxruntime | 1.31.0 |
-| rapidocr-onnxruntime | 1.2.3 (also `rapidocr` 3.10.0; choose in Step 3) |
+| rapidocr-onnxruntime | 1.4.4 (resolved in uv.lock) |
 | opencv-python-headless | 5.0.0.93 |
 | scikit-learn | 1.9.1 |
 | reportlab | 5.1.0 |

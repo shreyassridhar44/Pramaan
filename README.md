@@ -6,7 +6,7 @@ Pramaan is a security deposit and Fixed Deposit Receipt (FDR) management system 
 
 It keeps one record of every deposit AICTE holds against a technical institution, shows for each value whether it was declared by the institution, read from the document, or confirmed by the issuing bank, watches every maturity and compliance deadline, and runs release cases through the clearances in the Approval Process Handbook to the competent authority, with a tamper-evident audit trail.
 
-> **Status (25 October 2026):** Steps 1 to 8 of the plan are built and tested: intake with document checks, bank confirmation, monitoring, renewals, corrections, release with signed letters and public verification. See `claude-code/HANDOFF.md`.
+> **Status (27 October 2026):** Steps 1 to 9 of the plan are built and tested, and Step 10 (hardening, evaluation, deployment and demo) is in progress. The demo runs at https://pramaan.duckdns.org. See `claude-code/HANDOFF.md`.
 
 ## What it does
 

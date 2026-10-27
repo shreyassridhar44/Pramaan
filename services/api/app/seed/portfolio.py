@@ -26,6 +26,7 @@ from app.domain.asof import InstrumentFacts, status_on
 from app.domain.assurance import EvidenceDates
 from app.domain.provenance import normalise
 from app.domain.rules.demand import ProgrammeLevel, compute_demand
+from app.domain.rules.maturity import reminders_between
 from app.domain.rules.params import RuleSet
 from app.domain.rules.penalty import applicable_penalties
 from app.domain.types import FieldName, InstrumentKind, Ownership, Premises, Source, Status
@@ -1184,22 +1185,23 @@ class Generator:
                 status in ("active", "maturing", "matured")
                 and -120 <= (maturity - anchor).days <= 95
             ):
-                for offset in RULES.maturity.reminder_offsets_days:
-                    due = maturity - timedelta(days=offset)
-                    if anchor - timedelta(days=120) <= due <= anchor:
-                        self.ds.add(
-                            "reminders",
-                            {
-                                "instrument_id": inst_row["id"],
-                                "rule_code": RULES.maturity.ref.code,
-                                "offset_days": offset,
-                                "channel": "email",
-                                "recipient": "accounts@institution.demo",
-                                "due_on": due,
-                                "sent_on": due,
-                                "status": "sent",
-                            },
-                        )
+                # The ladder before maturity and, once matured, the periodic overdue reminders.
+                for r in reminders_between(
+                    maturity, anchor - timedelta(days=120), anchor, RULES.maturity
+                ):
+                    self.ds.add(
+                        "reminders",
+                        {
+                            "instrument_id": inst_row["id"],
+                            "rule_code": RULES.maturity.ref.code,
+                            "offset_days": r.offset_days,
+                            "channel": "email",
+                            "recipient": "accounts@institution.demo",
+                            "due_on": r.due_on,
+                            "sent_on": r.due_on,
+                            "status": "sent",
+                        },
+                    )
             # The other monitoring alerts over the same 120 days, as the nightly run would send.
             if status not in ("active", "maturing"):
                 continue

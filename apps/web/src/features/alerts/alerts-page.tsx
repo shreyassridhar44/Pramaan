@@ -244,7 +244,12 @@ function Reminders({ rule, region }: { rule?: string; region?: string }) {
                   {r.rule === 'Maturity reminder' ? (
                     <span className="text-ink-3">
                       {' '}
-                      · {r.offset_days ? `${r.offset_days} d before` : 'on the maturity date'}
+                      ·{' '}
+                      {r.offset_days > 0
+                        ? `${r.offset_days} d before`
+                        : r.offset_days < 0
+                          ? `${-r.offset_days} d overdue`
+                          : 'on the maturity date'}
                     </span>
                   ) : null}
                 </td>

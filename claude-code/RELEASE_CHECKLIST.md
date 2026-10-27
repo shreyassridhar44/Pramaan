@@ -23,9 +23,9 @@ For the SIH submission release `v1.0.0-sih`.
 - [x] AWS Budget set ($100 a month, existing account budget).
 
 ## Documentation
-- [ ] README quick start verified on a clean machine.
+- [x] README quick start verified on a clean machine (fresh clone on Fedora 44, 27 Oct 2026).
 - [ ] `CHANGELOG.md` has the release entry.
-- [ ] `VERSIONS.md` and `THIRD_PARTY.md` match the lockfiles.
+- [x] `VERSIONS.md` and `THIRD_PARTY.md` match the lockfiles (checked 27 Oct 2026).
 - [x] `MODEL_CARD.md` and `EVALUATION.md` contain measured results.
 - [ ] `HANDOFF.md` reflects the final state.
 

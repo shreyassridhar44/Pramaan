@@ -25,8 +25,7 @@ export function GovFooter() {
             </div>
           </div>
           <p className="mt-4 max-w-sm text-[0.8125rem] leading-relaxed text-board-ink/70">
-            Security deposit and FDR management portal for the AICTE Regulation Bureau. A Smart
-            India Hackathon 2026 prototype for problem statement SIH26265.
+            Security deposit and FDR management portal for the AICTE Regulation Bureau.
           </p>
         </div>
         <FooterList
@@ -56,7 +55,7 @@ export function GovFooter() {
       </div>
       <div className="border-t border-board-ink/10">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[0.6875rem] text-board-ink/70">
-          <p>Content owned and maintained by the Pramaan team for SIH 2026.</p>
+          <p>Content owned and maintained by the Pramaan team.</p>
           <p>
             Ministry of Education, Government of India is the problem statement owner through AICTE.
           </p>

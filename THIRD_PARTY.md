@@ -17,8 +17,16 @@ Licences below are as published by each project and are re-verified when the dep
 | Lucide icons | Icons | ISC | Notice |
 | jsQR | Decoding a letter's QR code from the camera on the public home page | Apache-2.0 | Notice |
 | Sonner | Toasts | MIT | Notice |
+| openapi-fetch | Typed API client generated from the OpenAPI schema | MIT | Notice |
+| Zod, React Hook Form | Form validation and state | MIT | Notice |
+| date-fns | Date arithmetic | MIT | Notice |
+| clsx, tailwind-merge | Class name composition | MIT | Notice |
+| class-variance-authority | Component variants | Apache 2.0 | Notice |
 | FastAPI, Starlette | API | MIT, BSD-3-Clause | Notice |
-| Pydantic | Validation | MIT | Notice |
+| Uvicorn | ASGI server | BSD-3-Clause | Notice |
+| Pydantic, pydantic-settings | Validation and configuration | MIT | Notice |
+| orjson | JSON serialisation | MPL-2.0 and (Apache 2.0 or MIT) | Notice |
+| python-multipart | Upload parsing | Apache 2.0 | Notice |
 | SQLAlchemy, Alembic | Database | MIT | Notice |
 | asyncpg | Postgres driver | Apache 2.0 | Notice |
 | itsdangerous | Signed session cookies | BSD-3-Clause | Notice |

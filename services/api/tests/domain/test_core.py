@@ -6,6 +6,7 @@ from hypothesis import strategies as st
 
 from app.domain.asof import InstrumentFacts, state_on, status_on, summarise, timeline
 from app.domain.assurance import EvidenceDates, assurance_on
+from app.domain.messages import maturity_reminder
 from app.domain.provenance import Observation, char_diff, compare_field, normalise
 from app.domain.rules.params import RuleSet
 from app.domain.state_machine import TransitionRefused, check_transition
@@ -219,3 +220,13 @@ def test_display_gives_one_format_per_field() -> None:
         display(FieldName.MATURITY_DATE, "2023-08-11"),
     )
     assert "".join(t for t, changed in runs if changed) == "13"
+
+
+def test_reminder_wording_follows_the_maturity_date() -> None:
+    before = maturity_reminder("123", 150_000_000, D, 30)
+    assert before.subject_en.endswith("matures in 30 days")
+    assert f"matures on {D:%d %b %Y}" in before.body_en
+    after = maturity_reminder("123", 150_000_000, D, -7)
+    assert after.subject_en.endswith("matured 7 days ago")
+    assert f"matured on {D:%d %b %Y}" in after.body_en
+    assert maturity_reminder("123", 150_000_000, D, 0).subject_en.endswith("matures today")

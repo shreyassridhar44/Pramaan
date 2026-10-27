@@ -12,7 +12,7 @@ const SIZES: { size: TextSize; label: string; name: string }[] = [
 
 /**
  * The government website strip (GIGW): who runs the service, skip to content, text size and
- * contrast. It also says plainly that this is a prototype, not an official AICTE website.
+ * contrast.
  */
 export function GovStrip({
   className,
@@ -44,9 +44,6 @@ export function GovStrip({
               : 'All India Council for Technical Education, Ministry of Education, Government of India'}
           </span>
         </p>
-        <span className="hidden shrink-0 rounded-full border border-board-ink/20 px-2 py-px text-[0.625rem] tracking-[0.04em] text-board-ink/75 lg:inline">
-          SIH 2026 prototype, not an official AICTE website
-        </span>
         <div className="ml-auto flex shrink-0 items-center gap-1">
           <div role="group" aria-label="Text size" className="flex items-center">
             {SIZES.map((s) => (

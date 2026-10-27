@@ -34,10 +34,12 @@ def _when_hi(offset_days: int) -> str:
 def maturity_reminder(number: str, amount_paise: int, maturity: date, offset_days: int) -> Message:
     amount = rupees(amount_paise // 100)
     on = f"{maturity:%d %b %Y}"
+    # Overdue reminders (negative offsets) go out after the maturity date.
+    verb = "matured" if offset_days < 0 else "matures"
     return Message(
-        subject_en=f"Security deposit {number} matures {_when_en(offset_days)}",
+        subject_en=f"Security deposit {number} {verb} {_when_en(offset_days)}",
         body_en=(
-            f"Your security deposit {number} of {amount} with AICTE matures on {on}. "
+            f"Your security deposit {number} of {amount} with AICTE {verb} on {on}. "
             "Submit a renewal or apply for release on the Pramaan portal."
         ),
         subject_hi=f"सुरक्षा जमा {number} की परिपक्वता {_when_hi(offset_days)}",
