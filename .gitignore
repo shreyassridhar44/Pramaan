@@ -58,3 +58,7 @@ test-results/
 infra/aws/.release.*
 infra/aws/.params.*
 infra/aws/.cloudfront.*
+
+# Project documentation is kept locally; only the root README is published
+*.md
+!/README.md
